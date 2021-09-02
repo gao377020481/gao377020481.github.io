@@ -2,17 +2,17 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
     <channel>
         <title>Gao&#39;s happy day</title>
-        <link>https://example.com/</link>
+        <link>https://gao377020481.github.io/</link>
         <description>Recent content on Gao&#39;s happy day</description>
         <generator>Hugo -- gohugo.io</generator>
         <language>en-us</language>
-        <lastBuildDate>Thu, 10 Sep 2020 00:00:00 +0000</lastBuildDate><atom:link href="https://example.com/index.xml" rel="self" type="application/rss+xml" /><item>
+        <lastBuildDate>Thu, 10 Sep 2020 00:00:00 +0000</lastBuildDate><atom:link href="https://gao377020481.github.io/index.xml" rel="self" type="application/rss+xml" /><item>
         <title>ubuntu-server虚拟机配置</title>
-        <link>https://example.com/p/ubuntu-server%E8%99%9A%E6%8B%9F%E6%9C%BA%E9%85%8D%E7%BD%AE/</link>
+        <link>https://gao377020481.github.io/p/ubuntu-server%E8%99%9A%E6%8B%9F%E6%9C%BA%E9%85%8D%E7%BD%AE/</link>
         <pubDate>Thu, 10 Sep 2020 00:00:00 +0000</pubDate>
         
-        <guid>https://example.com/p/ubuntu-server%E8%99%9A%E6%8B%9F%E6%9C%BA%E9%85%8D%E7%BD%AE/</guid>
-        <description>&lt;img src="https://example.com/p/ubuntu-server%E8%99%9A%E6%8B%9F%E6%9C%BA%E9%85%8D%E7%BD%AE/hudai-gayiran-3Od_VKcDEAA-unsplash.jpg" alt="Featured image of post ubuntu-server虚拟机配置" /&gt;&lt;h1 id=&#34;ubuntu-server虚拟机配置&#34;&gt;ubuntu-server虚拟机配置&lt;/h1&gt;
+        <guid>https://gao377020481.github.io/p/ubuntu-server%E8%99%9A%E6%8B%9F%E6%9C%BA%E9%85%8D%E7%BD%AE/</guid>
+        <description>&lt;img src="https://gao377020481.github.io/p/ubuntu-server%E8%99%9A%E6%8B%9F%E6%9C%BA%E9%85%8D%E7%BD%AE/hudai-gayiran-3Od_VKcDEAA-unsplash.jpg" alt="Featured image of post ubuntu-server虚拟机配置" /&gt;&lt;h1 id=&#34;ubuntu-server虚拟机配置&#34;&gt;ubuntu-server虚拟机配置&lt;/h1&gt;
 &lt;h2 id=&#34;sh配置&#34;&gt;Sh配置&lt;/h2&gt;
 &lt;p&gt;安装完ubuntu后先配置sh这样可以通过xshell连接
 只需要：&lt;/p&gt;
@@ -66,11 +66,11 @@ deb http://mirrors.aliyun.com/ubuntu/ xenial-security multiverse
         </item>
         <item>
         <title>Mysql基本知识</title>
-        <link>https://example.com/p/mysql/</link>
+        <link>https://gao377020481.github.io/p/mysql/</link>
         <pubDate>Wed, 09 Sep 2020 00:00:00 +0000</pubDate>
         
-        <guid>https://example.com/p/mysql/</guid>
-        <description>&lt;img src="https://example.com/p/mysql/pawel-czerwinski-8uZPynIu-rQ-unsplash.jpg" alt="Featured image of post Mysql基本知识" /&gt;&lt;h1 id=&#34;mysql&#34;&gt;MYSQL&lt;/h1&gt;
+        <guid>https://gao377020481.github.io/p/mysql/</guid>
+        <description>&lt;img src="https://gao377020481.github.io/p/mysql/pawel-czerwinski-8uZPynIu-rQ-unsplash.jpg" alt="Featured image of post Mysql基本知识" /&gt;&lt;h1 id=&#34;mysql&#34;&gt;MYSQL&lt;/h1&gt;
 &lt;h2 id=&#34;mysql安装与配置&#34;&gt;mysql安装与配置&lt;/h2&gt;
 &lt;p&gt;在虚拟机上安装mysql,使用apt-get install就可以
 这里我只检索到了mysql-server-5.7就安装了5.7&lt;/p&gt;
@@ -431,11 +431,11 @@ max_binlog_size   = 100M
         </item>
         <item>
         <title>简易http客户端(C posix API)</title>
-        <link>https://example.com/p/http%E5%AE%A2%E6%88%B7%E7%AB%AF/</link>
+        <link>https://gao377020481.github.io/p/http%E5%AE%A2%E6%88%B7%E7%AB%AF/</link>
         <pubDate>Wed, 09 Sep 2020 00:00:00 +0000</pubDate>
         
-        <guid>https://example.com/p/http%E5%AE%A2%E6%88%B7%E7%AB%AF/</guid>
-        <description>&lt;img src="https://example.com/p/http%E5%AE%A2%E6%88%B7%E7%AB%AF/florian-klauer-nptLmg6jqDo-unsplash.jpg" alt="Featured image of post 简易http客户端(C posix API)" /&gt;&lt;h1 id=&#34;http&#34;&gt;HTTP&lt;/h1&gt;
+        <guid>https://gao377020481.github.io/p/http%E5%AE%A2%E6%88%B7%E7%AB%AF/</guid>
+        <description>&lt;img src="https://gao377020481.github.io/p/http%E5%AE%A2%E6%88%B7%E7%AB%AF/florian-klauer-nptLmg6jqDo-unsplash.jpg" alt="Featured image of post 简易http客户端(C posix API)" /&gt;&lt;h1 id=&#34;http&#34;&gt;HTTP&lt;/h1&gt;
 &lt;p&gt;实现http客户端程序&lt;/p&gt;
 &lt;h2 id=&#34;基础&#34;&gt;基础&lt;/h2&gt;
 &lt;p&gt;HTTP使用TCP连接

@@ -2,17 +2,17 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>网络编程 on Gao&#39;s happy day</title>
-    <link>https://example.com/categories/%E7%BD%91%E7%BB%9C%E7%BC%96%E7%A8%8B/</link>
+    <link>https://gao377020481.github.io/categories/%E7%BD%91%E7%BB%9C%E7%BC%96%E7%A8%8B/</link>
     <description>Recent content in 网络编程 on Gao&#39;s happy day</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Wed, 09 Sep 2020 00:00:00 +0000</lastBuildDate><atom:link href="https://example.com/categories/%E7%BD%91%E7%BB%9C%E7%BC%96%E7%A8%8B/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Wed, 09 Sep 2020 00:00:00 +0000</lastBuildDate><atom:link href="https://gao377020481.github.io/categories/%E7%BD%91%E7%BB%9C%E7%BC%96%E7%A8%8B/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>简易http客户端(C posix API)</title>
-      <link>https://example.com/p/http%E5%AE%A2%E6%88%B7%E7%AB%AF/</link>
+      <link>https://gao377020481.github.io/p/http%E5%AE%A2%E6%88%B7%E7%AB%AF/</link>
       <pubDate>Wed, 09 Sep 2020 00:00:00 +0000</pubDate>
       
-      <guid>https://example.com/p/http%E5%AE%A2%E6%88%B7%E7%AB%AF/</guid>
+      <guid>https://gao377020481.github.io/p/http%E5%AE%A2%E6%88%B7%E7%AB%AF/</guid>
       <description>HTTP 实现http客户端程序
 基础 HTTP使用TCP连接 HTTP报文格式见文档
 实现 域名到ip地址转换(dns) 直接调用api进行转换比较简单：

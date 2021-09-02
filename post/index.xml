@@ -2,17 +2,17 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Posts on Gao&#39;s happy day</title>
-    <link>https://example.com/post/</link>
+    <link>https://gao377020481.github.io/post/</link>
     <description>Recent content in Posts on Gao&#39;s happy day</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Thu, 10 Sep 2020 00:00:00 +0000</lastBuildDate><atom:link href="https://example.com/post/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Thu, 10 Sep 2020 00:00:00 +0000</lastBuildDate><atom:link href="https://gao377020481.github.io/post/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>ubuntu-server虚拟机配置</title>
-      <link>https://example.com/p/ubuntu-server%E8%99%9A%E6%8B%9F%E6%9C%BA%E9%85%8D%E7%BD%AE/</link>
+      <link>https://gao377020481.github.io/p/ubuntu-server%E8%99%9A%E6%8B%9F%E6%9C%BA%E9%85%8D%E7%BD%AE/</link>
       <pubDate>Thu, 10 Sep 2020 00:00:00 +0000</pubDate>
       
-      <guid>https://example.com/p/ubuntu-server%E8%99%9A%E6%8B%9F%E6%9C%BA%E9%85%8D%E7%BD%AE/</guid>
+      <guid>https://gao377020481.github.io/p/ubuntu-server%E8%99%9A%E6%8B%9F%E6%9C%BA%E9%85%8D%E7%BD%AE/</guid>
       <description>ubuntu-server虚拟机配置 Sh配置 安装完ubuntu后先配置sh这样可以通过xshell连接 只需要：
 sudo apt-get install openssh-server ssh即可 Samba配置 然后安装samba
 sudo apt-get install samba 创建share文件夹
@@ -26,10 +26,10 @@ deb-src http://archive.ubuntu.com/ubuntu xenial main restricted #Added by softwa
     
     <item>
       <title>Mysql基本知识</title>
-      <link>https://example.com/p/mysql/</link>
+      <link>https://gao377020481.github.io/p/mysql/</link>
       <pubDate>Wed, 09 Sep 2020 00:00:00 +0000</pubDate>
       
-      <guid>https://example.com/p/mysql/</guid>
+      <guid>https://gao377020481.github.io/p/mysql/</guid>
       <description>MYSQL mysql安装与配置 在虚拟机上安装mysql,使用apt-get install就可以 这里我只检索到了mysql-server-5.7就安装了5.7
 在本地win10上安装mysqlbench用于连接虚拟机的mysql服务器 这里使用网络连接，可能是因为mysql版本的原因，本来应该在/etc/mysql中的my.cnf文件中显式的配置有基本信息，我只需要修改部分，但5.7在/etc/mysql/mysql.conf.d/mysqld.cnf,在它的基础上修改对应的bind-address为0.0.0.0保证回环地址可访问：
 ## The MySQL database server configuration file.## You can copy this to one of:# - &amp;quot;/etc/mysql/my.cnf&amp;quot; to set global options,# - &amp;quot;~/.my.cnf&amp;quot; to set user-specific options.# # One can use all long options that the program supports.# Run program with --help to get a list of available options and with# --print-defaults to see which it would actually understand and use.</description>
@@ -37,10 +37,10 @@ deb-src http://archive.ubuntu.com/ubuntu xenial main restricted #Added by softwa
     
     <item>
       <title>简易http客户端(C posix API)</title>
-      <link>https://example.com/p/http%E5%AE%A2%E6%88%B7%E7%AB%AF/</link>
+      <link>https://gao377020481.github.io/p/http%E5%AE%A2%E6%88%B7%E7%AB%AF/</link>
       <pubDate>Wed, 09 Sep 2020 00:00:00 +0000</pubDate>
       
-      <guid>https://example.com/p/http%E5%AE%A2%E6%88%B7%E7%AB%AF/</guid>
+      <guid>https://gao377020481.github.io/p/http%E5%AE%A2%E6%88%B7%E7%AB%AF/</guid>
       <description>HTTP 实现http客户端程序
 基础 HTTP使用TCP连接 HTTP报文格式见文档
 实现 域名到ip地址转换(dns) 直接调用api进行转换比较简单：
