@@ -1,0 +1,767 @@
+<!DOCTYPE html>
+<html lang="en-us">
+    <head><meta charset='utf-8'>
+<meta name='viewport' content='width=device-width, initial-scale=1'><meta name='description' content='基础知识'><title>线程池进阶版</title>
+
+<link rel='canonical' href='https://gao377020481.github.io/p/%E7%BA%BF%E7%A8%8B%E6%B1%A0%E8%BF%9B%E9%98%B6%E7%89%88/'>
+
+<link rel="stylesheet" href="/scss/style.min.css"><meta property='og:title' content='线程池进阶版'>
+<meta property='og:description' content='基础知识'>
+<meta property='og:url' content='https://gao377020481.github.io/p/%E7%BA%BF%E7%A8%8B%E6%B1%A0%E8%BF%9B%E9%98%B6%E7%89%88/'>
+<meta property='og:site_name' content='Gao&#39;s happy day'>
+<meta property='og:type' content='article'><meta property='article:section' content='Post' /><meta property='article:published_time' content='2020-09-10T00:00:00&#43;00:00'/><meta property='article:modified_time' content='2020-09-10T00:00:00&#43;00:00'/><meta property='og:image' content='https://gao377020481.github.io/p/%E7%BA%BF%E7%A8%8B%E6%B1%A0%E8%BF%9B%E9%98%B6%E7%89%88/241.jpg' />
+<meta name="twitter:title" content="线程池进阶版">
+<meta name="twitter:description" content="基础知识"><meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:image" content='https://gao377020481.github.io/p/%E7%BA%BF%E7%A8%8B%E6%B1%A0%E8%BF%9B%E9%98%B6%E7%89%88/241.jpg' />
+    </head>
+    <body class="
+    article-page 
+">
+    <script>
+        (function() {
+            const colorSchemeKey = 'StackColorScheme';
+            if(!localStorage.getItem(colorSchemeKey)){
+                localStorage.setItem(colorSchemeKey, "auto");
+            }
+        })();
+    </script><script>
+    (function() {
+        const colorSchemeKey = 'StackColorScheme';
+        const colorSchemeItem = localStorage.getItem(colorSchemeKey);
+        const supportDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches === true;
+
+        if (colorSchemeItem == 'dark' || colorSchemeItem === 'auto' && supportDarkMode) {
+            
+
+            document.documentElement.dataset.scheme = 'dark';
+        } else {
+            document.documentElement.dataset.scheme = 'light';
+        }
+    })();
+</script>
+<div class="container main-container flex 
+    
+        on-phone--column extended
+    
+">
+    
+        <aside class="sidebar left-sidebar sticky">
+    <button class="hamburger hamburger--spin" type="button" id="toggle-menu" aria-label="Toggle Menu">
+        <span class="hamburger-box">
+            <span class="hamburger-inner"></span>
+        </span>
+    </button>
+
+    <header class="site-info">
+        
+            
+            <figure class="site-avatar">
+                
+                    
+                    
+                    
+                        
+                        <img src="/img/head_hu80bfbd66acb06447b579b0189a09d13c_52956_300x0_resize_q75_box.jpg" width="300"
+                            height="300" class="site-logo" loading="lazy" alt="Avatar">
+                    
+                
+
+                
+            </figure>
+            
+        
+        <h1 class="site-name"><a href="https://gao377020481.github.io">Gao&#39;s happy day</a></h1>
+        <h2 class="site-description">After all,tomorrow is another day</h2>
+    </header>
+
+    <ol class="menu" id="main-menu">
+        
+        
+        
+
+        <li >
+            <a href='/' target="_blank">
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-home" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <polyline points="5 12 3 12 12 3 21 12 19 12" />
+  <path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-7" />
+  <path d="M9 21v-6a2 2 0 0 1 2 -2h2a2 2 0 0 1 2 2v6" />
+</svg>
+
+
+
+                
+                <span>Home</span>
+            </a>
+        </li>
+        
+        
+
+        <li >
+            <a href='/about/' >
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-user" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="7" r="4" />
+  <path d="M6 21v-2a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v2" />
+</svg>
+
+
+
+                
+                <span>About</span>
+            </a>
+        </li>
+        
+        
+
+        <li >
+            <a href='/archives/' >
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-archive" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <rect x="3" y="4" width="18" height="4" rx="2" />
+  <path d="M5 8v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-10" />
+  <line x1="10" y1="12" x2="14" y2="12" />
+</svg>
+
+
+
+                
+                <span>Archives</span>
+            </a>
+        </li>
+        
+        
+
+        <li >
+            <a href='/search/' >
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="10" cy="10" r="7" />
+  <line x1="21" y1="21" x2="15" y2="15" />
+</svg>
+
+
+
+                
+                <span>Search</span>
+            </a>
+        </li>
+        
+
+        
+            <li id="dark-mode-toggle">
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-left" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="8" cy="12" r="2" />
+  <rect x="2" y="6" width="20" height="12" rx="6" />
+</svg>
+
+
+
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-right" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="16" cy="12" r="2" />
+  <rect x="2" y="6" width="20" height="12" rx="6" />
+</svg>
+
+
+
+                <span>Dark Mode</span>
+            </li>
+        
+    </ol>
+</aside>
+
+    
+<main class="main full-width">
+    <article class="has-image main-article">
+    <header class="article-header">
+        <div class="article-image">
+            <a href="/p/%E7%BA%BF%E7%A8%8B%E6%B1%A0%E8%BF%9B%E9%98%B6%E7%89%88/">
+                <img src="/p/%E7%BA%BF%E7%A8%8B%E6%B1%A0%E8%BF%9B%E9%98%B6%E7%89%88/241_hudd714e7c3305b4c239dc02d266d283b9_7211866_800x0_resize_q75_box.jpg"
+                        srcset="/p/%E7%BA%BF%E7%A8%8B%E6%B1%A0%E8%BF%9B%E9%98%B6%E7%89%88/241_hudd714e7c3305b4c239dc02d266d283b9_7211866_800x0_resize_q75_box.jpg 800w, /p/%E7%BA%BF%E7%A8%8B%E6%B1%A0%E8%BF%9B%E9%98%B6%E7%89%88/241_hudd714e7c3305b4c239dc02d266d283b9_7211866_1600x0_resize_q75_box.jpg 1600w"
+                        width="800" 
+                        height="600" 
+                        loading="lazy"
+                        alt="Featured image of post 线程池进阶版" />
+                
+            </a>
+        </div>
+    
+
+    <div class="article-details">
+    
+    <header class="article-category">
+        
+            <a href="/categories/%E7%BD%91%E7%BB%9C%E7%BC%96%E7%A8%8B/" style="background-color: #2a9d8f; color: #fff;">
+                网络编程
+            </a>
+        
+    </header>
+    
+
+    <h2 class="article-title">
+        <a href="/p/%E7%BA%BF%E7%A8%8B%E6%B1%A0%E8%BF%9B%E9%98%B6%E7%89%88/">线程池进阶版</a>
+    </h2>
+
+    
+    <h3 class="article-subtitle">
+        基础知识
+    </h3>
+    
+
+    
+    <footer class="article-time">
+        
+            <div>
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-calendar-time" width="56" height="56" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <path d="M11.795 21h-6.795a2 2 0 0 1 -2 -2v-12a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v4" />
+  <circle cx="18" cy="18" r="4" />
+  <path d="M15 3v4" />
+  <path d="M7 3v4" />
+  <path d="M3 11h16" />
+  <path d="M18 16.496v1.504l1 1" />
+</svg>
+                <time class="article-time--published">Sep 10, 2020</time>
+            </div>
+        
+
+        
+            <div>
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="12" r="9" />
+  <polyline points="12 7 12 12 15 15" />
+</svg>
+
+
+
+                <time class="article-time--reading">
+                    2 minute read
+                </time>
+            </div>
+        
+    </footer>
+    
+</div>
+</header>
+
+    <section class="article-content">
+    <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="cp">#include</span> <span class="cpf">&lt;stdio.h&gt;</span><span class="cp">
+</span><span class="cp">#include</span> <span class="cpf">&lt;stdlib.h&gt;</span><span class="cp">
+</span><span class="cp">#include</span> <span class="cpf">&lt;string.h&gt;</span><span class="cp">
+</span><span class="cp"></span>
+<span class="cp">#include</span> <span class="cpf">&lt;pthread.h&gt;</span><span class="cp">
+</span><span class="cp"></span>
+
+
+<span class="cp">#define LL_ADD(item, list) do { 	\
+</span><span class="cp">	item-&gt;prev = NULL;				\
+</span><span class="cp">	item-&gt;next = list;				\
+</span><span class="cp">	list = item;					\
+</span><span class="cp">} while(0)
+</span><span class="cp"></span>
+<span class="cp">#define LL_REMOVE(item, list) do {						\
+</span><span class="cp">	if (item-&gt;prev != NULL) item-&gt;prev-&gt;next = item-&gt;next;	\
+</span><span class="cp">	if (item-&gt;next != NULL) item-&gt;next-&gt;prev = item-&gt;prev;	\
+</span><span class="cp">	if (list == item) list = item-&gt;next;					\
+</span><span class="cp">	item-&gt;prev = item-&gt;next = NULL;							\
+</span><span class="cp">} while(0)
+</span><span class="cp"></span>
+
+<span class="k">typedef</span> <span class="k">struct</span> <span class="n">NWORKER</span> <span class="p">{</span><span class="c1">//工作线程信息
+</span><span class="c1"></span>	<span class="n">pthread_t</span> <span class="kr">thread</span><span class="p">;</span> <span class="c1">//线程id
+</span><span class="c1"></span>	<span class="kt">int</span> <span class="n">terminate</span><span class="p">;</span> <span class="c1">//是否要终止
+</span><span class="c1"></span>	<span class="k">struct</span> <span class="n">NWORKQUEUE</span> <span class="o">*</span><span class="n">workqueue</span><span class="p">;</span> <span class="c1">//线程池，用于找到工作队列
+</span><span class="c1"></span>	<span class="k">struct</span> <span class="n">NWORKER</span> <span class="o">*</span><span class="n">prev</span><span class="p">;</span>
+	<span class="k">struct</span> <span class="n">NWORKER</span> <span class="o">*</span><span class="n">next</span><span class="p">;</span>
+<span class="p">}</span> <span class="n">nWorker</span><span class="p">;</span>
+
+<span class="k">typedef</span> <span class="k">struct</span> <span class="n">NJOB</span> <span class="p">{</span>  <span class="c1">//工作个体
+</span><span class="c1"></span>	<span class="kt">void</span> <span class="p">(</span><span class="o">*</span><span class="n">job_function</span><span class="p">)(</span><span class="k">struct</span> <span class="n">NJOB</span> <span class="o">*</span><span class="n">job</span><span class="p">);</span> 
+	<span class="kt">void</span> <span class="o">*</span><span class="n">user_data</span><span class="p">;</span>
+	<span class="k">struct</span> <span class="n">NJOB</span> <span class="o">*</span><span class="n">prev</span><span class="p">;</span>
+	<span class="k">struct</span> <span class="n">NJOB</span> <span class="o">*</span><span class="n">next</span><span class="p">;</span>
+<span class="p">}</span> <span class="n">nJob</span><span class="p">;</span>
+
+<span class="k">typedef</span> <span class="k">struct</span> <span class="n">NWORKQUEUE</span> <span class="p">{</span>
+	<span class="k">struct</span> <span class="n">NWORKER</span> <span class="o">*</span><span class="n">workers</span><span class="p">;</span> <span class="c1">//所有工作线程的链表
+</span><span class="c1"></span>	<span class="k">struct</span> <span class="n">NJOB</span> <span class="o">*</span><span class="n">waiting_jobs</span><span class="p">;</span> <span class="c1">//工作队列
+</span><span class="c1"></span>	<span class="n">pthread_mutex_t</span> <span class="n">jobs_mtx</span><span class="p">;</span> 
+	<span class="n">pthread_cond_t</span> <span class="n">jobs_cond</span><span class="p">;</span>
+<span class="p">}</span> <span class="n">nWorkQueue</span><span class="p">;</span>
+
+<span class="k">typedef</span> <span class="n">nWorkQueue</span> <span class="n">nThreadPool</span><span class="p">;</span>
+
+<span class="k">static</span> <span class="kt">void</span> <span class="o">*</span><span class="nf">ntyWorkerThread</span><span class="p">(</span><span class="kt">void</span> <span class="o">*</span><span class="n">ptr</span><span class="p">)</span> <span class="p">{</span> <span class="c1">//工作线程取用工作
+</span><span class="c1"></span>	<span class="n">nWorker</span> <span class="o">*</span><span class="n">worker</span> <span class="o">=</span> <span class="p">(</span><span class="n">nWorker</span><span class="o">*</span><span class="p">)</span><span class="n">ptr</span><span class="p">;</span>
+
+	<span class="k">while</span> <span class="p">(</span><span class="mi">1</span><span class="p">)</span> <span class="p">{</span>
+		<span class="n">pthread_mutex_lock</span><span class="p">(</span><span class="o">&amp;</span><span class="n">worker</span><span class="o">-&gt;</span><span class="n">workqueue</span><span class="o">-&gt;</span><span class="n">jobs_mtx</span><span class="p">);</span> <span class="c1">//先获取工作队列的操作互斥锁
+</span><span class="c1"></span>
+		<span class="k">while</span> <span class="p">(</span><span class="n">worker</span><span class="o">-&gt;</span><span class="n">workqueue</span><span class="o">-&gt;</span><span class="n">waiting_jobs</span> <span class="o">==</span> <span class="nb">NULL</span><span class="p">)</span> <span class="p">{</span>
+			<span class="k">if</span> <span class="p">(</span><span class="n">worker</span><span class="o">-&gt;</span><span class="n">terminate</span><span class="p">)</span> <span class="k">break</span><span class="p">;</span>
+			<span class="n">pthread_cond_wait</span><span class="p">(</span><span class="o">&amp;</span><span class="n">worker</span><span class="o">-&gt;</span><span class="n">workqueue</span><span class="o">-&gt;</span><span class="n">jobs_cond</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">worker</span><span class="o">-&gt;</span><span class="n">workqueue</span><span class="o">-&gt;</span><span class="n">jobs_mtx</span><span class="p">);</span> <span class="c1">//如果工作队列为空，这个线程就阻塞在条件变量上等待事件发生
+</span><span class="c1"></span>		<span class="p">}</span>
+
+		<span class="k">if</span> <span class="p">(</span><span class="n">worker</span><span class="o">-&gt;</span><span class="n">terminate</span><span class="p">)</span> <span class="p">{</span>
+			<span class="n">pthread_mutex_unlock</span><span class="p">(</span><span class="o">&amp;</span><span class="n">worker</span><span class="o">-&gt;</span><span class="n">workqueue</span><span class="o">-&gt;</span><span class="n">jobs_mtx</span><span class="p">);</span> <span class="c1">//如果检测到工作线程被终止，那么这个线程就需要结束工作，但在结束工作前需要将对工作队列的取用权限放开，所以这里在break前需要解锁这个互斥锁
+</span><span class="c1"></span>			<span class="k">break</span><span class="p">;</span>
+		<span class="p">}</span>
+		
+		<span class="n">nJob</span> <span class="o">*</span><span class="n">job</span> <span class="o">=</span> <span class="n">worker</span><span class="o">-&gt;</span><span class="n">workqueue</span><span class="o">-&gt;</span><span class="n">waiting_jobs</span><span class="p">;</span> <span class="c1">//从工作队列中获取一个工作
+</span><span class="c1"></span>		<span class="k">if</span> <span class="p">(</span><span class="n">job</span> <span class="o">!=</span> <span class="nb">NULL</span><span class="p">)</span> <span class="p">{</span>
+			<span class="n">LL_REMOVE</span><span class="p">(</span><span class="n">job</span><span class="p">,</span> <span class="n">worker</span><span class="o">-&gt;</span><span class="n">workqueue</span><span class="o">-&gt;</span><span class="n">waiting_jobs</span><span class="p">);</span>  <span class="c1">//从工作队列中移除掉获取的这个工作
+</span><span class="c1"></span>		<span class="k">if</span> <span class="p">(</span><span class="n">job</span> <span class="o">!=</span> <span class="nb">NULL</span><span class="p">)</span> <span class="p">{</span>
+		<span class="p">}</span>
+		
+		<span class="n">pthread_mutex_unlock</span><span class="p">(</span><span class="o">&amp;</span><span class="n">worker</span><span class="o">-&gt;</span><span class="n">workqueue</span><span class="o">-&gt;</span><span class="n">jobs_mtx</span><span class="p">);</span> <span class="c1">//已经取到工作了，就可以放开对工作队列的占有了
+</span><span class="c1"></span>
+		<span class="k">if</span> <span class="p">(</span><span class="n">job</span> <span class="o">==</span> <span class="nb">NULL</span><span class="p">)</span> <span class="k">continue</span><span class="p">;</span>
+
+		<span class="n">job</span><span class="o">-&gt;</span><span class="n">job_function</span><span class="p">(</span><span class="n">job</span><span class="p">);</span> <span class="c1">//针对工作调用他的回调函数处理，处理结束后继续循环去工作队列中取
+</span><span class="c1"></span>	<span class="p">}</span>
+
+	<span class="n">free</span><span class="p">(</span><span class="n">worker</span><span class="p">);</span> <span class="c1">//工作线程被终止那当然需要释放其堆上内存
+</span><span class="c1"></span>	<span class="n">pthread_exit</span><span class="p">(</span><span class="nb">NULL</span><span class="p">);</span>
+<span class="p">}</span>
+
+
+
+<span class="kt">int</span> <span class="n">ntyThreadPoolCreate</span><span class="p">(</span><span class="n">nThreadPool</span> <span class="o">*</span><span class="n">workqueue</span><span class="p">,</span> <span class="kt">int</span> <span class="n">numWorkers</span><span class="p">)</span> <span class="p">{</span> <span class="c1">//创建线程池
+</span><span class="c1"></span>
+	<span class="k">if</span> <span class="p">(</span><span class="n">numWorkers</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">)</span> <span class="n">numWorkers</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
+	<span class="n">memset</span><span class="p">(</span><span class="n">workqueue</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">nThreadPool</span><span class="p">));</span>
+	
+	<span class="n">pthread_cond_t</span> <span class="n">blank_cond</span> <span class="o">=</span> <span class="n">PTHREAD_COND_INITIALIZER</span><span class="p">;</span>  <span class="c1">//条件变量用于通知所有的工作线程事件发生
+</span><span class="c1"></span>	<span class="n">memcpy</span><span class="p">(</span><span class="o">&amp;</span><span class="n">workqueue</span><span class="o">-&gt;</span><span class="n">jobs_cond</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">blank_cond</span><span class="p">,</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">workqueue</span><span class="o">-&gt;</span><span class="n">jobs_cond</span><span class="p">));</span>
+	
+	<span class="n">pthread_mutex_t</span> <span class="n">blank_mutex</span> <span class="o">=</span> <span class="n">PTHREAD_MUTEX_INITIALIZER</span><span class="p">;</span> <span class="c1">// 互斥锁用于锁住工作队列确保同时只有一个工作线程在从工作队列中取工作
+</span><span class="c1"></span>	<span class="n">memcpy</span><span class="p">(</span><span class="o">&amp;</span><span class="n">workqueue</span><span class="o">-&gt;</span><span class="n">jobs_mtx</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">blank_mutex</span><span class="p">,</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">workqueue</span><span class="o">-&gt;</span><span class="n">jobs_mtx</span><span class="p">));</span>
+
+	<span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+	<span class="k">for</span> <span class="p">(</span><span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span><span class="n">i</span> <span class="o">&lt;</span> <span class="n">numWorkers</span><span class="p">;</span><span class="n">i</span> <span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+		<span class="n">nWorker</span> <span class="o">*</span><span class="n">worker</span> <span class="o">=</span> <span class="p">(</span><span class="n">nWorker</span><span class="o">*</span><span class="p">)</span><span class="n">malloc</span><span class="p">(</span><span class="k">sizeof</span><span class="p">(</span><span class="n">nWorker</span><span class="p">));</span> <span class="c1">//这里在堆上创建线程，那就需要在线程终止时释放
+</span><span class="c1"></span>		<span class="k">if</span> <span class="p">(</span><span class="n">worker</span> <span class="o">==</span> <span class="nb">NULL</span><span class="p">)</span> <span class="p">{</span>
+			<span class="n">perror</span><span class="p">(</span><span class="s">&#34;malloc&#34;</span><span class="p">);</span>
+			<span class="k">return</span> <span class="mi">1</span><span class="p">;</span>
+		<span class="p">}</span>
+
+		<span class="n">memset</span><span class="p">(</span><span class="n">worker</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">nWorker</span><span class="p">));</span>
+		<span class="n">worker</span><span class="o">-&gt;</span><span class="n">workqueue</span> <span class="o">=</span> <span class="n">workqueue</span><span class="p">;</span>  <span class="c1">//初始化工作线程信息，线程池用于找到工作队列
+</span><span class="c1"></span>
+		<span class="kt">int</span> <span class="n">ret</span> <span class="o">=</span> <span class="n">pthread_create</span><span class="p">(</span><span class="o">&amp;</span><span class="n">worker</span><span class="o">-&gt;</span><span class="kr">thread</span><span class="p">,</span> <span class="nb">NULL</span><span class="p">,</span> <span class="n">ntyWorkerThread</span><span class="p">,</span> <span class="p">(</span><span class="kt">void</span> <span class="o">*</span><span class="p">)</span><span class="n">worker</span><span class="p">);</span> <span class="c1">//创建线程，传入该线程信息，达到信息和线程的绑定关系
+</span><span class="c1"></span>		<span class="k">if</span> <span class="p">(</span><span class="n">ret</span><span class="p">)</span> <span class="p">{</span>
+			
+			<span class="n">perror</span><span class="p">(</span><span class="s">&#34;pthread_create&#34;</span><span class="p">);</span>
+			<span class="n">free</span><span class="p">(</span><span class="n">worker</span><span class="p">);</span>
+
+			<span class="k">return</span> <span class="mi">1</span><span class="p">;</span>
+		<span class="p">}</span>
+
+		<span class="n">LL_ADD</span><span class="p">(</span><span class="n">worker</span><span class="p">,</span> <span class="n">worker</span><span class="o">-&gt;</span><span class="n">workqueue</span><span class="o">-&gt;</span><span class="n">workers</span><span class="p">);</span> <span class="c1">//头插法在所有工作线程的链表中插入新建的工作线程
+</span><span class="c1"></span>	<span class="p">}</span>
+
+	<span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+
+
+<span class="kt">void</span> <span class="n">ntyThreadPoolShutdown</span><span class="p">(</span><span class="n">nThreadPool</span> <span class="o">*</span><span class="n">workqueue</span><span class="p">)</span> <span class="p">{</span> <span class="c1">//关闭线程池
+</span><span class="c1"></span>	<span class="n">nWorker</span> <span class="o">*</span><span class="n">worker</span> <span class="o">=</span> <span class="nb">NULL</span><span class="p">;</span>
+
+	<span class="k">for</span> <span class="p">(</span><span class="n">worker</span> <span class="o">=</span> <span class="n">workqueue</span><span class="o">-&gt;</span><span class="n">workers</span><span class="p">;</span><span class="n">worker</span> <span class="o">!=</span> <span class="nb">NULL</span><span class="p">;</span><span class="n">worker</span> <span class="o">=</span> <span class="n">worker</span><span class="o">-&gt;</span><span class="n">next</span><span class="p">)</span> <span class="p">{</span>
+		<span class="n">worker</span><span class="o">-&gt;</span><span class="n">terminate</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>    <span class="c1">//所有工作线程的terminate关键字置为1
+</span><span class="c1"></span>	<span class="p">}</span>
+
+	<span class="n">pthread_mutex_lock</span><span class="p">(</span><span class="o">&amp;</span><span class="n">workqueue</span><span class="o">-&gt;</span><span class="n">jobs_mtx</span><span class="p">);</span>
+
+	<span class="n">workqueue</span><span class="o">-&gt;</span><span class="n">workers</span> <span class="o">=</span> <span class="nb">NULL</span><span class="p">;</span>  <span class="c1">//清空工作线程链表
+</span><span class="c1"></span>	<span class="n">workqueue</span><span class="o">-&gt;</span><span class="n">waiting_jobs</span> <span class="o">=</span> <span class="nb">NULL</span><span class="p">;</span> <span class="c1">// 清空工作队列
+</span><span class="c1"></span>
+	<span class="n">pthread_cond_broadcast</span><span class="p">(</span><span class="o">&amp;</span><span class="n">workqueue</span><span class="o">-&gt;</span><span class="n">jobs_cond</span><span class="p">);</span> <span class="c1">//告诉所有工作线程有事件发生(shutdown，下一步检查terminate关键字)
+</span><span class="c1"></span>
+	<span class="n">pthread_mutex_unlock</span><span class="p">(</span><span class="o">&amp;</span><span class="n">workqueue</span><span class="o">-&gt;</span><span class="n">jobs_mtx</span><span class="p">);</span>
+	
+<span class="p">}</span>
+
+<span class="kt">void</span> <span class="n">ntyThreadPoolQueue</span><span class="p">(</span><span class="n">nThreadPool</span> <span class="o">*</span><span class="n">workqueue</span><span class="p">,</span> <span class="n">nJob</span> <span class="o">*</span><span class="n">job</span><span class="p">)</span> <span class="p">{</span> <span class="c1">//向工作队列中添加工作
+</span><span class="c1"></span>
+	<span class="n">pthread_mutex_lock</span><span class="p">(</span><span class="o">&amp;</span><span class="n">workqueue</span><span class="o">-&gt;</span><span class="n">jobs_mtx</span><span class="p">);</span>
+
+	<span class="n">LL_ADD</span><span class="p">(</span><span class="n">job</span><span class="p">,</span> <span class="n">workqueue</span><span class="o">-&gt;</span><span class="n">waiting_jobs</span><span class="p">);</span>
+	
+	<span class="n">pthread_cond_signal</span><span class="p">(</span><span class="o">&amp;</span><span class="n">workqueue</span><span class="o">-&gt;</span><span class="n">jobs_cond</span><span class="p">);</span> <span class="c1">//告诉任意一个工作线程有事件发生(目前有新的工作出现在工作队列里了，下一步get互斥锁并取工作)
+</span><span class="c1"></span>	<span class="n">pthread_mutex_unlock</span><span class="p">(</span><span class="o">&amp;</span><span class="n">workqueue</span><span class="o">-&gt;</span><span class="n">jobs_mtx</span><span class="p">);</span>
+	
+<span class="p">}</span>
+
+
+
+
+<span class="cm">/************************** debug thread pool **************************/</span>
+<span class="c1">//sdk  --&gt; software develop kit
+</span><span class="c1">// 提供SDK给其他开发者使用
+</span><span class="c1"></span>
+<span class="cp">#if 1
+</span><span class="cp"></span>
+<span class="cp">#define KING_MAX_THREAD			80
+</span><span class="cp">#define KING_COUNTER_SIZE		1000
+</span><span class="cp"></span>
+<span class="kt">void</span> <span class="n">king_counter</span><span class="p">(</span><span class="n">nJob</span> <span class="o">*</span><span class="n">job</span><span class="p">)</span> <span class="p">{</span>
+
+	<span class="kt">int</span> <span class="n">index</span> <span class="o">=</span> <span class="o">*</span><span class="p">(</span><span class="kt">int</span><span class="o">*</span><span class="p">)</span><span class="n">job</span><span class="o">-&gt;</span><span class="n">user_data</span><span class="p">;</span>
+
+	<span class="n">printf</span><span class="p">(</span><span class="s">&#34;index : %d, selfid : %lu</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span> <span class="n">index</span><span class="p">,</span> <span class="n">pthread_self</span><span class="p">());</span>
+	
+	<span class="n">free</span><span class="p">(</span><span class="n">job</span><span class="o">-&gt;</span><span class="n">user_data</span><span class="p">);</span>
+	<span class="n">free</span><span class="p">(</span><span class="n">job</span><span class="p">);</span>
+<span class="p">}</span>
+
+
+
+<span class="kt">int</span> <span class="n">main</span><span class="p">(</span><span class="kt">int</span> <span class="n">argc</span><span class="p">,</span> <span class="kt">char</span> <span class="o">*</span><span class="n">argv</span><span class="p">[])</span> <span class="p">{</span>
+
+	<span class="n">nThreadPool</span> <span class="n">pool</span><span class="p">;</span>
+
+	<span class="n">ntyThreadPoolCreate</span><span class="p">(</span><span class="o">&amp;</span><span class="n">pool</span><span class="p">,</span> <span class="n">KING_MAX_THREAD</span><span class="p">);</span>
+	
+	<span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+	<span class="k">for</span> <span class="p">(</span><span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span><span class="n">i</span> <span class="o">&lt;</span> <span class="n">KING_COUNTER_SIZE</span><span class="p">;</span><span class="n">i</span> <span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+		<span class="n">nJob</span> <span class="o">*</span><span class="n">job</span> <span class="o">=</span> <span class="p">(</span><span class="n">nJob</span><span class="o">*</span><span class="p">)</span><span class="n">malloc</span><span class="p">(</span><span class="k">sizeof</span><span class="p">(</span><span class="n">nJob</span><span class="p">));</span>
+		<span class="k">if</span> <span class="p">(</span><span class="n">job</span> <span class="o">==</span> <span class="nb">NULL</span><span class="p">)</span> <span class="p">{</span>
+			<span class="n">perror</span><span class="p">(</span><span class="s">&#34;malloc&#34;</span><span class="p">);</span>
+			<span class="n">exit</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>
+		<span class="p">}</span>
+		
+		<span class="n">job</span><span class="o">-&gt;</span><span class="n">job_function</span> <span class="o">=</span> <span class="n">king_counter</span><span class="p">;</span>
+		<span class="n">job</span><span class="o">-&gt;</span><span class="n">user_data</span> <span class="o">=</span> <span class="n">malloc</span><span class="p">(</span><span class="k">sizeof</span><span class="p">(</span><span class="kt">int</span><span class="p">));</span>
+		<span class="o">*</span><span class="p">(</span><span class="kt">int</span><span class="o">*</span><span class="p">)</span><span class="n">job</span><span class="o">-&gt;</span><span class="n">user_data</span> <span class="o">=</span> <span class="n">i</span><span class="p">;</span>
+
+		<span class="n">ntyThreadPoolQueue</span><span class="p">(</span><span class="o">&amp;</span><span class="n">pool</span><span class="p">,</span> <span class="n">job</span><span class="p">);</span>
+		
+	<span class="p">}</span>
+
+	<span class="n">getchar</span><span class="p">();</span>
+	<span class="n">printf</span><span class="p">(</span><span class="s">&#34;</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">);</span>
+
+	
+<span class="p">}</span>
+
+<span class="cp">#endif
+</span><span class="cp"></span>
+</code></pre></div>
+</section>
+
+
+    <footer class="article-footer">
+    
+
+    
+    <section class="article-copyright">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-copyright" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="12" r="9" />
+  <path d="M14.5 9a3.5 4 0 1 0 0 6" />
+</svg>
+
+
+
+        <span>Licensed under CC BY-NC-SA 4.0</span>
+    </section>
+    </footer>
+
+
+    
+</article>
+
+    <aside class="related-contents--wrapper">
+    
+    
+        <h2 class="section-title">Related contents</h2>
+        <div class="related-contents">
+            <div class="flex article-list--tile">
+                
+                    
+<article class="has-image">
+    <a href="/p/dns%E5%8D%8F%E8%AE%AE%E8%A7%A3%E6%9E%90/">
+        
+        
+            <div class="article-image">
+                <img src="/p/dns%E5%8D%8F%E8%AE%AE%E8%A7%A3%E6%9E%90/081.eec9a01e1f368bff905b9f4613a97d42_hu7f5bc23efa6e31f2e831fa0dcdad6471_5540510_250x150_fill_q75_box_smart1.jpg" 
+                        width="250" 
+                        height="150" 
+                        loading="lazy" 
+                        data-key="DNS协议解析" 
+                        data-hash="md5-7smgHh82i/&#43;QW59GE6l9Qg==">
+                
+            </div>
+        
+
+        <div class="article-details">
+            <h2 class="article-title">DNS协议解析</h2>
+        </div>
+    </a>
+</article>
+                
+                    
+<article class="has-image">
+    <a href="/p/%E5%86%85%E5%AD%98%E6%B1%A0/">
+        
+        
+            <div class="article-image">
+                <img src="/p/%E5%86%85%E5%AD%98%E6%B1%A0/244.71de31cc6652d9902ea8c651f0059650_hud068d333fa339d76c3f1e66a3f8bf604_8126422_250x150_fill_q75_box_smart1.jpg" 
+                        width="250" 
+                        height="150" 
+                        loading="lazy" 
+                        data-key="内存池" 
+                        data-hash="md5-cd4xzGZS2ZAuqMZR8AWWUA==">
+                
+            </div>
+        
+
+        <div class="article-details">
+            <h2 class="article-title">内存池</h2>
+        </div>
+    </a>
+</article>
+                
+                    
+<article class="has-image">
+    <a href="/p/%E7%AE%80%E6%98%93tcp%E6%9C%8D%E5%8A%A1%E5%99%A8/">
+        
+        
+            <div class="article-image">
+                <img src="/p/%E7%AE%80%E6%98%93tcp%E6%9C%8D%E5%8A%A1%E5%99%A8/029.155943df5a1ed5ef7aeb3d74a37bef67_hu5f7dae7e78ac97b0b045f4b1159a4d54_14023957_250x150_fill_q75_box_smart1.jpg" 
+                        width="250" 
+                        height="150" 
+                        loading="lazy" 
+                        data-key="简易Tcp服务器" 
+                        data-hash="md5-FVlD31oe1e966z10o3vvZw==">
+                
+            </div>
+        
+
+        <div class="article-details">
+            <h2 class="article-title">简易Tcp服务器</h2>
+        </div>
+    </a>
+</article>
+                
+                    
+<article class="has-image">
+    <a href="/p/%E7%BA%BF%E7%A8%8B%E6%B1%A0/">
+        
+        
+            <div class="article-image">
+                <img src="/p/%E7%BA%BF%E7%A8%8B%E6%B1%A0/240.1d66d2f2f5cf2eed0d60df1bd2c599c2_huc6553c3d943592fc8492e4a8a4385797_5666304_250x150_fill_q75_box_smart1.jpg" 
+                        width="250" 
+                        height="150" 
+                        loading="lazy" 
+                        data-key="线程池" 
+                        data-hash="md5-HWbS8vXPLu0NYN8b0sWZwg==">
+                
+            </div>
+        
+
+        <div class="article-details">
+            <h2 class="article-title">线程池</h2>
+        </div>
+    </a>
+</article>
+                
+                    
+<article class="has-image">
+    <a href="/p/%E8%AF%B7%E6%B1%82%E6%B1%A0/">
+        
+        
+            <div class="article-image">
+                <img src="/p/%E8%AF%B7%E6%B1%82%E6%B1%A0/247.f5d865192346f6b27e0487d96c0700d0_hu00377075f8d3c09f9b9bff67495c3ec1_5277773_250x150_fill_q75_box_smart1.jpg" 
+                        width="250" 
+                        height="150" 
+                        loading="lazy" 
+                        data-key="请求池" 
+                        data-hash="md5-9dhlGSNG9rJ&#43;BIfZbAcA0A==">
+                
+            </div>
+        
+
+        <div class="article-details">
+            <h2 class="article-title">请求池</h2>
+        </div>
+    </a>
+</article>
+                
+            </div>
+        </div>
+    
+</aside>
+
+     
+     
+        
+    <div class="disqus-container">
+    <div id="disqus_thread"></div>
+<script type="application/javascript">
+    var disqus_config = function () {
+    
+    
+    
+    };
+    (function() {
+        if (["localhost", "127.0.0.1"].indexOf(window.location.hostname) != -1) {
+            document.getElementById('disqus_thread').innerHTML = 'Disqus comments not available by default when the website is previewed locally.';
+            return;
+        }
+        var d = document, s = d.createElement('script'); s.async = true;
+        s.src = '//' + "hugo-theme-stack" + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="https://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+</div>
+
+<style>
+    .disqus-container {
+        background-color: var(--card-background);
+        border-radius: var(--card-border-radius);
+        box-shadow: var(--shadow-l1);
+        padding: var(--card-padding);
+    }
+</style>
+
+<script>
+    window.addEventListener('onColorSchemeChange', (e) => {
+        if (DISQUS) {
+            DISQUS.reset({
+                reload: true
+            });
+        }
+    })
+</script>
+
+    
+
+    <footer class="site-footer">
+    <section class="copyright">
+        &copy; 
+        
+            2020 - 
+        
+        2021 Gao&#39;s happy day
+    </section>
+    
+    <section class="powerby">
+        Built with <a href="https://gohugo.io/" target="_blank" rel="noopener">Hugo</a> <br />
+        Theme <b><a href="https://github.com/CaiJimmy/hugo-theme-stack" target="_blank" rel="noopener" data-version="3.2.0">Stack</a></b> designed by <a href="https://jimmycai.com" target="_blank" rel="noopener">Jimmy</a>
+    </section>
+</footer>
+
+
+    
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+    
+    <div class="pswp__bg"></div>
+
+    
+    <div class="pswp__scroll-wrap">
+
+        
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+
+        
+        <div class="pswp__ui pswp__ui--hidden">
+
+            <div class="pswp__top-bar">
+
+                
+
+                <div class="pswp__counter"></div>
+
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+
+                <button class="pswp__button pswp__button--share" title="Share"></button>
+
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+
+                
+                
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                        <div class="pswp__preloader__cut">
+                            <div class="pswp__preloader__donut"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div>
+            </div>
+
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div><script 
+                src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js"integrity="sha256-ePwmChbbvXbsO02lbM3HoHbSHTHFAeChekF1xKJdleo="crossorigin="anonymous"
+                defer="true"
+                >
+            </script><script 
+                src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js"integrity="sha256-UKkzOn/w1mBxRmLLGrSeyB4e1xbrp4xylgAWb3M42pU="crossorigin="anonymous"
+                defer="true"
+                >
+            </script><link 
+                rel="stylesheet" 
+                href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.css"integrity="sha256-c0uckgykQ9v5k&#43;IqViZOZKc47Jn7KQil4/MP3ySA3F8="crossorigin="anonymous"
+            ><link 
+                rel="stylesheet" 
+                href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.css"integrity="sha256-SBLU4vv6CA6lHsZ1XyTdhyjJxCjPif/TRkjnsyGAGnE="crossorigin="anonymous"
+            >
+
+            </main>
+    
+
+        </div>
+        <script 
+                src="https://cdn.jsdelivr.net/npm/node-vibrant@3.1.5/dist/vibrant.min.js"integrity="sha256-5NovOZc4iwiAWTYIFiIM7DxKUXKWvpVEuMEPLzcm5/g="crossorigin="anonymous"
+                defer="false"
+                >
+            </script><script type="text/javascript" src="/ts/main.js" defer></script>
+<script>
+    (function () {
+        const customFont = document.createElement('link');
+        customFont.href = "https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap";
+
+        customFont.type = "text/css";
+        customFont.rel = "stylesheet";
+
+        document.head.appendChild(customFont);
+    }());
+</script>
+
+    </body>
+</html>

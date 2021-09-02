@@ -1,0 +1,906 @@
+<!DOCTYPE html>
+<html lang="en-us">
+    <head><meta charset='utf-8'>
+<meta name='viewport' content='width=device-width, initial-scale=1'><meta name='description' content='基础知识'><title>内存池</title>
+
+<link rel='canonical' href='https://gao377020481.github.io/p/%E5%86%85%E5%AD%98%E6%B1%A0/'>
+
+<link rel="stylesheet" href="/scss/style.min.css"><meta property='og:title' content='内存池'>
+<meta property='og:description' content='基础知识'>
+<meta property='og:url' content='https://gao377020481.github.io/p/%E5%86%85%E5%AD%98%E6%B1%A0/'>
+<meta property='og:site_name' content='Gao&#39;s happy day'>
+<meta property='og:type' content='article'><meta property='article:section' content='Post' /><meta property='article:published_time' content='2020-09-10T00:00:00&#43;00:00'/><meta property='article:modified_time' content='2020-09-10T00:00:00&#43;00:00'/><meta property='og:image' content='https://gao377020481.github.io/p/%E5%86%85%E5%AD%98%E6%B1%A0/244.jpg' />
+<meta name="twitter:title" content="内存池">
+<meta name="twitter:description" content="基础知识"><meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:image" content='https://gao377020481.github.io/p/%E5%86%85%E5%AD%98%E6%B1%A0/244.jpg' />
+    </head>
+    <body class="
+    article-page 
+">
+    <script>
+        (function() {
+            const colorSchemeKey = 'StackColorScheme';
+            if(!localStorage.getItem(colorSchemeKey)){
+                localStorage.setItem(colorSchemeKey, "auto");
+            }
+        })();
+    </script><script>
+    (function() {
+        const colorSchemeKey = 'StackColorScheme';
+        const colorSchemeItem = localStorage.getItem(colorSchemeKey);
+        const supportDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches === true;
+
+        if (colorSchemeItem == 'dark' || colorSchemeItem === 'auto' && supportDarkMode) {
+            
+
+            document.documentElement.dataset.scheme = 'dark';
+        } else {
+            document.documentElement.dataset.scheme = 'light';
+        }
+    })();
+</script>
+<div class="container main-container flex 
+    
+        on-phone--column extended
+    
+">
+    
+        <aside class="sidebar left-sidebar sticky">
+    <button class="hamburger hamburger--spin" type="button" id="toggle-menu" aria-label="Toggle Menu">
+        <span class="hamburger-box">
+            <span class="hamburger-inner"></span>
+        </span>
+    </button>
+
+    <header class="site-info">
+        
+            
+            <figure class="site-avatar">
+                
+                    
+                    
+                    
+                        
+                        <img src="/img/head_hu80bfbd66acb06447b579b0189a09d13c_52956_300x0_resize_q75_box.jpg" width="300"
+                            height="300" class="site-logo" loading="lazy" alt="Avatar">
+                    
+                
+
+                
+            </figure>
+            
+        
+        <h1 class="site-name"><a href="https://gao377020481.github.io">Gao&#39;s happy day</a></h1>
+        <h2 class="site-description">After all,tomorrow is another day</h2>
+    </header>
+
+    <ol class="menu" id="main-menu">
+        
+        
+        
+
+        <li >
+            <a href='/' target="_blank">
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-home" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <polyline points="5 12 3 12 12 3 21 12 19 12" />
+  <path d="M5 12v7a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-7" />
+  <path d="M9 21v-6a2 2 0 0 1 2 -2h2a2 2 0 0 1 2 2v6" />
+</svg>
+
+
+
+                
+                <span>Home</span>
+            </a>
+        </li>
+        
+        
+
+        <li >
+            <a href='/about/' >
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-user" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="7" r="4" />
+  <path d="M6 21v-2a4 4 0 0 1 4 -4h4a4 4 0 0 1 4 4v2" />
+</svg>
+
+
+
+                
+                <span>About</span>
+            </a>
+        </li>
+        
+        
+
+        <li >
+            <a href='/archives/' >
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-archive" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <rect x="3" y="4" width="18" height="4" rx="2" />
+  <path d="M5 8v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2 -2v-10" />
+  <line x1="10" y1="12" x2="14" y2="12" />
+</svg>
+
+
+
+                
+                <span>Archives</span>
+            </a>
+        </li>
+        
+        
+
+        <li >
+            <a href='/search/' >
+                
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-search" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="10" cy="10" r="7" />
+  <line x1="21" y1="21" x2="15" y2="15" />
+</svg>
+
+
+
+                
+                <span>Search</span>
+            </a>
+        </li>
+        
+
+        
+            <li id="dark-mode-toggle">
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-left" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="8" cy="12" r="2" />
+  <rect x="2" y="6" width="20" height="12" rx="6" />
+</svg>
+
+
+
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-toggle-right" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="16" cy="12" r="2" />
+  <rect x="2" y="6" width="20" height="12" rx="6" />
+</svg>
+
+
+
+                <span>Dark Mode</span>
+            </li>
+        
+    </ol>
+</aside>
+
+    
+<main class="main full-width">
+    <article class="has-image main-article">
+    <header class="article-header">
+        <div class="article-image">
+            <a href="/p/%E5%86%85%E5%AD%98%E6%B1%A0/">
+                <img src="/p/%E5%86%85%E5%AD%98%E6%B1%A0/244_hud068d333fa339d76c3f1e66a3f8bf604_8126422_800x0_resize_q75_box.jpg"
+                        srcset="/p/%E5%86%85%E5%AD%98%E6%B1%A0/244_hud068d333fa339d76c3f1e66a3f8bf604_8126422_800x0_resize_q75_box.jpg 800w, /p/%E5%86%85%E5%AD%98%E6%B1%A0/244_hud068d333fa339d76c3f1e66a3f8bf604_8126422_1600x0_resize_q75_box.jpg 1600w"
+                        width="800" 
+                        height="600" 
+                        loading="lazy"
+                        alt="Featured image of post 内存池" />
+                
+            </a>
+        </div>
+    
+
+    <div class="article-details">
+    
+    <header class="article-category">
+        
+            <a href="/categories/%E7%BD%91%E7%BB%9C%E7%BC%96%E7%A8%8B/" style="background-color: #2a9d8f; color: #fff;">
+                网络编程
+            </a>
+        
+    </header>
+    
+
+    <h2 class="article-title">
+        <a href="/p/%E5%86%85%E5%AD%98%E6%B1%A0/">内存池</a>
+    </h2>
+
+    
+    <h3 class="article-subtitle">
+        基础知识
+    </h3>
+    
+
+    
+    <footer class="article-time">
+        
+            <div>
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-calendar-time" width="56" height="56" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <path d="M11.795 21h-6.795a2 2 0 0 1 -2 -2v-12a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v4" />
+  <circle cx="18" cy="18" r="4" />
+  <path d="M15 3v4" />
+  <path d="M7 3v4" />
+  <path d="M3 11h16" />
+  <path d="M18 16.496v1.504l1 1" />
+</svg>
+                <time class="article-time--published">Sep 10, 2020</time>
+            </div>
+        
+
+        
+            <div>
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="12" r="9" />
+  <polyline points="12 7 12 12 15 15" />
+</svg>
+
+
+
+                <time class="article-time--reading">
+                    4 minute read
+                </time>
+            </div>
+        
+    </footer>
+    
+</div>
+</header>
+
+    <section class="article-content">
+    <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-c" data-lang="c">
+
+
+<span class="cp">#include</span> <span class="cpf">&lt;stdlib.h&gt;</span><span class="cp">
+</span><span class="cp">#include</span> <span class="cpf">&lt;stdio.h&gt;</span><span class="cp">
+</span><span class="cp">#include</span> <span class="cpf">&lt;string.h&gt;</span><span class="cp">
+</span><span class="cp">#include</span> <span class="cpf">&lt;unistd.h&gt;</span><span class="cp">
+</span><span class="cp"></span>
+<span class="cp">#include</span> <span class="cpf">&lt;fcntl.h&gt;</span><span class="cp">
+</span><span class="cp"></span>
+
+
+<span class="cp">#define MP_ALIGNMENT       		32  </span><span class="c1">//对齐信息
+</span><span class="c1"></span><span class="cp">#define MP_PAGE_SIZE			4096 </span><span class="c1">//单次分配大块大小
+</span><span class="c1"></span><span class="cp">#define MP_MAX_ALLOC_FROM_POOL	(MP_PAGE_SIZE-1) 
+</span><span class="cp"></span>
+<span class="cp">#define mp_align(n, alignment) (((n)+(alignment-1)) &amp; ~(alignment-1))
+</span><span class="cp">#define mp_align_ptr(p, alignment) (void *)((((size_t)p)+(alignment-1)) &amp; ~(alignment-1))
+</span><span class="cp"></span>
+
+
+
+
+<span class="k">struct</span> <span class="n">mp_large_s</span> <span class="p">{</span>
+	<span class="k">struct</span> <span class="n">mp_large_s</span> <span class="o">*</span><span class="n">next</span><span class="p">;</span>
+	<span class="kt">void</span> <span class="o">*</span><span class="n">alloc</span><span class="p">;</span>
+<span class="p">};</span> <span class="c1">// 当单次分配超过pagesize时就需要一次分配然后归入large的一个链表中保存
+</span><span class="c1"></span>
+<span class="k">struct</span> <span class="n">mp_node_s</span> <span class="p">{</span>
+
+	<span class="kt">unsigned</span> <span class="kt">char</span> <span class="o">*</span><span class="n">last</span><span class="p">;</span>
+	<span class="kt">unsigned</span> <span class="kt">char</span> <span class="o">*</span><span class="n">end</span><span class="p">;</span>
+	
+	<span class="k">struct</span> <span class="n">mp_node_s</span> <span class="o">*</span><span class="n">next</span><span class="p">;</span>
+	<span class="n">size_t</span> <span class="n">failed</span><span class="p">;</span>
+<span class="p">};</span><span class="c1">// 页内的小区域，用于小块的分配
+</span><span class="c1"></span>
+<span class="k">struct</span> <span class="n">mp_pool_s</span> <span class="p">{</span>
+
+	<span class="n">size_t</span> <span class="n">max</span><span class="p">;</span>
+
+	<span class="k">struct</span> <span class="n">mp_node_s</span> <span class="o">*</span><span class="n">current</span><span class="p">;</span>
+	<span class="k">struct</span> <span class="n">mp_large_s</span> <span class="o">*</span><span class="n">large</span><span class="p">;</span>
+
+	<span class="k">struct</span> <span class="n">mp_node_s</span> <span class="n">head</span><span class="p">[</span><span class="mi">0</span><span class="p">];</span>
+
+<span class="p">};</span> <span class="c1">//内存池
+</span><span class="c1"></span>
+<span class="k">struct</span> <span class="n">mp_pool_s</span> <span class="o">*</span><span class="nf">mp_create_pool</span><span class="p">(</span><span class="n">size_t</span> <span class="n">size</span><span class="p">);</span>
+<span class="kt">void</span> <span class="nf">mp_destory_pool</span><span class="p">(</span><span class="k">struct</span> <span class="n">mp_pool_s</span> <span class="o">*</span><span class="n">pool</span><span class="p">);</span>
+<span class="kt">void</span> <span class="o">*</span><span class="nf">mp_alloc</span><span class="p">(</span><span class="k">struct</span> <span class="n">mp_pool_s</span> <span class="o">*</span><span class="n">pool</span><span class="p">,</span> <span class="n">size_t</span> <span class="n">size</span><span class="p">);</span>
+<span class="kt">void</span> <span class="o">*</span><span class="nf">mp_nalloc</span><span class="p">(</span><span class="k">struct</span> <span class="n">mp_pool_s</span> <span class="o">*</span><span class="n">pool</span><span class="p">,</span> <span class="n">size_t</span> <span class="n">size</span><span class="p">);</span>
+<span class="kt">void</span> <span class="o">*</span><span class="nf">mp_calloc</span><span class="p">(</span><span class="k">struct</span> <span class="n">mp_pool_s</span> <span class="o">*</span><span class="n">pool</span><span class="p">,</span> <span class="n">size_t</span> <span class="n">size</span><span class="p">);</span>
+<span class="kt">void</span> <span class="nf">mp_free</span><span class="p">(</span><span class="k">struct</span> <span class="n">mp_pool_s</span> <span class="o">*</span><span class="n">pool</span><span class="p">,</span> <span class="kt">void</span> <span class="o">*</span><span class="n">p</span><span class="p">);</span>
+
+
+
+<span class="c1">//首先需要明确，在分配的时候需要将所有的数据结构都存在我们管理的内存池中
+</span><span class="c1">//比如struct mp_pool_s *pool这个内存池本身也需要受我们管理
+</span><span class="c1"></span><span class="k">struct</span> <span class="n">mp_pool_s</span> <span class="o">*</span><span class="nf">mp_create_pool</span><span class="p">(</span><span class="n">size_t</span> <span class="n">size</span><span class="p">)</span> <span class="p">{</span>
+
+	<span class="k">struct</span> <span class="n">mp_pool_s</span> <span class="o">*</span><span class="n">p</span><span class="p">;</span>
+	<span class="kt">int</span> <span class="n">ret</span> <span class="o">=</span> <span class="n">posix_memalign</span><span class="p">((</span><span class="kt">void</span> <span class="o">**</span><span class="p">)</span><span class="o">&amp;</span><span class="n">p</span><span class="p">,</span> <span class="n">MP_ALIGNMENT</span><span class="p">,</span> <span class="n">size</span> <span class="o">+</span> <span class="k">sizeof</span><span class="p">(</span><span class="k">struct</span> <span class="n">mp_pool_s</span><span class="p">)</span> <span class="o">+</span> <span class="k">sizeof</span><span class="p">(</span><span class="k">struct</span> <span class="n">mp_node_s</span><span class="p">));</span>
+	<span class="c1">//posix_memalign 分配足够的内存，size（page_size：4096） 加上内存池本身和小块结构本身
+</span><span class="c1"></span>	<span class="k">if</span> <span class="p">(</span><span class="n">ret</span><span class="p">)</span> <span class="p">{</span>
+		<span class="k">return</span> <span class="nb">NULL</span><span class="p">;</span>
+	<span class="p">}</span>
+	
+	<span class="n">p</span><span class="o">-&gt;</span><span class="n">max</span> <span class="o">=</span> <span class="p">(</span><span class="n">size</span> <span class="o">&lt;</span> <span class="n">MP_MAX_ALLOC_FROM_POOL</span><span class="p">)</span> <span class="o">?</span> <span class="nl">size</span> <span class="p">:</span> <span class="n">MP_MAX_ALLOC_FROM_POOL</span><span class="p">;</span> <span class="c1">//内存池单块大小受我们定义的pagesize限制
+</span><span class="c1"></span>	<span class="n">p</span><span class="o">-&gt;</span><span class="n">current</span> <span class="o">=</span> <span class="n">p</span><span class="o">-&gt;</span><span class="n">head</span><span class="p">;</span><span class="c1">// 初始化时head无值且struct中head在最末尾，c++的struct内存布局决定了current就是head
+</span><span class="c1"></span>	<span class="n">p</span><span class="o">-&gt;</span><span class="n">large</span> <span class="o">=</span> <span class="nb">NULL</span><span class="p">;</span><span class="c1">// 还没有分配large块
+</span><span class="c1"></span>
+	<span class="n">p</span><span class="o">-&gt;</span><span class="n">head</span><span class="o">-&gt;</span><span class="n">last</span> <span class="o">=</span> <span class="p">(</span><span class="kt">unsigned</span> <span class="kt">char</span> <span class="o">*</span><span class="p">)</span><span class="n">p</span> <span class="o">+</span> <span class="k">sizeof</span><span class="p">(</span><span class="k">struct</span> <span class="n">mp_pool_s</span><span class="p">)</span> <span class="o">+</span> <span class="k">sizeof</span><span class="p">(</span><span class="k">struct</span> <span class="n">mp_node_s</span><span class="p">);</span> <span class="c1">//最后一个分配的小块
+</span><span class="c1"></span>	<span class="n">p</span><span class="o">-&gt;</span><span class="n">head</span><span class="o">-&gt;</span><span class="n">end</span> <span class="o">=</span> <span class="n">p</span><span class="o">-&gt;</span><span class="n">head</span><span class="o">-&gt;</span><span class="n">last</span> <span class="o">+</span> <span class="n">size</span><span class="p">;</span><span class="c1">//这次分配的页面的末尾
+</span><span class="c1"></span>
+	<span class="n">p</span><span class="o">-&gt;</span><span class="n">head</span><span class="o">-&gt;</span><span class="n">failed</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+
+	<span class="k">return</span> <span class="n">p</span><span class="p">;</span>
+
+<span class="p">}</span>
+
+<span class="kt">void</span> <span class="nf">mp_destory_pool</span><span class="p">(</span><span class="k">struct</span> <span class="n">mp_pool_s</span> <span class="o">*</span><span class="n">pool</span><span class="p">)</span> <span class="p">{</span> <span class="c1">//释放内存池
+</span><span class="c1"></span>
+	<span class="k">struct</span> <span class="n">mp_node_s</span> <span class="o">*</span><span class="n">h</span><span class="p">,</span> <span class="o">*</span><span class="n">n</span><span class="p">;</span>
+	<span class="k">struct</span> <span class="n">mp_large_s</span> <span class="o">*</span><span class="n">l</span><span class="p">;</span>
+
+	<span class="k">for</span> <span class="p">(</span><span class="n">l</span> <span class="o">=</span> <span class="n">pool</span><span class="o">-&gt;</span><span class="n">large</span><span class="p">;</span> <span class="n">l</span><span class="p">;</span> <span class="n">l</span> <span class="o">=</span> <span class="n">l</span><span class="o">-&gt;</span><span class="n">next</span><span class="p">)</span> <span class="p">{</span> <span class="c1">//循环释放分配的large块
+</span><span class="c1"></span>		<span class="k">if</span> <span class="p">(</span><span class="n">l</span><span class="o">-&gt;</span><span class="n">alloc</span><span class="p">)</span> <span class="p">{</span>
+			<span class="n">free</span><span class="p">(</span><span class="n">l</span><span class="o">-&gt;</span><span class="n">alloc</span><span class="p">);</span>
+		<span class="p">}</span>
+	<span class="p">}</span>
+
+	<span class="n">h</span> <span class="o">=</span> <span class="n">pool</span><span class="o">-&gt;</span><span class="n">head</span><span class="o">-&gt;</span><span class="n">next</span><span class="p">;</span>
+
+	<span class="k">while</span> <span class="p">(</span><span class="n">h</span><span class="p">)</span> <span class="p">{</span> <span class="c1">//循环释放分配的页面
+</span><span class="c1"></span>		<span class="n">n</span> <span class="o">=</span> <span class="n">h</span><span class="o">-&gt;</span><span class="n">next</span><span class="p">;</span>
+		<span class="n">free</span><span class="p">(</span><span class="n">h</span><span class="p">);</span>
+		<span class="n">h</span> <span class="o">=</span> <span class="n">n</span><span class="p">;</span>
+	<span class="p">}</span>
+
+	<span class="n">free</span><span class="p">(</span><span class="n">pool</span><span class="p">);</span><span class="c1">//释放内存池本身
+</span><span class="c1"></span>
+<span class="p">}</span>
+
+<span class="kt">void</span> <span class="nf">mp_reset_pool</span><span class="p">(</span><span class="k">struct</span> <span class="n">mp_pool_s</span> <span class="o">*</span><span class="n">pool</span><span class="p">)</span> <span class="p">{</span> <span class="c1">//重置内存池
+</span><span class="c1"></span>
+	<span class="k">struct</span> <span class="n">mp_node_s</span> <span class="o">*</span><span class="n">h</span><span class="p">;</span>
+	<span class="k">struct</span> <span class="n">mp_large_s</span> <span class="o">*</span><span class="n">l</span><span class="p">;</span>
+
+	<span class="k">for</span> <span class="p">(</span><span class="n">l</span> <span class="o">=</span> <span class="n">pool</span><span class="o">-&gt;</span><span class="n">large</span><span class="p">;</span> <span class="n">l</span><span class="p">;</span> <span class="n">l</span> <span class="o">=</span> <span class="n">l</span><span class="o">-&gt;</span><span class="n">next</span><span class="p">)</span> <span class="p">{</span><span class="c1">//重置的时候需要释放大块内存
+</span><span class="c1"></span>		<span class="k">if</span> <span class="p">(</span><span class="n">l</span><span class="o">-&gt;</span><span class="n">alloc</span><span class="p">)</span> <span class="p">{</span>
+			<span class="n">free</span><span class="p">(</span><span class="n">l</span><span class="o">-&gt;</span><span class="n">alloc</span><span class="p">);</span>
+		<span class="p">}</span>
+	<span class="p">}</span>
+
+	<span class="n">pool</span><span class="o">-&gt;</span><span class="n">large</span> <span class="o">=</span> <span class="nb">NULL</span><span class="p">;</span>
+
+	<span class="k">for</span> <span class="p">(</span><span class="n">h</span> <span class="o">=</span> <span class="n">pool</span><span class="o">-&gt;</span><span class="n">head</span><span class="p">;</span> <span class="n">h</span><span class="p">;</span> <span class="n">h</span> <span class="o">=</span> <span class="n">h</span><span class="o">-&gt;</span><span class="n">next</span><span class="p">)</span> <span class="p">{</span><span class="c1">// 但针对页面只需要将页面内的小块内存指针退回起始位置就可以，不需要将已经分配的页面还给操作系统
+</span><span class="c1"></span>		<span class="n">h</span><span class="o">-&gt;</span><span class="n">last</span> <span class="o">=</span> <span class="p">(</span><span class="kt">unsigned</span> <span class="kt">char</span> <span class="o">*</span><span class="p">)</span><span class="n">h</span> <span class="o">+</span> <span class="k">sizeof</span><span class="p">(</span><span class="k">struct</span> <span class="n">mp_node_s</span><span class="p">);</span>
+	<span class="p">}</span>
+
+<span class="p">}</span>
+
+<span class="k">static</span> <span class="kt">void</span> <span class="o">*</span><span class="nf">mp_alloc_block</span><span class="p">(</span><span class="k">struct</span> <span class="n">mp_pool_s</span> <span class="o">*</span><span class="n">pool</span><span class="p">,</span> <span class="n">size_t</span> <span class="n">size</span><span class="p">)</span> <span class="p">{</span> <span class="c1">// 开辟新的页面并分配内存
+</span><span class="c1"></span>
+	<span class="kt">unsigned</span> <span class="kt">char</span> <span class="o">*</span><span class="n">m</span><span class="p">;</span>
+	<span class="k">struct</span> <span class="n">mp_node_s</span> <span class="o">*</span><span class="n">h</span> <span class="o">=</span> <span class="n">pool</span><span class="o">-&gt;</span><span class="n">head</span><span class="p">;</span> <span class="c1">//先拿到当前页面的head指针
+</span><span class="c1"></span>	<span class="n">size_t</span> <span class="n">psize</span> <span class="o">=</span> <span class="p">(</span><span class="n">size_t</span><span class="p">)(</span><span class="n">h</span><span class="o">-&gt;</span><span class="n">end</span> <span class="o">-</span> <span class="p">(</span><span class="kt">unsigned</span> <span class="kt">char</span> <span class="o">*</span><span class="p">)</span><span class="n">h</span><span class="p">);</span> <span class="c1">//拿到页面总大小
+</span><span class="c1"></span>	
+	<span class="kt">int</span> <span class="n">ret</span> <span class="o">=</span> <span class="n">posix_memalign</span><span class="p">((</span><span class="kt">void</span> <span class="o">**</span><span class="p">)</span><span class="o">&amp;</span><span class="n">m</span><span class="p">,</span> <span class="n">MP_ALIGNMENT</span><span class="p">,</span> <span class="n">psize</span><span class="p">);</span><span class="c1">//分配新的页面
+</span><span class="c1"></span>	<span class="k">if</span> <span class="p">(</span><span class="n">ret</span><span class="p">)</span> <span class="k">return</span> <span class="nb">NULL</span><span class="p">;</span>
+
+	<span class="k">struct</span> <span class="n">mp_node_s</span> <span class="o">*</span><span class="n">p</span><span class="p">,</span> <span class="o">*</span><span class="n">new_node</span><span class="p">,</span> <span class="o">*</span><span class="n">current</span><span class="p">;</span>
+	<span class="n">new_node</span> <span class="o">=</span> <span class="p">(</span><span class="k">struct</span> <span class="n">mp_node_s</span><span class="o">*</span><span class="p">)</span><span class="n">m</span><span class="p">;</span> <span class="c1">//初始化新的页面
+</span><span class="c1"></span>
+	<span class="n">new_node</span><span class="o">-&gt;</span><span class="n">end</span> <span class="o">=</span> <span class="n">m</span> <span class="o">+</span> <span class="n">psize</span><span class="p">;</span>
+	<span class="n">new_node</span><span class="o">-&gt;</span><span class="n">next</span> <span class="o">=</span> <span class="nb">NULL</span><span class="p">;</span>
+	<span class="n">new_node</span><span class="o">-&gt;</span><span class="n">failed</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+
+	<span class="n">m</span> <span class="o">+=</span> <span class="k">sizeof</span><span class="p">(</span><span class="k">struct</span> <span class="n">mp_node_s</span><span class="p">);</span> 
+	<span class="n">m</span> <span class="o">=</span> <span class="n">mp_align_ptr</span><span class="p">(</span><span class="n">m</span><span class="p">,</span> <span class="n">MP_ALIGNMENT</span><span class="p">);</span> 
+	<span class="n">new_node</span><span class="o">-&gt;</span><span class="n">last</span> <span class="o">=</span> <span class="n">m</span> <span class="o">+</span> <span class="n">size</span><span class="p">;</span> <span class="c1">//把需要的内存大小从新分配的页面上取走
+</span><span class="c1"></span>
+	<span class="n">current</span> <span class="o">=</span> <span class="n">pool</span><span class="o">-&gt;</span><span class="n">current</span><span class="p">;</span>  <span class="c1">//关键点：旨在减少页面末尾的内存碎片，nginx使用的方式
+</span><span class="c1"></span>
+	<span class="k">for</span> <span class="p">(</span><span class="n">p</span> <span class="o">=</span> <span class="n">current</span><span class="p">;</span> <span class="n">p</span><span class="o">-&gt;</span><span class="n">next</span><span class="p">;</span> <span class="n">p</span> <span class="o">=</span> <span class="n">p</span><span class="o">-&gt;</span><span class="n">next</span><span class="p">)</span> <span class="p">{</span>  <span class="c1">//每一个页面都有一个自己的failed关键字，用于表明其页面末尾提供给新需求时失败的次数，失败次数大于4就将内存池的current指针换到下一个页面
+</span><span class="c1"></span>	<span class="c1">// 失败次数少于4那么就不变内存池的current指针，这样在下一个需求到来时还是从当前分配失败的(页面末尾内存不够用)这一页面末尾开始查找，有利于减少末尾内存碎片，4这个值的得出应该是nginx的实验
+</span><span class="c1"></span>		<span class="k">if</span> <span class="p">(</span><span class="n">p</span><span class="o">-&gt;</span><span class="n">failed</span><span class="o">++</span> <span class="o">&gt;</span> <span class="mi">4</span><span class="p">)</span> <span class="p">{</span>
+			<span class="n">current</span> <span class="o">=</span> <span class="n">p</span><span class="o">-&gt;</span><span class="n">next</span><span class="p">;</span>
+		<span class="p">}</span>
+	<span class="p">}</span>
+	<span class="n">p</span><span class="o">-&gt;</span><span class="n">next</span> <span class="o">=</span> <span class="n">new_node</span><span class="p">;</span>
+
+	<span class="n">pool</span><span class="o">-&gt;</span><span class="n">current</span> <span class="o">=</span> <span class="n">current</span> <span class="o">?</span> <span class="nl">current</span> <span class="p">:</span> <span class="n">new_node</span><span class="p">;</span> <span class="c1">//这里可以看出，如果刚好所有之前创建的页面都失败大于4次，那么将当前内存池首选页面变为刚新建的页面即可
+</span><span class="c1"></span>
+	<span class="k">return</span> <span class="n">m</span><span class="p">;</span>
+
+<span class="p">}</span>
+
+<span class="k">static</span> <span class="kt">void</span> <span class="o">*</span><span class="nf">mp_alloc_large</span><span class="p">(</span><span class="k">struct</span> <span class="n">mp_pool_s</span> <span class="o">*</span><span class="n">pool</span><span class="p">,</span> <span class="n">size_t</span> <span class="n">size</span><span class="p">)</span> <span class="p">{</span> <span class="c1">//分配大块空间
+</span><span class="c1"></span>
+	<span class="kt">void</span> <span class="o">*</span><span class="n">p</span> <span class="o">=</span> <span class="n">malloc</span><span class="p">(</span><span class="n">size</span><span class="p">);</span>
+	<span class="k">if</span> <span class="p">(</span><span class="n">p</span> <span class="o">==</span> <span class="nb">NULL</span><span class="p">)</span> <span class="k">return</span> <span class="nb">NULL</span><span class="p">;</span>
+
+	<span class="n">size_t</span> <span class="n">n</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+	<span class="k">struct</span> <span class="n">mp_large_s</span> <span class="o">*</span><span class="n">large</span><span class="p">;</span>
+	<span class="k">for</span> <span class="p">(</span><span class="n">large</span> <span class="o">=</span> <span class="n">pool</span><span class="o">-&gt;</span><span class="n">large</span><span class="p">;</span> <span class="n">large</span><span class="p">;</span> <span class="n">large</span> <span class="o">=</span> <span class="n">large</span><span class="o">-&gt;</span><span class="n">next</span><span class="p">)</span> <span class="p">{</span>
+		<span class="k">if</span> <span class="p">(</span><span class="n">large</span><span class="o">-&gt;</span><span class="n">alloc</span> <span class="o">==</span> <span class="nb">NULL</span><span class="p">)</span> <span class="p">{</span>
+			<span class="n">large</span><span class="o">-&gt;</span><span class="n">alloc</span> <span class="o">=</span> <span class="n">p</span><span class="p">;</span>
+			<span class="k">return</span> <span class="n">p</span><span class="p">;</span>
+		<span class="p">}</span>
+		<span class="k">if</span> <span class="p">(</span><span class="n">n</span> <span class="o">++</span> <span class="o">&gt;</span> <span class="mi">3</span><span class="p">)</span> <span class="k">break</span><span class="p">;</span>
+	<span class="p">}</span>
+
+	<span class="n">large</span> <span class="o">=</span> <span class="n">mp_alloc</span><span class="p">(</span><span class="n">pool</span><span class="p">,</span> <span class="k">sizeof</span><span class="p">(</span><span class="k">struct</span> <span class="n">mp_large_s</span><span class="p">));</span><span class="c1">// large这个数据结构本身也需要交由内存池来管理，分析一下在mp_alloc中因为这个数据结构很小会存储在页面上，故不会产生无限循环
+</span><span class="c1"></span>	<span class="k">if</span> <span class="p">(</span><span class="n">large</span> <span class="o">==</span> <span class="nb">NULL</span><span class="p">)</span> <span class="p">{</span>
+		<span class="n">free</span><span class="p">(</span><span class="n">p</span><span class="p">);</span>
+		<span class="k">return</span> <span class="nb">NULL</span><span class="p">;</span>
+	<span class="p">}</span>
+
+	<span class="n">large</span><span class="o">-&gt;</span><span class="n">alloc</span> <span class="o">=</span> <span class="n">p</span><span class="p">;</span>
+	<span class="n">large</span><span class="o">-&gt;</span><span class="n">next</span> <span class="o">=</span> <span class="n">pool</span><span class="o">-&gt;</span><span class="n">large</span><span class="p">;</span>
+	<span class="n">pool</span><span class="o">-&gt;</span><span class="n">large</span> <span class="o">=</span> <span class="n">large</span><span class="p">;</span> <span class="c1">//large链表的头插法，很简单
+</span><span class="c1"></span>
+	<span class="k">return</span> <span class="n">p</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kt">void</span> <span class="o">*</span><span class="nf">mp_memalign</span><span class="p">(</span><span class="k">struct</span> <span class="n">mp_pool_s</span> <span class="o">*</span><span class="n">pool</span><span class="p">,</span> <span class="n">size_t</span> <span class="n">size</span><span class="p">,</span> <span class="n">size_t</span> <span class="n">alignment</span><span class="p">)</span> <span class="p">{</span>
+
+	<span class="kt">void</span> <span class="o">*</span><span class="n">p</span><span class="p">;</span>
+	
+	<span class="kt">int</span> <span class="n">ret</span> <span class="o">=</span> <span class="n">posix_memalign</span><span class="p">(</span><span class="o">&amp;</span><span class="n">p</span><span class="p">,</span> <span class="n">alignment</span><span class="p">,</span> <span class="n">size</span><span class="p">);</span>
+	<span class="k">if</span> <span class="p">(</span><span class="n">ret</span><span class="p">)</span> <span class="p">{</span>
+		<span class="k">return</span> <span class="nb">NULL</span><span class="p">;</span>
+	<span class="p">}</span>
+
+	<span class="k">struct</span> <span class="n">mp_large_s</span> <span class="o">*</span><span class="n">large</span> <span class="o">=</span> <span class="n">mp_alloc</span><span class="p">(</span><span class="n">pool</span><span class="p">,</span> <span class="k">sizeof</span><span class="p">(</span><span class="k">struct</span> <span class="n">mp_large_s</span><span class="p">));</span>
+	<span class="k">if</span> <span class="p">(</span><span class="n">large</span> <span class="o">==</span> <span class="nb">NULL</span><span class="p">)</span> <span class="p">{</span>
+		<span class="n">free</span><span class="p">(</span><span class="n">p</span><span class="p">);</span>
+		<span class="k">return</span> <span class="nb">NULL</span><span class="p">;</span>
+	<span class="p">}</span>
+
+	<span class="n">large</span><span class="o">-&gt;</span><span class="n">alloc</span> <span class="o">=</span> <span class="n">p</span><span class="p">;</span>
+	<span class="n">large</span><span class="o">-&gt;</span><span class="n">next</span> <span class="o">=</span> <span class="n">pool</span><span class="o">-&gt;</span><span class="n">large</span><span class="p">;</span>
+	<span class="n">pool</span><span class="o">-&gt;</span><span class="n">large</span> <span class="o">=</span> <span class="n">large</span><span class="p">;</span>
+
+	<span class="k">return</span> <span class="n">p</span><span class="p">;</span>
+<span class="p">}</span>
+
+
+
+
+<span class="kt">void</span> <span class="o">*</span><span class="nf">mp_alloc</span><span class="p">(</span><span class="k">struct</span> <span class="n">mp_pool_s</span> <span class="o">*</span><span class="n">pool</span><span class="p">,</span> <span class="n">size_t</span> <span class="n">size</span><span class="p">)</span> <span class="p">{</span> <span class="c1">//内存分配的入口函数，分别处理大块内存和小块内存需求，小块内存需求在页面末尾空间不足时进入新建页面并分配函数中，否则直接分配在当前页面就可以
+</span><span class="c1"></span>
+	<span class="kt">unsigned</span> <span class="kt">char</span> <span class="o">*</span><span class="n">m</span><span class="p">;</span>
+	<span class="k">struct</span> <span class="n">mp_node_s</span> <span class="o">*</span><span class="n">p</span><span class="p">;</span>
+
+	<span class="k">if</span> <span class="p">(</span><span class="n">size</span> <span class="o">&lt;=</span> <span class="n">pool</span><span class="o">-&gt;</span><span class="n">max</span><span class="p">)</span> <span class="p">{</span>
+
+		<span class="n">p</span> <span class="o">=</span> <span class="n">pool</span><span class="o">-&gt;</span><span class="n">current</span><span class="p">;</span>
+
+		<span class="k">do</span> <span class="p">{</span>
+			
+			<span class="n">m</span> <span class="o">=</span> <span class="n">mp_align_ptr</span><span class="p">(</span><span class="n">p</span><span class="o">-&gt;</span><span class="n">last</span><span class="p">,</span> <span class="n">MP_ALIGNMENT</span><span class="p">);</span>
+			<span class="k">if</span> <span class="p">((</span><span class="n">size_t</span><span class="p">)(</span><span class="n">p</span><span class="o">-&gt;</span><span class="n">end</span> <span class="o">-</span> <span class="n">m</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="n">size</span><span class="p">)</span> <span class="p">{</span>
+				<span class="n">p</span><span class="o">-&gt;</span><span class="n">last</span> <span class="o">=</span> <span class="n">m</span> <span class="o">+</span> <span class="n">size</span><span class="p">;</span>
+				<span class="k">return</span> <span class="n">m</span><span class="p">;</span>
+			<span class="p">}</span>
+			<span class="n">p</span> <span class="o">=</span> <span class="n">p</span><span class="o">-&gt;</span><span class="n">next</span><span class="p">;</span>
+		<span class="p">}</span> <span class="k">while</span> <span class="p">(</span><span class="n">p</span><span class="p">);</span> <span class="c1">//循环在current及其后的一个或多个页面上查找符合要求的末尾空间，存在的话就return
+</span><span class="c1"></span>
+		<span class="k">return</span> <span class="n">mp_alloc_block</span><span class="p">(</span><span class="n">pool</span><span class="p">,</span> <span class="n">size</span><span class="p">);</span> <span class="c1">//进到这里说明不存在符合要求空间，那就新建页面然后分配并对页面failed值计数和调整current页面
+</span><span class="c1"></span>	<span class="p">}</span>
+
+	<span class="k">return</span> <span class="n">mp_alloc_large</span><span class="p">(</span><span class="n">pool</span><span class="p">,</span> <span class="n">size</span><span class="p">);</span> <span class="c1">//大块内存情况
+</span><span class="c1"></span>	
+<span class="p">}</span>
+
+
+<span class="kt">void</span> <span class="o">*</span><span class="nf">mp_nalloc</span><span class="p">(</span><span class="k">struct</span> <span class="n">mp_pool_s</span> <span class="o">*</span><span class="n">pool</span><span class="p">,</span> <span class="n">size_t</span> <span class="n">size</span><span class="p">)</span> <span class="p">{</span>
+
+	<span class="kt">unsigned</span> <span class="kt">char</span> <span class="o">*</span><span class="n">m</span><span class="p">;</span>
+	<span class="k">struct</span> <span class="n">mp_node_s</span> <span class="o">*</span><span class="n">p</span><span class="p">;</span>
+
+	<span class="k">if</span> <span class="p">(</span><span class="n">size</span> <span class="o">&lt;=</span> <span class="n">pool</span><span class="o">-&gt;</span><span class="n">max</span><span class="p">)</span> <span class="p">{</span>
+		<span class="n">p</span> <span class="o">=</span> <span class="n">pool</span><span class="o">-&gt;</span><span class="n">current</span><span class="p">;</span>
+
+		<span class="k">do</span> <span class="p">{</span>
+			<span class="n">m</span> <span class="o">=</span> <span class="n">p</span><span class="o">-&gt;</span><span class="n">last</span><span class="p">;</span>
+			<span class="k">if</span> <span class="p">((</span><span class="n">size_t</span><span class="p">)(</span><span class="n">p</span><span class="o">-&gt;</span><span class="n">end</span> <span class="o">-</span> <span class="n">m</span><span class="p">)</span> <span class="o">&gt;=</span> <span class="n">size</span><span class="p">)</span> <span class="p">{</span>
+				<span class="n">p</span><span class="o">-&gt;</span><span class="n">last</span> <span class="o">=</span> <span class="n">m</span><span class="o">+</span><span class="n">size</span><span class="p">;</span>
+				<span class="k">return</span> <span class="n">m</span><span class="p">;</span>
+			<span class="p">}</span>
+			<span class="n">p</span> <span class="o">=</span> <span class="n">p</span><span class="o">-&gt;</span><span class="n">next</span><span class="p">;</span>
+		<span class="p">}</span> <span class="k">while</span> <span class="p">(</span><span class="n">p</span><span class="p">);</span>
+
+		<span class="k">return</span> <span class="n">mp_alloc_block</span><span class="p">(</span><span class="n">pool</span><span class="p">,</span> <span class="n">size</span><span class="p">);</span>
+	<span class="p">}</span>
+
+	<span class="k">return</span> <span class="n">mp_alloc_large</span><span class="p">(</span><span class="n">pool</span><span class="p">,</span> <span class="n">size</span><span class="p">);</span>
+	
+<span class="p">}</span>
+
+<span class="kt">void</span> <span class="o">*</span><span class="nf">mp_calloc</span><span class="p">(</span><span class="k">struct</span> <span class="n">mp_pool_s</span> <span class="o">*</span><span class="n">pool</span><span class="p">,</span> <span class="n">size_t</span> <span class="n">size</span><span class="p">)</span> <span class="p">{</span>
+
+	<span class="kt">void</span> <span class="o">*</span><span class="n">p</span> <span class="o">=</span> <span class="n">mp_alloc</span><span class="p">(</span><span class="n">pool</span><span class="p">,</span> <span class="n">size</span><span class="p">);</span>
+	<span class="k">if</span> <span class="p">(</span><span class="n">p</span><span class="p">)</span> <span class="p">{</span>
+		<span class="n">memset</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">size</span><span class="p">);</span>
+	<span class="p">}</span>
+
+	<span class="k">return</span> <span class="n">p</span><span class="p">;</span>
+	
+<span class="p">}</span>
+
+<span class="kt">void</span> <span class="nf">mp_free</span><span class="p">(</span><span class="k">struct</span> <span class="n">mp_pool_s</span> <span class="o">*</span><span class="n">pool</span><span class="p">,</span> <span class="kt">void</span> <span class="o">*</span><span class="n">p</span><span class="p">)</span> <span class="p">{</span>
+
+	<span class="k">struct</span> <span class="n">mp_large_s</span> <span class="o">*</span><span class="n">l</span><span class="p">;</span>
+	<span class="k">for</span> <span class="p">(</span><span class="n">l</span> <span class="o">=</span> <span class="n">pool</span><span class="o">-&gt;</span><span class="n">large</span><span class="p">;</span> <span class="n">l</span><span class="p">;</span> <span class="n">l</span> <span class="o">=</span> <span class="n">l</span><span class="o">-&gt;</span><span class="n">next</span><span class="p">)</span> <span class="p">{</span>
+		<span class="k">if</span> <span class="p">(</span><span class="n">p</span> <span class="o">==</span> <span class="n">l</span><span class="o">-&gt;</span><span class="n">alloc</span><span class="p">)</span> <span class="p">{</span>
+			<span class="n">free</span><span class="p">(</span><span class="n">l</span><span class="o">-&gt;</span><span class="n">alloc</span><span class="p">);</span>
+			<span class="n">l</span><span class="o">-&gt;</span><span class="n">alloc</span> <span class="o">=</span> <span class="nb">NULL</span><span class="p">;</span>
+
+			<span class="k">return</span> <span class="p">;</span>
+		<span class="p">}</span>
+	<span class="p">}</span>
+	
+<span class="p">}</span>
+
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">(</span><span class="kt">int</span> <span class="n">argc</span><span class="p">,</span> <span class="kt">char</span> <span class="o">*</span><span class="n">argv</span><span class="p">[])</span> <span class="p">{</span>
+
+	<span class="kt">int</span> <span class="n">size</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">&lt;&lt;</span> <span class="mi">12</span><span class="p">;</span>
+
+	<span class="k">struct</span> <span class="n">mp_pool_s</span> <span class="o">*</span><span class="n">p</span> <span class="o">=</span> <span class="n">mp_create_pool</span><span class="p">(</span><span class="n">size</span><span class="p">);</span>
+
+	<span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+	<span class="k">for</span> <span class="p">(</span><span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span><span class="n">i</span> <span class="o">&lt;</span> <span class="mi">10</span><span class="p">;</span><span class="n">i</span> <span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+
+		<span class="kt">void</span> <span class="o">*</span><span class="n">mp</span> <span class="o">=</span> <span class="n">mp_alloc</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="mi">512</span><span class="p">);</span>
+<span class="c1">//		mp_free(mp);
+</span><span class="c1"></span>	<span class="p">}</span>
+
+	<span class="c1">//printf(&#34;mp_create_pool: %ld\n&#34;, p-&gt;max);
+</span><span class="c1"></span>	<span class="n">printf</span><span class="p">(</span><span class="s">&#34;mp_align(123, 32): %d, mp_align(17, 32): %d</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span> <span class="n">mp_align</span><span class="p">(</span><span class="mi">24</span><span class="p">,</span> <span class="mi">32</span><span class="p">),</span> <span class="n">mp_align</span><span class="p">(</span><span class="mi">17</span><span class="p">,</span> <span class="mi">32</span><span class="p">));</span>
+	<span class="c1">//printf(&#34;mp_align_ptr(p-&gt;current, 32): %lx, p-&gt;current: %lx, mp_align(p-&gt;large, 32): %lx, p-&gt;large: %lx\n&#34;, mp_align_ptr(p-&gt;current, 32), p-&gt;current, mp_align_ptr(p-&gt;large, 32), p-&gt;large);
+</span><span class="c1"></span>
+	<span class="kt">int</span> <span class="n">j</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+	<span class="k">for</span> <span class="p">(</span><span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span><span class="n">i</span> <span class="o">&lt;</span> <span class="mi">5</span><span class="p">;</span><span class="n">i</span> <span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+
+		<span class="kt">char</span> <span class="o">*</span><span class="n">pp</span> <span class="o">=</span> <span class="n">mp_calloc</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="mi">32</span><span class="p">);</span>
+		<span class="k">for</span> <span class="p">(</span><span class="n">j</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span><span class="n">j</span> <span class="o">&lt;</span> <span class="mi">32</span><span class="p">;</span><span class="n">j</span> <span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+			<span class="k">if</span> <span class="p">(</span><span class="n">pp</span><span class="p">[</span><span class="n">j</span><span class="p">])</span> <span class="p">{</span>
+				<span class="n">printf</span><span class="p">(</span><span class="s">&#34;calloc wrong</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">);</span>
+			<span class="p">}</span>
+			<span class="n">printf</span><span class="p">(</span><span class="s">&#34;calloc success</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">);</span>
+		<span class="p">}</span>
+	<span class="p">}</span>
+
+	<span class="c1">//printf(&#34;mp_reset_pool\n&#34;);
+</span><span class="c1"></span>
+	<span class="k">for</span> <span class="p">(</span><span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span><span class="n">i</span> <span class="o">&lt;</span> <span class="mi">5</span><span class="p">;</span><span class="n">i</span> <span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+		<span class="kt">void</span> <span class="o">*</span><span class="n">l</span> <span class="o">=</span> <span class="n">mp_alloc</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="mi">8192</span><span class="p">);</span>
+		<span class="n">mp_free</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="n">l</span><span class="p">);</span>
+	<span class="p">}</span>
+
+	<span class="n">mp_reset_pool</span><span class="p">(</span><span class="n">p</span><span class="p">);</span>
+
+	<span class="c1">//printf(&#34;mp_destory_pool\n&#34;);
+</span><span class="c1"></span>	<span class="k">for</span> <span class="p">(</span><span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span><span class="n">i</span> <span class="o">&lt;</span> <span class="mi">58</span><span class="p">;</span><span class="n">i</span> <span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+		<span class="n">mp_alloc</span><span class="p">(</span><span class="n">p</span><span class="p">,</span> <span class="mi">256</span><span class="p">);</span>
+	<span class="p">}</span>
+
+	<span class="n">mp_destory_pool</span><span class="p">(</span><span class="n">p</span><span class="p">);</span>
+
+	<span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+
+<span class="p">}</span>
+
+
+
+
+</code></pre></div>
+</section>
+
+
+    <footer class="article-footer">
+    
+
+    
+    <section class="article-copyright">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-copyright" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="12" r="9" />
+  <path d="M14.5 9a3.5 4 0 1 0 0 6" />
+</svg>
+
+
+
+        <span>Licensed under CC BY-NC-SA 4.0</span>
+    </section>
+    </footer>
+
+
+    
+</article>
+
+    <aside class="related-contents--wrapper">
+    
+    
+        <h2 class="section-title">Related contents</h2>
+        <div class="related-contents">
+            <div class="flex article-list--tile">
+                
+                    
+<article class="has-image">
+    <a href="/p/dns%E5%8D%8F%E8%AE%AE%E8%A7%A3%E6%9E%90/">
+        
+        
+            <div class="article-image">
+                <img src="/p/dns%E5%8D%8F%E8%AE%AE%E8%A7%A3%E6%9E%90/081.eec9a01e1f368bff905b9f4613a97d42_hu7f5bc23efa6e31f2e831fa0dcdad6471_5540510_250x150_fill_q75_box_smart1.jpg" 
+                        width="250" 
+                        height="150" 
+                        loading="lazy" 
+                        data-key="DNS协议解析" 
+                        data-hash="md5-7smgHh82i/&#43;QW59GE6l9Qg==">
+                
+            </div>
+        
+
+        <div class="article-details">
+            <h2 class="article-title">DNS协议解析</h2>
+        </div>
+    </a>
+</article>
+                
+                    
+<article class="has-image">
+    <a href="/p/%E7%AE%80%E6%98%93tcp%E6%9C%8D%E5%8A%A1%E5%99%A8/">
+        
+        
+            <div class="article-image">
+                <img src="/p/%E7%AE%80%E6%98%93tcp%E6%9C%8D%E5%8A%A1%E5%99%A8/029.155943df5a1ed5ef7aeb3d74a37bef67_hu5f7dae7e78ac97b0b045f4b1159a4d54_14023957_250x150_fill_q75_box_smart1.jpg" 
+                        width="250" 
+                        height="150" 
+                        loading="lazy" 
+                        data-key="简易Tcp服务器" 
+                        data-hash="md5-FVlD31oe1e966z10o3vvZw==">
+                
+            </div>
+        
+
+        <div class="article-details">
+            <h2 class="article-title">简易Tcp服务器</h2>
+        </div>
+    </a>
+</article>
+                
+                    
+<article class="has-image">
+    <a href="/p/%E7%BA%BF%E7%A8%8B%E6%B1%A0/">
+        
+        
+            <div class="article-image">
+                <img src="/p/%E7%BA%BF%E7%A8%8B%E6%B1%A0/240.1d66d2f2f5cf2eed0d60df1bd2c599c2_huc6553c3d943592fc8492e4a8a4385797_5666304_250x150_fill_q75_box_smart1.jpg" 
+                        width="250" 
+                        height="150" 
+                        loading="lazy" 
+                        data-key="线程池" 
+                        data-hash="md5-HWbS8vXPLu0NYN8b0sWZwg==">
+                
+            </div>
+        
+
+        <div class="article-details">
+            <h2 class="article-title">线程池</h2>
+        </div>
+    </a>
+</article>
+                
+                    
+<article class="has-image">
+    <a href="/p/%E7%BA%BF%E7%A8%8B%E6%B1%A0%E8%BF%9B%E9%98%B6%E7%89%88/">
+        
+        
+            <div class="article-image">
+                <img src="/p/%E7%BA%BF%E7%A8%8B%E6%B1%A0%E8%BF%9B%E9%98%B6%E7%89%88/241.67ff17709516aab444e7c867cfe2b735_hudd714e7c3305b4c239dc02d266d283b9_7211866_250x150_fill_q75_box_smart1.jpg" 
+                        width="250" 
+                        height="150" 
+                        loading="lazy" 
+                        data-key="线程池进阶版" 
+                        data-hash="md5-Z/8XcJUWqrRE58hnz&#43;K3NQ==">
+                
+            </div>
+        
+
+        <div class="article-details">
+            <h2 class="article-title">线程池进阶版</h2>
+        </div>
+    </a>
+</article>
+                
+                    
+<article class="has-image">
+    <a href="/p/%E8%AF%B7%E6%B1%82%E6%B1%A0/">
+        
+        
+            <div class="article-image">
+                <img src="/p/%E8%AF%B7%E6%B1%82%E6%B1%A0/247.f5d865192346f6b27e0487d96c0700d0_hu00377075f8d3c09f9b9bff67495c3ec1_5277773_250x150_fill_q75_box_smart1.jpg" 
+                        width="250" 
+                        height="150" 
+                        loading="lazy" 
+                        data-key="请求池" 
+                        data-hash="md5-9dhlGSNG9rJ&#43;BIfZbAcA0A==">
+                
+            </div>
+        
+
+        <div class="article-details">
+            <h2 class="article-title">请求池</h2>
+        </div>
+    </a>
+</article>
+                
+            </div>
+        </div>
+    
+</aside>
+
+     
+     
+        
+    <div class="disqus-container">
+    <div id="disqus_thread"></div>
+<script type="application/javascript">
+    var disqus_config = function () {
+    
+    
+    
+    };
+    (function() {
+        if (["localhost", "127.0.0.1"].indexOf(window.location.hostname) != -1) {
+            document.getElementById('disqus_thread').innerHTML = 'Disqus comments not available by default when the website is previewed locally.';
+            return;
+        }
+        var d = document, s = d.createElement('script'); s.async = true;
+        s.src = '//' + "hugo-theme-stack" + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="https://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+</div>
+
+<style>
+    .disqus-container {
+        background-color: var(--card-background);
+        border-radius: var(--card-border-radius);
+        box-shadow: var(--shadow-l1);
+        padding: var(--card-padding);
+    }
+</style>
+
+<script>
+    window.addEventListener('onColorSchemeChange', (e) => {
+        if (DISQUS) {
+            DISQUS.reset({
+                reload: true
+            });
+        }
+    })
+</script>
+
+    
+
+    <footer class="site-footer">
+    <section class="copyright">
+        &copy; 
+        
+            2020 - 
+        
+        2021 Gao&#39;s happy day
+    </section>
+    
+    <section class="powerby">
+        Built with <a href="https://gohugo.io/" target="_blank" rel="noopener">Hugo</a> <br />
+        Theme <b><a href="https://github.com/CaiJimmy/hugo-theme-stack" target="_blank" rel="noopener" data-version="3.2.0">Stack</a></b> designed by <a href="https://jimmycai.com" target="_blank" rel="noopener">Jimmy</a>
+    </section>
+</footer>
+
+
+    
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+    
+    <div class="pswp__bg"></div>
+
+    
+    <div class="pswp__scroll-wrap">
+
+        
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+
+        
+        <div class="pswp__ui pswp__ui--hidden">
+
+            <div class="pswp__top-bar">
+
+                
+
+                <div class="pswp__counter"></div>
+
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+
+                <button class="pswp__button pswp__button--share" title="Share"></button>
+
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+
+                
+                
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                        <div class="pswp__preloader__cut">
+                            <div class="pswp__preloader__donut"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div>
+            </div>
+
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div><script 
+                src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js"integrity="sha256-ePwmChbbvXbsO02lbM3HoHbSHTHFAeChekF1xKJdleo="crossorigin="anonymous"
+                defer="true"
+                >
+            </script><script 
+                src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js"integrity="sha256-UKkzOn/w1mBxRmLLGrSeyB4e1xbrp4xylgAWb3M42pU="crossorigin="anonymous"
+                defer="true"
+                >
+            </script><link 
+                rel="stylesheet" 
+                href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.css"integrity="sha256-c0uckgykQ9v5k&#43;IqViZOZKc47Jn7KQil4/MP3ySA3F8="crossorigin="anonymous"
+            ><link 
+                rel="stylesheet" 
+                href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.css"integrity="sha256-SBLU4vv6CA6lHsZ1XyTdhyjJxCjPif/TRkjnsyGAGnE="crossorigin="anonymous"
+            >
+
+            </main>
+    
+
+        </div>
+        <script 
+                src="https://cdn.jsdelivr.net/npm/node-vibrant@3.1.5/dist/vibrant.min.js"integrity="sha256-5NovOZc4iwiAWTYIFiIM7DxKUXKWvpVEuMEPLzcm5/g="crossorigin="anonymous"
+                defer="false"
+                >
+            </script><script type="text/javascript" src="/ts/main.js" defer></script>
+<script>
+    (function () {
+        const customFont = document.createElement('link');
+        customFont.href = "https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap";
+
+        customFont.type = "text/css";
+        customFont.rel = "stylesheet";
+
+        document.head.appendChild(customFont);
+    }());
+</script>
+
+    </body>
+</html>

@@ -1,0 +1,656 @@
+<!DOCTYPE html>
+<html lang="en-us">
+    <head><meta charset='utf-8'>
+<meta name='viewport' content='width=device-width, initial-scale=1'><meta name='description' content='基础知识'><title>DNS协议解析</title>
+
+<link rel='canonical' href='https://gao377020481.github.io/p/dns%E5%8D%8F%E8%AE%AE%E8%A7%A3%E6%9E%90/'>
+
+<link rel="stylesheet" href="/scss/style.min.css"><meta property='og:title' content='DNS协议解析'>
+<meta property='og:description' content='基础知识'>
+<meta property='og:url' content='https://gao377020481.github.io/p/dns%E5%8D%8F%E8%AE%AE%E8%A7%A3%E6%9E%90/'>
+<meta property='og:site_name' content='Gao&#39;s happy day'>
+<meta property='og:type' content='article'><meta property='article:section' content='Post' /><meta property='article:published_time' content='2020-09-10T00:00:00&#43;00:00'/><meta property='article:modified_time' content='2020-09-10T00:00:00&#43;00:00'/><meta property='og:image' content='https://gao377020481.github.io/p/dns%E5%8D%8F%E8%AE%AE%E8%A7%A3%E6%9E%90/081.jpg' />
+<meta name="twitter:title" content="DNS协议解析">
+<meta name="twitter:description" content="基础知识"><meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:image" content='https://gao377020481.github.io/p/dns%E5%8D%8F%E8%AE%AE%E8%A7%A3%E6%9E%90/081.jpg' />
+    </head>
+    <body class="
+    article-page has-toc
+">
+    <script>
+        (function() {
+            const colorSchemeKey = 'StackColorScheme';
+            if(!localStorage.getItem(colorSchemeKey)){
+                localStorage.setItem(colorSchemeKey, "auto");
+            }
+        })();
+    </script><script>
+    (function() {
+        const colorSchemeKey = 'StackColorScheme';
+        const colorSchemeItem = localStorage.getItem(colorSchemeKey);
+        const supportDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches === true;
+
+        if (colorSchemeItem == 'dark' || colorSchemeItem === 'auto' && supportDarkMode) {
+            
+
+            document.documentElement.dataset.scheme = 'dark';
+        } else {
+            document.documentElement.dataset.scheme = 'light';
+        }
+    })();
+</script>
+<div class="container main-container flex 
+    
+        extended
+    
+">
+    
+        <div id="article-toolbar">
+            <a href="https://gao377020481.github.io" class="back-home">
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-chevron-left" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <polyline points="15 6 9 12 15 18" />
+</svg>
+
+
+
+                <span>Back</span>
+            </a>
+        </div>
+    
+<main class="main full-width">
+    <article class="has-image main-article">
+    <header class="article-header">
+        <div class="article-image">
+            <a href="/p/dns%E5%8D%8F%E8%AE%AE%E8%A7%A3%E6%9E%90/">
+                <img src="/p/dns%E5%8D%8F%E8%AE%AE%E8%A7%A3%E6%9E%90/081_hu7f5bc23efa6e31f2e831fa0dcdad6471_5540510_800x0_resize_q75_box.jpg"
+                        srcset="/p/dns%E5%8D%8F%E8%AE%AE%E8%A7%A3%E6%9E%90/081_hu7f5bc23efa6e31f2e831fa0dcdad6471_5540510_800x0_resize_q75_box.jpg 800w, /p/dns%E5%8D%8F%E8%AE%AE%E8%A7%A3%E6%9E%90/081_hu7f5bc23efa6e31f2e831fa0dcdad6471_5540510_1600x0_resize_q75_box.jpg 1600w"
+                        width="800" 
+                        height="1155" 
+                        loading="lazy"
+                        alt="Featured image of post DNS协议解析" />
+                
+            </a>
+        </div>
+    
+
+    <div class="article-details">
+    
+    <header class="article-category">
+        
+            <a href="/categories/%E7%BD%91%E7%BB%9C%E7%BC%96%E7%A8%8B/" style="background-color: #2a9d8f; color: #fff;">
+                网络编程
+            </a>
+        
+    </header>
+    
+
+    <h2 class="article-title">
+        <a href="/p/dns%E5%8D%8F%E8%AE%AE%E8%A7%A3%E6%9E%90/">DNS协议解析</a>
+    </h2>
+
+    
+    <h3 class="article-subtitle">
+        基础知识
+    </h3>
+    
+
+    
+    <footer class="article-time">
+        
+            <div>
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-calendar-time" width="56" height="56" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <path d="M11.795 21h-6.795a2 2 0 0 1 -2 -2v-12a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v4" />
+  <circle cx="18" cy="18" r="4" />
+  <path d="M15 3v4" />
+  <path d="M7 3v4" />
+  <path d="M3 11h16" />
+  <path d="M18 16.496v1.504l1 1" />
+</svg>
+                <time class="article-time--published">Sep 10, 2020</time>
+            </div>
+        
+
+        
+            <div>
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="12" r="9" />
+  <polyline points="12 7 12 12 15 15" />
+</svg>
+
+
+
+                <time class="article-time--reading">
+                    2 minute read
+                </time>
+            </div>
+        
+    </footer>
+    
+</div>
+</header>
+
+    <section class="article-content">
+    <h1 id="dns">DNS</h1>
+<p>Domain Name System 域名系统，是一个分布式数据库，用于映射IP与域名</p>
+<p>每级域名长度限制为63，总长度限制为253，使用TCP UDP端口53</p>
+<h2 id="dns分层">DNS分层</h2>
+<p>顶级域：com org等
+第二级域：baidu google等
+第三级域：www edu等</p>
+<h2 id="域名解析">域名解析</h2>
+<p>静态映射：在本机上配置域名和ip映射并直接使用</p>
+<p>动态映射：使用DNS域名解析系统，在DNS服务器上配置ip到域名的映射</p>
+<h2 id="域名服务器">域名服务器</h2>
+<p>根域名服务器： 共a-m十三台（十三个ip）但拥有很多镜像服务器，镜像与本体使用同一个ip，存有顶级域名服务器的ip
+顶级域名服务器：管理在该顶级域名服务器下注册的二级域名
+权限域名服务器：一个区域的域名解析
+本地域名服务器：处理本地的请求，保存本地的映射</p>
+<h2 id="域名解析方式">域名解析方式</h2>
+<p>迭代查询：本机请求本地域名服务器，本地域名服务器开始迭代的查询各个层级服务器，先查询根获得顶级的ip然后根据获得的ip查询顶级在获得区域的ip依次迭代查到请求的映射</p>
+<p>递归查询：递归查询时只发出一次请求然后等待接收到最终结果，在上面的步骤中本机使用的就是递归查询</p>
+<p>具体查看文档</p>
+<h1 id="dns-client-udp编程">DNS client UDP编程</h1>
+<p>首先需要自己定义数据结构用于存储dns报文</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="k">struct</span> <span class="n">dns_header</span><span class="p">{</span>
+
+    <span class="kt">unsigned</span> <span class="kt">short</span> <span class="n">id</span><span class="p">;</span>
+    <span class="kt">unsigned</span> <span class="kt">short</span> <span class="n">flags</span><span class="p">;</span>
+    
+    <span class="kt">unsigned</span> <span class="kt">short</span> <span class="n">questions</span><span class="p">;</span>
+    <span class="kt">unsigned</span> <span class="kt">short</span> <span class="n">answer</span><span class="p">;</span>
+
+    <span class="kt">unsigned</span> <span class="kt">short</span> <span class="n">authority</span><span class="p">;</span>
+    <span class="kt">unsigned</span> <span class="kt">short</span> <span class="n">additional</span><span class="p">;</span>
+
+<span class="p">};</span>
+<span class="k">struct</span> <span class="n">dns_question</span> <span class="p">{</span>
+
+    <span class="kt">int</span> <span class="n">length</span><span class="p">;</span>
+    <span class="kt">unsigned</span> <span class="kt">short</span> <span class="n">qtype</span><span class="p">;</span>
+    <span class="kt">unsigned</span> <span class="kt">short</span> <span class="n">qclass</span><span class="p">;</span>
+    <span class="kt">unsigned</span> <span class="kt">char</span> <span class="o">*</span><span class="n">name</span><span class="p">;</span>
+
+<span class="p">};</span>
+</code></pre></div><p>这里只需要question和header是因为我们作为client只实现发送A请求也就是获取域名的ipv4地址，在实现中header的授权码和附加码都不需要使用只需要使用questions id和flags即可</p>
+<p>先建立UDP套接字用于发送UDP报文：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="cp">#define DNS_SERVER_PORT  53
+</span><span class="cp">#define DNS_SERVER_IP &#34;114.114.114.114&#34;
+</span><span class="cp"></span>
+<span class="kt">int</span> <span class="n">sockfd</span> <span class="o">=</span> <span class="n">socket</span><span class="p">(</span><span class="n">AF_INET</span><span class="p">,</span> <span class="n">SOCK_DGRAM</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>
+
+<span class="k">if</span><span class="p">(</span><span class="n">sockfd</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="k">return</span> <span class="o">-</span><span class="mi">1</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="k">struct</span> <span class="n">sockaddr_in</span> <span class="n">servaddr</span> <span class="o">=</span> <span class="p">{</span><span class="mi">0</span><span class="p">};</span>    
+<span class="n">servaddr</span><span class="p">.</span><span class="n">sin_family</span> <span class="o">=</span> <span class="n">AF_INET</span><span class="p">;</span>
+<span class="n">servaddr</span><span class="p">.</span><span class="n">sin_port</span>  <span class="o">=</span> <span class="n">htons</span><span class="p">(</span><span class="n">DNS_SERVER_PORT</span><span class="p">);</span>
+<span class="n">servaddr</span><span class="p">.</span><span class="n">sin_addr</span><span class="p">.</span><span class="n">s_addr</span> <span class="o">=</span> <span class="n">inet_addr</span><span class="p">(</span><span class="n">DNS_SERVER_IP</span><span class="p">);</span>
+</code></pre></div><p>然后使用connect检测开辟本机到DNS服务器的通路：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="kt">int</span> <span class="n">ret</span> <span class="o">=</span> <span class="n">connect</span><span class="p">(</span><span class="n">sockfd</span><span class="p">,</span> <span class="p">(</span><span class="k">struct</span> <span class="n">sockaddr</span><span class="o">*</span><span class="p">)</span><span class="o">&amp;</span><span class="n">servaddr</span><span class="p">,</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">servaddr</span><span class="p">));</span>
+</code></pre></div><p>ret返回值可以用于检测通路是否存在</p>
+<p>然后开始初始化要发送的DNS报文：</p>
+<p>1.初始化dns header：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="k">struct</span> <span class="n">dns_header</span> <span class="n">header</span> <span class="o">=</span> <span class="p">{</span><span class="mi">0</span><span class="p">};</span>
+<span class="n">dns_create_header</span><span class="p">(</span><span class="o">&amp;</span><span class="n">header</span><span class="p">);</span>
+</code></pre></div><p>使用的dns_create_header：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="kt">int</span> <span class="nf">dns_create_header</span><span class="p">(</span><span class="k">struct</span> <span class="n">dns_header</span> <span class="o">*</span><span class="n">header</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="k">if</span><span class="p">(</span><span class="n">header</span> <span class="o">==</span> <span class="nb">NULL</span><span class="p">)</span> <span class="k">return</span> <span class="o">-</span><span class="mi">1</span><span class="p">;</span>
+
+    <span class="n">memset</span><span class="p">(</span><span class="n">header</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="k">sizeof</span><span class="p">(</span><span class="k">struct</span> <span class="n">dns_header</span><span class="p">));</span>
+
+
+    <span class="c1">//random
+</span><span class="c1"></span>    <span class="n">srandom</span><span class="p">(</span><span class="n">time</span><span class="p">(</span><span class="nb">NULL</span><span class="p">));</span>
+    <span class="n">header</span><span class="o">-&gt;</span><span class="n">id</span> <span class="o">=</span> <span class="n">random</span><span class="p">();</span>
+
+    <span class="n">header</span><span class="o">-&gt;</span><span class="n">flags</span> <span class="o">=</span> <span class="n">htons</span><span class="p">(</span><span class="mh">0x0100</span><span class="p">);</span>
+
+    <span class="n">header</span><span class="o">-&gt;</span><span class="n">questions</span> <span class="o">=</span> <span class="n">htons</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>
+    
+    <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+
+<span class="p">}</span>
+</code></pre></div><p>这里的id为随机生成
+questions为1代表一个问题 flags的0x0100查表后代表：期望递归
+传地址来初始化header</p>
+<p>然后就是初始化正文部分的question：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="k">struct</span> <span class="n">dns_question</span> <span class="n">question</span> <span class="o">=</span> <span class="p">{</span><span class="mi">0</span><span class="p">};</span>
+<span class="n">dns_create_question</span><span class="p">(</span><span class="o">&amp;</span><span class="n">question</span><span class="p">,</span> <span class="n">domain</span><span class="p">);</span>
+</code></pre></div><p>dns_create_question的实现：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="kt">int</span> <span class="nf">dns_create_question</span><span class="p">(</span><span class="k">struct</span> <span class="n">dns_question</span><span class="o">*</span> <span class="n">question</span><span class="p">,</span> <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">hostname</span><span class="p">)</span>
+<span class="p">{</span>
+
+    <span class="k">if</span><span class="p">(</span><span class="n">question</span> <span class="o">==</span> <span class="nb">NULL</span> <span class="o">||</span> <span class="n">hostname</span> <span class="o">==</span> <span class="nb">NULL</span><span class="p">)</span> <span class="k">return</span> <span class="o">-</span><span class="mi">1</span><span class="p">;</span>
+
+    <span class="n">memset</span><span class="p">(</span><span class="n">question</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="k">sizeof</span><span class="p">(</span><span class="k">struct</span> <span class="n">dns_question</span><span class="p">));</span>
+
+    <span class="n">question</span><span class="o">-&gt;</span><span class="n">name</span> <span class="o">=</span> <span class="p">(</span><span class="kt">char</span><span class="o">*</span><span class="p">)</span><span class="n">malloc</span><span class="p">(</span><span class="n">strlen</span><span class="p">(</span><span class="n">hostname</span><span class="p">)</span> <span class="o">+</span> <span class="mi">2</span><span class="p">);</span>
+
+    <span class="k">if</span><span class="p">(</span><span class="n">question</span><span class="o">-&gt;</span><span class="n">name</span> <span class="o">==</span> <span class="nb">NULL</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="k">return</span> <span class="o">-</span><span class="mi">1</span><span class="p">;</span>
+    <span class="p">}</span>
+
+    <span class="n">question</span><span class="o">-&gt;</span><span class="n">length</span> <span class="o">=</span> <span class="n">strlen</span><span class="p">(</span><span class="n">hostname</span><span class="p">)</span> <span class="o">+</span> <span class="mi">2</span><span class="p">;</span>
+
+    <span class="n">question</span><span class="o">-&gt;</span><span class="n">qtype</span> <span class="o">=</span> <span class="n">htons</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>
+
+    <span class="n">question</span><span class="o">-&gt;</span><span class="n">qclass</span> <span class="o">=</span> <span class="n">htons</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>
+
+    <span class="c1">//name
+</span><span class="c1"></span>    <span class="k">const</span> <span class="kt">char</span> <span class="n">delim</span><span class="p">[</span><span class="mi">2</span><span class="p">]</span> <span class="o">=</span> <span class="s">&#34;.&#34;</span><span class="p">;</span>
+    <span class="kt">char</span> <span class="o">*</span><span class="n">hostname_dup</span> <span class="o">=</span> <span class="n">strdup</span><span class="p">(</span><span class="n">hostname</span><span class="p">);</span>
+    <span class="kt">char</span> <span class="o">*</span><span class="n">token</span> <span class="o">=</span> <span class="n">strtok</span><span class="p">(</span><span class="n">hostname_dup</span><span class="p">,</span> <span class="n">delim</span><span class="p">);</span>
+
+    <span class="kt">char</span> <span class="o">*</span><span class="n">qname</span> <span class="o">=</span> <span class="n">question</span><span class="o">-&gt;</span><span class="n">name</span><span class="p">;</span>
+
+    <span class="k">while</span><span class="p">(</span><span class="n">token</span> <span class="o">!=</span> <span class="nb">NULL</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="n">size_t</span> <span class="n">len</span> <span class="o">=</span> <span class="n">strlen</span><span class="p">(</span><span class="n">token</span><span class="p">);</span>
+        <span class="o">*</span><span class="n">qname</span> <span class="o">=</span> <span class="n">len</span><span class="p">;</span>
+        <span class="n">qname</span><span class="o">++</span><span class="p">;</span>
+
+        <span class="n">strncpy</span><span class="p">(</span><span class="n">qname</span><span class="p">,</span> <span class="n">token</span><span class="p">,</span> <span class="n">len</span><span class="o">+</span><span class="mi">1</span><span class="p">);</span> <span class="c1">// +1 copy \0
+</span><span class="c1"></span>        <span class="n">qname</span> <span class="o">+=</span> <span class="n">len</span><span class="p">;</span>
+        
+        <span class="n">token</span> <span class="o">=</span> <span class="n">strtok</span><span class="p">(</span><span class="nb">NULL</span><span class="p">,</span> <span class="n">delim</span><span class="p">);</span>
+    <span class="p">}</span>
+
+
+    <span class="n">free</span><span class="p">(</span><span class="n">hostname_dup</span><span class="p">);</span>
+
+<span class="p">}</span>
+</code></pre></div><p>这里正文的初始化使用循环和strtok分别取出每一级域名然后形成正文部分，www.baidu.com &ndash;&gt; 3www5baidu3com0</p>
+<p>接下来就可以将已经初始化好的header和question组装成dns报文request：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="kt">char</span> <span class="n">request</span><span class="p">[</span><span class="mi">1024</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="mi">0</span><span class="p">};</span>
+<span class="kt">int</span> <span class="n">length</span> <span class="o">=</span> <span class="n">dns_build_request</span><span class="p">(</span><span class="o">&amp;</span><span class="n">header</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">question</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="mi">1024</span><span class="p">);</span>
+</code></pre></div><p>dns_build_request的实现：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="kt">int</span> <span class="nf">dns_build_request</span><span class="p">(</span><span class="k">struct</span> <span class="n">dns_header</span><span class="o">*</span> <span class="n">header</span><span class="p">,</span> <span class="k">struct</span> <span class="n">dns_question</span><span class="o">*</span> <span class="n">question</span><span class="p">,</span> <span class="kt">char</span> <span class="o">*</span><span class="n">request</span><span class="p">,</span> <span class="kt">int</span> <span class="n">rlen</span> <span class="p">)</span>
+<span class="p">{</span>   
+    <span class="k">if</span><span class="p">(</span><span class="n">header</span> <span class="o">==</span> <span class="nb">NULL</span> <span class="o">||</span> <span class="n">question</span> <span class="o">==</span> <span class="nb">NULL</span> <span class="o">||</span> <span class="n">request</span> <span class="o">==</span> <span class="nb">NULL</span><span class="p">)</span>
+    <span class="k">return</span> <span class="o">-</span><span class="mi">1</span><span class="p">;</span>
+    <span class="n">memset</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="mi">0</span> <span class="p">,</span> <span class="n">rlen</span><span class="p">);</span>
+
+    <span class="c1">//header --&gt; request
+</span><span class="c1"></span>
+    <span class="kt">int</span> <span class="n">offset</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+    <span class="n">memcpy</span><span class="p">(</span><span class="n">request</span><span class="p">,</span> <span class="n">header</span><span class="p">,</span> <span class="k">sizeof</span><span class="p">(</span><span class="k">struct</span> <span class="n">dns_header</span><span class="p">));</span>
+    <span class="n">offset</span> <span class="o">=</span> <span class="k">sizeof</span><span class="p">(</span><span class="k">struct</span> <span class="n">dns_header</span><span class="p">);</span>
+
+    <span class="c1">//question --&gt; request
+</span><span class="c1"></span>
+    <span class="n">memcpy</span><span class="p">(</span><span class="n">request</span><span class="o">+</span><span class="n">offset</span><span class="p">,</span> <span class="n">question</span><span class="o">-&gt;</span><span class="n">name</span><span class="p">,</span> <span class="n">question</span><span class="o">-&gt;</span><span class="n">length</span><span class="p">);</span>
+    <span class="n">offset</span> <span class="o">+=</span> <span class="n">question</span><span class="o">-&gt;</span><span class="n">length</span><span class="p">;</span>
+
+    <span class="n">memcpy</span><span class="p">(</span><span class="n">request</span><span class="o">+</span><span class="n">offset</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">question</span><span class="o">-&gt;</span><span class="n">qtype</span><span class="p">,</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">question</span><span class="o">-&gt;</span><span class="n">qtype</span><span class="p">));</span>
+    <span class="n">offset</span> <span class="o">+=</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">question</span><span class="o">-&gt;</span><span class="n">qtype</span><span class="p">);</span> 
+
+    <span class="n">memcpy</span><span class="p">(</span><span class="n">request</span><span class="o">+</span><span class="n">offset</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">question</span><span class="o">-&gt;</span><span class="n">qclass</span><span class="p">,</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">question</span><span class="o">-&gt;</span><span class="n">qclass</span><span class="p">));</span>
+    <span class="n">offset</span> <span class="o">+=</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">question</span><span class="o">-&gt;</span><span class="n">qclass</span><span class="p">);</span> 
+
+    <span class="k">return</span> <span class="n">offset</span><span class="p">;</span>
+
+<span class="p">}</span>
+</code></pre></div><p>可以看到就是按照协议进行拼接</p>
+<p>接下来就可以调用unix 网络编程capi来通过udp套接字发送正文：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="c1">//request
+</span><span class="c1"></span><span class="kt">int</span> <span class="n">slen</span> <span class="o">=</span> <span class="n">sendto</span><span class="p">(</span><span class="n">sockfd</span><span class="p">,</span> <span class="n">request</span><span class="p">,</span> <span class="n">length</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="p">(</span><span class="k">struct</span> <span class="n">sockaddr</span><span class="o">*</span><span class="p">)</span><span class="o">&amp;</span><span class="n">servaddr</span><span class="p">,</span> <span class="k">sizeof</span><span class="p">(</span><span class="k">struct</span> <span class="n">sockaddr</span><span class="p">));</span>
+</code></pre></div><p>至此发送就结束了</p>
+<p>我们发送了dns查询报文dns服务器会返回结果，所以可以通过套接字来接收这个结果，并打印出来验证一下：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="c1">//recvfrom()
+</span><span class="c1"></span><span class="kt">char</span> <span class="n">response</span><span class="p">[</span><span class="mi">1024</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="mi">0</span><span class="p">};</span>
+<span class="k">struct</span> <span class="n">sockaddr_in</span> <span class="n">addr</span><span class="p">;</span>
+<span class="n">size_t</span> <span class="n">addr_len</span> <span class="o">=</span> <span class="k">sizeof</span><span class="p">(</span><span class="k">struct</span> <span class="n">sockaddr_in</span><span class="p">);</span>
+
+
+<span class="kt">int</span> <span class="n">n</span> <span class="o">=</span><span class="n">recvfrom</span><span class="p">(</span><span class="n">sockfd</span><span class="p">,</span> <span class="n">response</span><span class="p">,</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">response</span><span class="p">),</span> <span class="mi">0</span><span class="p">,</span> <span class="p">(</span><span class="k">struct</span> <span class="n">sockaddr</span><span class="o">*</span><span class="p">)</span><span class="o">&amp;</span><span class="n">addr</span><span class="p">,</span> <span class="p">(</span><span class="n">socklen_t</span><span class="o">*</span><span class="p">)</span><span class="o">&amp;</span><span class="n">addr_len</span><span class="p">);</span>
+
+<span class="n">printf</span><span class="p">(</span><span class="s">&#34;recvfrom : %d, %s</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">response</span><span class="p">);</span>
+</code></pre></div><p>也可以写代码解析返回的结果，具体查看代码就可以</p>
+<p>至此就实现了一个dns客户端用于给dns服务器发送查询报文来查询一个域名的ipv4地址</p>
+
+</section>
+
+
+    <footer class="article-footer">
+    
+
+    
+    <section class="article-copyright">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-copyright" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="12" r="9" />
+  <path d="M14.5 9a3.5 4 0 1 0 0 6" />
+</svg>
+
+
+
+        <span>Licensed under CC BY-NC-SA 4.0</span>
+    </section>
+    </footer>
+
+
+    
+</article>
+
+    <aside class="related-contents--wrapper">
+    
+    
+        <h2 class="section-title">Related contents</h2>
+        <div class="related-contents">
+            <div class="flex article-list--tile">
+                
+                    
+<article class="has-image">
+    <a href="/p/%E5%86%85%E5%AD%98%E6%B1%A0/">
+        
+        
+            <div class="article-image">
+                <img src="/p/%E5%86%85%E5%AD%98%E6%B1%A0/244.71de31cc6652d9902ea8c651f0059650_hud068d333fa339d76c3f1e66a3f8bf604_8126422_250x150_fill_q75_box_smart1.jpg" 
+                        width="250" 
+                        height="150" 
+                        loading="lazy" 
+                        data-key="内存池" 
+                        data-hash="md5-cd4xzGZS2ZAuqMZR8AWWUA==">
+                
+            </div>
+        
+
+        <div class="article-details">
+            <h2 class="article-title">内存池</h2>
+        </div>
+    </a>
+</article>
+                
+                    
+<article class="has-image">
+    <a href="/p/%E7%AE%80%E6%98%93tcp%E6%9C%8D%E5%8A%A1%E5%99%A8/">
+        
+        
+            <div class="article-image">
+                <img src="/p/%E7%AE%80%E6%98%93tcp%E6%9C%8D%E5%8A%A1%E5%99%A8/029.155943df5a1ed5ef7aeb3d74a37bef67_hu5f7dae7e78ac97b0b045f4b1159a4d54_14023957_250x150_fill_q75_box_smart1.jpg" 
+                        width="250" 
+                        height="150" 
+                        loading="lazy" 
+                        data-key="简易Tcp服务器" 
+                        data-hash="md5-FVlD31oe1e966z10o3vvZw==">
+                
+            </div>
+        
+
+        <div class="article-details">
+            <h2 class="article-title">简易Tcp服务器</h2>
+        </div>
+    </a>
+</article>
+                
+                    
+<article class="has-image">
+    <a href="/p/%E7%BA%BF%E7%A8%8B%E6%B1%A0/">
+        
+        
+            <div class="article-image">
+                <img src="/p/%E7%BA%BF%E7%A8%8B%E6%B1%A0/240.1d66d2f2f5cf2eed0d60df1bd2c599c2_huc6553c3d943592fc8492e4a8a4385797_5666304_250x150_fill_q75_box_smart1.jpg" 
+                        width="250" 
+                        height="150" 
+                        loading="lazy" 
+                        data-key="线程池" 
+                        data-hash="md5-HWbS8vXPLu0NYN8b0sWZwg==">
+                
+            </div>
+        
+
+        <div class="article-details">
+            <h2 class="article-title">线程池</h2>
+        </div>
+    </a>
+</article>
+                
+                    
+<article class="has-image">
+    <a href="/p/%E7%BA%BF%E7%A8%8B%E6%B1%A0%E8%BF%9B%E9%98%B6%E7%89%88/">
+        
+        
+            <div class="article-image">
+                <img src="/p/%E7%BA%BF%E7%A8%8B%E6%B1%A0%E8%BF%9B%E9%98%B6%E7%89%88/241.67ff17709516aab444e7c867cfe2b735_hudd714e7c3305b4c239dc02d266d283b9_7211866_250x150_fill_q75_box_smart1.jpg" 
+                        width="250" 
+                        height="150" 
+                        loading="lazy" 
+                        data-key="线程池进阶版" 
+                        data-hash="md5-Z/8XcJUWqrRE58hnz&#43;K3NQ==">
+                
+            </div>
+        
+
+        <div class="article-details">
+            <h2 class="article-title">线程池进阶版</h2>
+        </div>
+    </a>
+</article>
+                
+                    
+<article class="has-image">
+    <a href="/p/%E8%AF%B7%E6%B1%82%E6%B1%A0/">
+        
+        
+            <div class="article-image">
+                <img src="/p/%E8%AF%B7%E6%B1%82%E6%B1%A0/247.f5d865192346f6b27e0487d96c0700d0_hu00377075f8d3c09f9b9bff67495c3ec1_5277773_250x150_fill_q75_box_smart1.jpg" 
+                        width="250" 
+                        height="150" 
+                        loading="lazy" 
+                        data-key="请求池" 
+                        data-hash="md5-9dhlGSNG9rJ&#43;BIfZbAcA0A==">
+                
+            </div>
+        
+
+        <div class="article-details">
+            <h2 class="article-title">请求池</h2>
+        </div>
+    </a>
+</article>
+                
+            </div>
+        </div>
+    
+</aside>
+
+     
+     
+        
+    <div class="disqus-container">
+    <div id="disqus_thread"></div>
+<script type="application/javascript">
+    var disqus_config = function () {
+    
+    
+    
+    };
+    (function() {
+        if (["localhost", "127.0.0.1"].indexOf(window.location.hostname) != -1) {
+            document.getElementById('disqus_thread').innerHTML = 'Disqus comments not available by default when the website is previewed locally.';
+            return;
+        }
+        var d = document, s = d.createElement('script'); s.async = true;
+        s.src = '//' + "hugo-theme-stack" + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="https://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+</div>
+
+<style>
+    .disqus-container {
+        background-color: var(--card-background);
+        border-radius: var(--card-border-radius);
+        box-shadow: var(--shadow-l1);
+        padding: var(--card-padding);
+    }
+</style>
+
+<script>
+    window.addEventListener('onColorSchemeChange', (e) => {
+        if (DISQUS) {
+            DISQUS.reset({
+                reload: true
+            });
+        }
+    })
+</script>
+
+    
+
+    <footer class="site-footer">
+    <section class="copyright">
+        &copy; 
+        
+            2020 - 
+        
+        2021 Gao&#39;s happy day
+    </section>
+    
+    <section class="powerby">
+        Built with <a href="https://gohugo.io/" target="_blank" rel="noopener">Hugo</a> <br />
+        Theme <b><a href="https://github.com/CaiJimmy/hugo-theme-stack" target="_blank" rel="noopener" data-version="3.2.0">Stack</a></b> designed by <a href="https://jimmycai.com" target="_blank" rel="noopener">Jimmy</a>
+    </section>
+</footer>
+
+
+    
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+    
+    <div class="pswp__bg"></div>
+
+    
+    <div class="pswp__scroll-wrap">
+
+        
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+
+        
+        <div class="pswp__ui pswp__ui--hidden">
+
+            <div class="pswp__top-bar">
+
+                
+
+                <div class="pswp__counter"></div>
+
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+
+                <button class="pswp__button pswp__button--share" title="Share"></button>
+
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+
+                
+                
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                        <div class="pswp__preloader__cut">
+                            <div class="pswp__preloader__donut"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div>
+            </div>
+
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div><script 
+                src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js"integrity="sha256-ePwmChbbvXbsO02lbM3HoHbSHTHFAeChekF1xKJdleo="crossorigin="anonymous"
+                defer="true"
+                >
+            </script><script 
+                src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js"integrity="sha256-UKkzOn/w1mBxRmLLGrSeyB4e1xbrp4xylgAWb3M42pU="crossorigin="anonymous"
+                defer="true"
+                >
+            </script><link 
+                rel="stylesheet" 
+                href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.css"integrity="sha256-c0uckgykQ9v5k&#43;IqViZOZKc47Jn7KQil4/MP3ySA3F8="crossorigin="anonymous"
+            ><link 
+                rel="stylesheet" 
+                href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.css"integrity="sha256-SBLU4vv6CA6lHsZ1XyTdhyjJxCjPif/TRkjnsyGAGnE="crossorigin="anonymous"
+            >
+
+            </main>
+    
+        <aside class="sidebar right-sidebar sticky">
+            <section class="widget archives">
+                <div class="widget-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-hash" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <line x1="5" y1="9" x2="19" y2="9" />
+  <line x1="5" y1="15" x2="19" y2="15" />
+  <line x1="11" y1="4" x2="7" y2="20" />
+  <line x1="17" y1="4" x2="13" y2="20" />
+</svg>
+
+
+
+                </div>
+                <h2 class="widget-title section-title">Table of contents</h2>
+                
+                <div class="widget--toc">
+                    <nav id="TableOfContents">
+  <ol>
+    <li><a href="#dns分层">DNS分层</a></li>
+    <li><a href="#域名解析">域名解析</a></li>
+    <li><a href="#域名服务器">域名服务器</a></li>
+    <li><a href="#域名解析方式">域名解析方式</a></li>
+  </ol>
+</nav>
+                </div>
+            </section>
+        </aside>
+    
+
+        </div>
+        <script 
+                src="https://cdn.jsdelivr.net/npm/node-vibrant@3.1.5/dist/vibrant.min.js"integrity="sha256-5NovOZc4iwiAWTYIFiIM7DxKUXKWvpVEuMEPLzcm5/g="crossorigin="anonymous"
+                defer="false"
+                >
+            </script><script type="text/javascript" src="/ts/main.js" defer></script>
+<script>
+    (function () {
+        const customFont = document.createElement('link');
+        customFont.href = "https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap";
+
+        customFont.type = "text/css";
+        customFont.rel = "stylesheet";
+
+        document.head.appendChild(customFont);
+    }());
+</script>
+
+    </body>
+</html>
