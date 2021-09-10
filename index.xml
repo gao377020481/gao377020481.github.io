@@ -623,6 +623,18 @@ deb http://mirrors.aliyun.com/ubuntu/ xenial-security multiverse
 &lt;p&gt;&lt;!-- raw HTML omitted --&gt; 3. 时间轮： &lt;!-- raw HTML omitted --&gt;&lt;/p&gt;
 &lt;!-- raw HTML omitted --&gt;
 &lt;p&gt;时间轮可以分为单层级与多层级。简单的单层级时间轮使用初始化好的链表数组来存储对应的事件节点链表，时间数据结构中一般包含引用计数，该数据结构只有在引用计数置零后销毁，一般也代表着事件对应的资源可以释放。单层时间轮的大小至少需要大于最长定时时间/单位时间，举例：每5秒发送一个心跳包，连接收到心跳包时需要开启一个10秒的定时器并将事件引用计数加一（事件数据结构插入链表数组中10秒后的链表中），也就是最长定时10秒，10秒后检查该连接对应的事件并将引用计数减一，如果减一后为0就说明连接超时，释放所有资源，关闭事件。在该例子中，初始化的链表数组大小至少为11，因为假如在第0秒来一个心跳包，我们就需要在第10号位置将该连接对应的事件节点加入事件链表中，如果小于11，比如为8，那从0开始往后10个的位置就是在2号位置，那2秒后就得触发了，这与我们设置的10秒定时时间不一致。&lt;/p&gt;
+&lt;p&gt;&lt;figure 
+	&gt;
+	&lt;a href=&#34;https://gao377020481.github.io/post/timer/1.jpg&#34; &gt;
+		&lt;img src=&#34;https://gao377020481.github.io/post/timer/1.jpg&#34;
+			
+			
+			
+			loading=&#34;lazy&#34;
+			&gt;
+	&lt;/a&gt;
+	
+&lt;/figure&gt;&lt;/p&gt;
 &lt;!-- raw HTML omitted --&gt;
 &lt;h2 id=&#34;font-color--red--size--6代码实现font&#34;&gt;&lt;!-- raw HTML omitted --&gt;代码实现：&lt;!-- raw HTML omitted --&gt;&lt;/h2&gt;
 &lt;p&gt;&lt;!-- raw HTML omitted --&gt; 1. 红黑树：&lt;!-- raw HTML omitted --&gt;&lt;/p&gt;
