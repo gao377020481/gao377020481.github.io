@@ -15,7 +15,7 @@
       <guid>https://gao377020481.github.io/p/mysql/</guid>
       <description>MYSQL mysql安装与配置 在虚拟机上安装mysql,使用apt-get install就可以 这里我只检索到了mysql-server-5.7就安装了5.7
 在本地win10上安装mysqlbench用于连接虚拟机的mysql服务器 这里使用网络连接，可能是因为mysql版本的原因，本来应该在/etc/mysql中的my.cnf文件中显式的配置有基本信息，我只需要修改部分，但5.7在/etc/mysql/mysql.conf.d/mysqld.cnf,在它的基础上修改对应的bind-address为0.0.0.0保证回环地址可访问：
-## The MySQL database server configuration file.## You can copy this to one of:# - &amp;quot;/etc/mysql/my.cnf&amp;quot; to set global options,# - &amp;quot;~/.my.cnf&amp;quot; to set user-specific options.# # One can use all long options that the program supports.# Run program with --help to get a list of available options and with# --print-defaults to see which it would actually understand and use.</description>
+# # The MySQL database server configuration file. # # You can copy this to one of: # - &amp;#34;/etc/mysql/my.cnf&amp;#34; to set global options, # - &amp;#34;~/.my.cnf&amp;#34; to set user-specific options. # # One can use all long options that the program supports. # Run program with --help to get a list of available options and with # --print-defaults to see which it would actually understand and use.</description>
     </item>
     
   </channel>

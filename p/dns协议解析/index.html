@@ -151,6 +151,63 @@
 <h2 id="域名解析方式">域名解析方式</h2>
 <p>迭代查询：本机请求本地域名服务器，本地域名服务器开始迭代的查询各个层级服务器，先查询根获得顶级的ip然后根据获得的ip查询顶级在获得区域的ip依次迭代查到请求的映射</p>
 <p>递归查询：递归查询时只发出一次请求然后等待接收到最终结果，在上面的步骤中本机使用的就是递归查询</p>
+<h2 id="协议报文格式">协议报文格式</h2>
+<p><figure 
+	>
+	<a href="/post/dns/dns_dp.png" >
+		<img src="/post/dns/dns_dp.png"
+			
+			
+			
+			loading="lazy"
+			alt="dns_dp">
+	</a>
+	
+	<figcaption>dns_dp</figcaption>
+	
+</figure>
+<figure 
+	>
+	<a href="/post/dns/dns2.png" >
+		<img src="/post/dns/dns2.png"
+			
+			
+			
+			loading="lazy"
+			alt="dns_dp">
+	</a>
+	
+	<figcaption>dns_dp</figcaption>
+	
+</figure>
+<figure 
+	>
+	<a href="/post/dns/dns3.png" >
+		<img src="/post/dns/dns3.png"
+			
+			
+			
+			loading="lazy"
+			alt="dns_dp">
+	</a>
+	
+	<figcaption>dns_dp</figcaption>
+	
+</figure>
+<figure 
+	>
+	<a href="/post/dns/dns4.png" >
+		<img src="/post/dns/dns4.png"
+			
+			
+			
+			loading="lazy"
+			alt="dns_dp">
+	</a>
+	
+	<figcaption>dns_dp</figcaption>
+	
+</figure></p>
 <p>具体查看文档</p>
 <h1 id="dns-client-udp编程">DNS client UDP编程</h1>
 <p>首先需要自己定义数据结构用于存储dns报文</p>
@@ -633,6 +690,7 @@ questions为1代表一个问题 flags的0x0100查表后代表：期望递归
     <li><a href="#域名解析">域名解析</a></li>
     <li><a href="#域名服务器">域名服务器</a></li>
     <li><a href="#域名解析方式">域名解析方式</a></li>
+    <li><a href="#协议报文格式">协议报文格式</a></li>
   </ol>
 </nav>
                 </div>

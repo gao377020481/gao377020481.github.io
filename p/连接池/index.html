@@ -133,9 +133,10 @@
 </header>
 
     <section class="article-content">
-    <h1 id="mysql连接池">mysql连接池</h1>
-<h2 id="头文件">头文件：</h2>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="cp">#ifndef DBPOOL_H_
+    <h1 id="连接池实现">连接池实现</h1>
+<h2 id="mysql连接池">mysql连接池</h2>
+<h3 id="头文件">头文件：</h3>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-c++" data-lang="c++"><span class="cp">#ifndef DBPOOL_H_
 </span><span class="cp">#define DBPOOL_H_
 </span><span class="cp"></span>
 <span class="cp">#include</span> <span class="cpf">&lt;iostream&gt;</span><span class="cp">
@@ -149,18 +150,18 @@
 </span><span class="cp"></span>
 <span class="cp">#define MAX_ESCAPE_STRING_LEN	10240
 </span><span class="cp"></span>
-<span class="n">using</span> <span class="n">namespace</span> <span class="n">std</span><span class="p">;</span>
+<span class="k">using</span> <span class="k">namespace</span> <span class="n">std</span><span class="p">;</span>
 
 <span class="c1">// 返回结果 select的时候用
-</span><span class="c1"></span><span class="n">class</span> <span class="n">CResultSet</span> <span class="p">{</span>
-<span class="nl">public</span><span class="p">:</span>
+</span><span class="c1"></span><span class="k">class</span> <span class="nc">CResultSet</span> <span class="p">{</span>
+<span class="k">public</span><span class="o">:</span>
 	<span class="n">CResultSet</span><span class="p">(</span><span class="n">MYSQL_RES</span><span class="o">*</span> <span class="n">res</span><span class="p">);</span>
-	<span class="n">virtual</span> <span class="o">~</span><span class="n">CResultSet</span><span class="p">();</span>
+	<span class="k">virtual</span> <span class="o">~</span><span class="n">CResultSet</span><span class="p">();</span>
 
 	<span class="kt">bool</span> <span class="nf">Next</span><span class="p">();</span>
 	<span class="kt">int</span> <span class="nf">GetInt</span><span class="p">(</span><span class="k">const</span> <span class="kt">char</span><span class="o">*</span> <span class="n">key</span><span class="p">);</span>
 	<span class="kt">char</span><span class="o">*</span> <span class="nf">GetString</span><span class="p">(</span><span class="k">const</span> <span class="kt">char</span><span class="o">*</span> <span class="n">key</span><span class="p">);</span>
-<span class="nl">private</span><span class="p">:</span>
+<span class="k">private</span><span class="o">:</span>
 	<span class="kt">int</span> <span class="n">_GetIndex</span><span class="p">(</span><span class="k">const</span> <span class="kt">char</span><span class="o">*</span> <span class="n">key</span><span class="p">);</span>
 
 	<span class="n">MYSQL_RES</span><span class="o">*</span> 			<span class="n">m_res</span><span class="p">;</span>
@@ -169,10 +170,10 @@
 <span class="p">};</span>
 
 <span class="c1">// 插入数据用
-</span><span class="c1"></span><span class="n">class</span> <span class="n">CPrepareStatement</span> <span class="p">{</span>
-<span class="nl">public</span><span class="p">:</span>
+</span><span class="c1"></span><span class="k">class</span> <span class="nc">CPrepareStatement</span> <span class="p">{</span>
+<span class="k">public</span><span class="o">:</span>
 	<span class="n">CPrepareStatement</span><span class="p">();</span>
-	<span class="n">virtual</span> <span class="o">~</span><span class="n">CPrepareStatement</span><span class="p">();</span>
+	<span class="k">virtual</span> <span class="o">~</span><span class="n">CPrepareStatement</span><span class="p">();</span>
 
 	<span class="kt">bool</span> <span class="nf">Init</span><span class="p">(</span><span class="n">MYSQL</span><span class="o">*</span> <span class="n">mysql</span><span class="p">,</span> <span class="n">string</span><span class="o">&amp;</span> <span class="n">sql</span><span class="p">);</span>
 
@@ -183,18 +184,18 @@
 
 	<span class="kt">bool</span> <span class="nf">ExecuteUpdate</span><span class="p">();</span>
 	<span class="kt">uint32_t</span> <span class="nf">GetInsertId</span><span class="p">();</span>
-<span class="nl">private</span><span class="p">:</span>
+<span class="k">private</span><span class="o">:</span>
 	<span class="n">MYSQL_STMT</span><span class="o">*</span>	<span class="n">m_stmt</span><span class="p">;</span>
 	<span class="n">MYSQL_BIND</span><span class="o">*</span>	<span class="n">m_param_bind</span><span class="p">;</span>
 	<span class="kt">uint32_t</span>	<span class="n">m_param_cnt</span><span class="p">;</span>
 <span class="p">};</span>
 
-<span class="n">class</span> <span class="n">CDBPool</span><span class="p">;</span>
+<span class="k">class</span> <span class="nc">CDBPool</span><span class="p">;</span>
 
-<span class="n">class</span> <span class="n">CDBConn</span> <span class="p">{</span>
-<span class="nl">public</span><span class="p">:</span>
+<span class="k">class</span> <span class="nc">CDBConn</span> <span class="p">{</span>
+<span class="k">public</span><span class="o">:</span>
 	<span class="n">CDBConn</span><span class="p">(</span><span class="n">CDBPool</span><span class="o">*</span> <span class="n">pDBPool</span><span class="p">);</span>
-	<span class="n">virtual</span> <span class="o">~</span><span class="n">CDBConn</span><span class="p">();</span>
+	<span class="k">virtual</span> <span class="o">~</span><span class="n">CDBConn</span><span class="p">();</span>
 	<span class="kt">int</span> <span class="nf">Init</span><span class="p">();</span>
 
 	<span class="c1">// 创建表
@@ -224,19 +225,19 @@
 	<span class="c1">// 获取连接池名
 </span><span class="c1"></span>	<span class="k">const</span> <span class="kt">char</span><span class="o">*</span> <span class="nf">GetPoolName</span><span class="p">();</span>
 	<span class="n">MYSQL</span><span class="o">*</span> <span class="nf">GetMysql</span><span class="p">()</span> <span class="p">{</span> <span class="k">return</span> <span class="n">m_mysql</span><span class="p">;</span> <span class="p">}</span>
-<span class="nl">private</span><span class="p">:</span>
+<span class="k">private</span><span class="o">:</span>
 	<span class="n">CDBPool</span><span class="o">*</span> 	<span class="n">m_pDBPool</span><span class="p">;</span>	<span class="c1">// to get MySQL server information
 </span><span class="c1"></span>	<span class="n">MYSQL</span><span class="o">*</span> 		<span class="n">m_mysql</span><span class="p">;</span>	<span class="c1">// 对应一个连接
 </span><span class="c1"></span>	<span class="kt">char</span>		<span class="n">m_escape_string</span><span class="p">[</span><span class="n">MAX_ESCAPE_STRING_LEN</span> <span class="o">+</span> <span class="mi">1</span><span class="p">];</span>
 <span class="p">};</span>
 
-<span class="n">class</span> <span class="n">CDBPool</span> <span class="p">{</span>	<span class="c1">// 只是负责管理连接CDBConn，真正干活的是CDBConn
-</span><span class="c1"></span><span class="nl">public</span><span class="p">:</span>
+<span class="k">class</span> <span class="nc">CDBPool</span> <span class="p">{</span>	<span class="c1">// 只是负责管理连接CDBConn，真正干活的是CDBConn
+</span><span class="c1"></span><span class="k">public</span><span class="o">:</span>
 	<span class="n">CDBPool</span><span class="p">()</span> <span class="p">{}</span>
 	<span class="n">CDBPool</span><span class="p">(</span><span class="k">const</span> <span class="kt">char</span><span class="o">*</span> <span class="n">pool_name</span><span class="p">,</span> <span class="k">const</span> <span class="kt">char</span><span class="o">*</span> <span class="n">db_server_ip</span><span class="p">,</span> <span class="kt">uint16_t</span> <span class="n">db_server_port</span><span class="p">,</span>
 			<span class="k">const</span> <span class="kt">char</span><span class="o">*</span> <span class="n">username</span><span class="p">,</span> <span class="k">const</span> <span class="kt">char</span><span class="o">*</span> <span class="n">password</span><span class="p">,</span> <span class="k">const</span> <span class="kt">char</span><span class="o">*</span> <span class="n">db_name</span><span class="p">,</span> 
 			<span class="kt">int</span> <span class="n">max_conn_cnt</span><span class="p">);</span>
-	<span class="n">virtual</span> 	<span class="o">~</span><span class="n">CDBPool</span><span class="p">();</span>
+	<span class="k">virtual</span> 	<span class="o">~</span><span class="n">CDBPool</span><span class="p">();</span>
 
 	<span class="kt">int</span> 		<span class="nf">Init</span><span class="p">();</span>		<span class="c1">// 连接数据库，创建连接
 </span><span class="c1"></span>	<span class="n">CDBConn</span><span class="o">*</span> 	<span class="nf">GetDBConn</span><span class="p">(</span><span class="k">const</span> <span class="kt">int</span> <span class="n">timeout_ms</span> <span class="o">=</span> <span class="o">-</span><span class="mi">1</span><span class="p">);</span>	<span class="c1">// 获取连接资源
@@ -248,7 +249,7 @@
 	<span class="k">const</span> <span class="kt">char</span><span class="o">*</span> <span class="nf">GetUsername</span><span class="p">()</span> <span class="p">{</span> <span class="k">return</span> <span class="n">m_username</span><span class="p">.</span><span class="n">c_str</span><span class="p">();</span> <span class="p">}</span>
 	<span class="k">const</span> <span class="kt">char</span><span class="o">*</span> <span class="nf">GetPasswrod</span><span class="p">()</span> <span class="p">{</span> <span class="k">return</span> <span class="n">m_password</span><span class="p">.</span><span class="n">c_str</span><span class="p">();</span> <span class="p">}</span>
 	<span class="k">const</span> <span class="kt">char</span><span class="o">*</span> <span class="nf">GetDBName</span><span class="p">()</span> <span class="p">{</span> <span class="k">return</span> <span class="n">m_db_name</span><span class="p">.</span><span class="n">c_str</span><span class="p">();</span> <span class="p">}</span>
-<span class="nl">private</span><span class="p">:</span>
+<span class="k">private</span><span class="o">:</span>
 	<span class="n">string</span> 		<span class="n">m_pool_name</span><span class="p">;</span>	<span class="c1">// 连接池名称
 </span><span class="c1"></span>	<span class="n">string</span> 		<span class="n">m_db_server_ip</span><span class="p">;</span>	<span class="c1">// 数据库ip
 </span><span class="c1"></span>	<span class="kt">uint16_t</span>	<span class="n">m_db_server_port</span><span class="p">;</span> <span class="c1">// 数据库端口
@@ -269,8 +270,9 @@
 <span class="cp">#endif </span><span class="cm">/* DBPOOL_H_ */</span><span class="cp">
 </span><span class="cp"></span>
 <span class="p">};</span>
-</code></pre></div><h2 id="实现">实现：</h2>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="cp">#include</span> <span class="cpf">&#34;DBPool.h&#34;</span><span class="cp">
+</code></pre></div><h3 id="实现">实现：</h3>
+<hr>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-c++" data-lang="c++"><span class="cp">#include</span> <span class="cpf">&#34;DBPool.h&#34;</span><span class="cp">
 </span><span class="cp">#include</span> <span class="cpf">&lt;string.h&gt;</span><span class="cp">
 </span><span class="cp"></span>
 <span class="cp">#define log_error printf
@@ -338,7 +340,7 @@
 	<span class="p">}</span>
 	<span class="k">else</span>
 	<span class="p">{</span>
-		<span class="k">return</span> <span class="n">atoi</span><span class="p">(</span><span class="n">m_row</span><span class="p">[</span><span class="n">idx</span><span class="p">]);</span> <span class="c1">// 有索引
+		<span class="k">return</span> <span class="nf">atoi</span><span class="p">(</span><span class="n">m_row</span><span class="p">[</span><span class="n">idx</span><span class="p">]);</span> <span class="c1">// 有索引
 </span><span class="c1"></span>	<span class="p">}</span>
 <span class="p">}</span>
 
@@ -373,7 +375,7 @@
 
 	<span class="k">if</span> <span class="p">(</span><span class="n">m_param_bind</span><span class="p">)</span>
 	<span class="p">{</span>
-		<span class="n">delete</span><span class="p">[]</span> <span class="n">m_param_bind</span><span class="p">;</span>
+		<span class="k">delete</span><span class="p">[]</span> <span class="n">m_param_bind</span><span class="p">;</span>
 		<span class="n">m_param_bind</span> <span class="o">=</span> <span class="nb">NULL</span><span class="p">;</span>
 	<span class="p">}</span>
 <span class="p">}</span>
@@ -399,7 +401,7 @@
 	<span class="n">m_param_cnt</span> <span class="o">=</span> <span class="n">mysql_stmt_param_count</span><span class="p">(</span><span class="n">m_stmt</span><span class="p">);</span>
 	<span class="k">if</span> <span class="p">(</span><span class="n">m_param_cnt</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span>
 	<span class="p">{</span>
-		<span class="n">m_param_bind</span> <span class="o">=</span> <span class="n">new</span> <span class="n">MYSQL_BIND</span><span class="p">[</span><span class="n">m_param_cnt</span><span class="p">];</span>
+		<span class="n">m_param_bind</span> <span class="o">=</span> <span class="k">new</span> <span class="n">MYSQL_BIND</span><span class="p">[</span><span class="n">m_param_cnt</span><span class="p">];</span>
 		<span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">m_param_bind</span><span class="p">)</span>
 		<span class="p">{</span>
 			<span class="n">log_error</span><span class="p">(</span><span class="s">&#34;new failed</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">);</span>
@@ -493,7 +495,7 @@
 
 <span class="kt">uint32_t</span> <span class="n">CPrepareStatement</span><span class="o">::</span><span class="n">GetInsertId</span><span class="p">()</span>
 <span class="p">{</span>
-	<span class="k">return</span> <span class="n">mysql_stmt_insert_id</span><span class="p">(</span><span class="n">m_stmt</span><span class="p">);</span>
+	<span class="k">return</span> <span class="nf">mysql_stmt_insert_id</span><span class="p">(</span><span class="n">m_stmt</span><span class="p">);</span>
 <span class="p">}</span>
 
 <span class="c1">/////////////////////
@@ -582,7 +584,7 @@
 		<span class="k">return</span> <span class="nb">NULL</span><span class="p">;</span>
 	<span class="p">}</span>
 
-	<span class="n">CResultSet</span> <span class="o">*</span><span class="n">result_set</span> <span class="o">=</span> <span class="n">new</span> <span class="n">CResultSet</span><span class="p">(</span><span class="n">res</span><span class="p">);</span>	<span class="c1">// 存储到CResultSet
+	<span class="n">CResultSet</span> <span class="o">*</span><span class="n">result_set</span> <span class="o">=</span> <span class="k">new</span> <span class="n">CResultSet</span><span class="p">(</span><span class="n">res</span><span class="p">);</span>	<span class="c1">// 存储到CResultSet
 </span><span class="c1"></span>	<span class="k">return</span> <span class="n">result_set</span><span class="p">;</span>
 <span class="p">}</span>
 
@@ -693,7 +695,7 @@
 	<span class="k">for</span> <span class="p">(</span><span class="n">list</span><span class="o">&lt;</span><span class="n">CDBConn</span> <span class="o">*&gt;::</span><span class="n">iterator</span> <span class="n">it</span> <span class="o">=</span> <span class="n">m_free_list</span><span class="p">.</span><span class="n">begin</span><span class="p">();</span> <span class="n">it</span> <span class="o">!=</span> <span class="n">m_free_list</span><span class="p">.</span><span class="n">end</span><span class="p">();</span> <span class="n">it</span><span class="o">++</span><span class="p">)</span>
 	<span class="p">{</span>
 		<span class="n">CDBConn</span> <span class="o">*</span><span class="n">pConn</span> <span class="o">=</span> <span class="o">*</span><span class="n">it</span><span class="p">;</span>
-		<span class="n">delete</span> <span class="n">pConn</span><span class="p">;</span>
+		<span class="k">delete</span> <span class="n">pConn</span><span class="p">;</span>
 	<span class="p">}</span>
 
 	<span class="n">m_free_list</span><span class="p">.</span><span class="n">clear</span><span class="p">();</span>
@@ -704,11 +706,11 @@
 	<span class="c1">// 创建固定最小的连接数量
 </span><span class="c1"></span>	<span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">m_db_cur_conn_cnt</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span>
 	<span class="p">{</span>
-		<span class="n">CDBConn</span> <span class="o">*</span><span class="n">pDBConn</span> <span class="o">=</span> <span class="n">new</span> <span class="n">CDBConn</span><span class="p">(</span><span class="n">this</span><span class="p">);</span>
+		<span class="n">CDBConn</span> <span class="o">*</span><span class="n">pDBConn</span> <span class="o">=</span> <span class="k">new</span> <span class="n">CDBConn</span><span class="p">(</span><span class="k">this</span><span class="p">);</span>
 		<span class="kt">int</span> <span class="n">ret</span> <span class="o">=</span> <span class="n">pDBConn</span><span class="o">-&gt;</span><span class="n">Init</span><span class="p">();</span>
 		<span class="k">if</span> <span class="p">(</span><span class="n">ret</span><span class="p">)</span>
 		<span class="p">{</span>
-			<span class="n">delete</span> <span class="n">pDBConn</span><span class="p">;</span>
+			<span class="k">delete</span> <span class="n">pDBConn</span><span class="p">;</span>
 			<span class="k">return</span> <span class="n">ret</span><span class="p">;</span>
 		<span class="p">}</span>
 
@@ -744,7 +746,7 @@
 </span><span class="c1"></span>			<span class="k">if</span><span class="p">(</span><span class="n">timeout_ms</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span>		<span class="c1">// 死等，直到有连接可以用 或者 连接池要退出
 </span><span class="c1"></span>			<span class="p">{</span>
 				<span class="n">log_info</span><span class="p">(</span><span class="s">&#34;wait ms:%d</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span> <span class="n">timeout_ms</span><span class="p">);</span>
-				<span class="n">m_cond_var</span><span class="p">.</span><span class="n">wait</span><span class="p">(</span><span class="n">lock</span><span class="p">,</span> <span class="p">[</span><span class="n">this</span><span class="p">]</span> 
+				<span class="n">m_cond_var</span><span class="p">.</span><span class="n">wait</span><span class="p">(</span><span class="n">lock</span><span class="p">,</span> <span class="p">[</span><span class="k">this</span><span class="p">]</span> 
 				<span class="p">{</span>
 					<span class="c1">// log_info(&#34;wait:%d, size:%d\n&#34;, wait_cout++, m_free_list.size());
 </span><span class="c1"></span>					<span class="c1">// 当前连接数量小于最大连接数量 或者请求释放连接池时退出
@@ -755,7 +757,7 @@
 </span><span class="c1"></span>				<span class="c1">// 1.m_free_list不为空
 </span><span class="c1"></span>				<span class="c1">// 2.超时退出
 </span><span class="c1"></span>				<span class="c1">// 3. m_abort_request被置为true，要释放整个连接池
-</span><span class="c1"></span>				<span class="n">m_cond_var</span><span class="p">.</span><span class="n">wait_for</span><span class="p">(</span><span class="n">lock</span><span class="p">,</span> <span class="n">std</span><span class="o">::</span><span class="n">chrono</span><span class="o">::</span><span class="n">milliseconds</span><span class="p">(</span><span class="n">timeout_ms</span><span class="p">),</span> <span class="p">[</span><span class="n">this</span><span class="p">]</span> <span class="p">{</span>
+</span><span class="c1"></span>				<span class="n">m_cond_var</span><span class="p">.</span><span class="n">wait_for</span><span class="p">(</span><span class="n">lock</span><span class="p">,</span> <span class="n">std</span><span class="o">::</span><span class="n">chrono</span><span class="o">::</span><span class="n">milliseconds</span><span class="p">(</span><span class="n">timeout_ms</span><span class="p">),</span> <span class="p">[</span><span class="k">this</span><span class="p">]</span> <span class="p">{</span>
 					<span class="c1">// log_info(&#34;wait_for:%d, size:%d\n&#34;, wait_cout++, m_free_list.size());
 </span><span class="c1"></span>					<span class="k">return</span> <span class="p">(</span><span class="o">!</span><span class="n">m_free_list</span><span class="p">.</span><span class="n">empty</span><span class="p">())</span> <span class="o">|</span> <span class="n">m_abort_request</span><span class="p">;</span>
 				<span class="p">});</span>
@@ -774,12 +776,12 @@
 		<span class="p">}</span>
 		<span class="k">else</span> <span class="c1">// 还没有到最大连接则创建连接
 </span><span class="c1"></span>		<span class="p">{</span>
-			<span class="n">CDBConn</span> <span class="o">*</span><span class="n">pDBConn</span> <span class="o">=</span> <span class="n">new</span> <span class="n">CDBConn</span><span class="p">(</span><span class="n">this</span><span class="p">);</span>	<span class="c1">//新建连接
+			<span class="n">CDBConn</span> <span class="o">*</span><span class="n">pDBConn</span> <span class="o">=</span> <span class="k">new</span> <span class="n">CDBConn</span><span class="p">(</span><span class="k">this</span><span class="p">);</span>	<span class="c1">//新建连接
 </span><span class="c1"></span>			<span class="kt">int</span> <span class="n">ret</span> <span class="o">=</span> <span class="n">pDBConn</span><span class="o">-&gt;</span><span class="n">Init</span><span class="p">();</span>
 			<span class="k">if</span> <span class="p">(</span><span class="n">ret</span><span class="p">)</span>
 			<span class="p">{</span>
 				<span class="n">log_error</span><span class="p">(</span><span class="s">&#34;Init DBConnecton failed</span><span class="se">\n\n</span><span class="s">&#34;</span><span class="p">);</span>
-				<span class="n">delete</span> <span class="n">pDBConn</span><span class="p">;</span>
+				<span class="k">delete</span> <span class="n">pDBConn</span><span class="p">;</span>
 				<span class="k">return</span> <span class="nb">NULL</span><span class="p">;</span>
 			<span class="p">}</span>
 			<span class="k">else</span>
@@ -825,9 +827,11 @@
 <span class="c1">// 遍历检测是否超时未归还
 </span><span class="c1">// pConn-&gt;isTimeout(); // 当前时间 - 被请求的时间
 </span><span class="c1">// 强制回收  从m_used_list 放回 m_free_list
-</span></code></pre></div><h1 id="redis连接池">redis连接池</h1>
-<h2 id="头文件-1">头文件</h2>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="cm">/*
+</span></code></pre></div><h2 id="redis连接池">redis连接池</h2>
+<p>=============</p>
+<h3 id="头文件-1">头文件</h3>
+<hr>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-c++" data-lang="c++"><span class="cm">/*
 </span><span class="cm"> * @Author: your name
 </span><span class="cm"> * @Date: 2019-12-07 10:54:57
 </span><span class="cm"> * @LastEditTime : 2020-01-10 16:35:13
@@ -848,19 +852,19 @@
 <span class="cp">#include</span> <span class="cpf">&#34;hiredis.h&#34;</span><span class="cp">
 </span><span class="cp"></span>
 
-<span class="n">using</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="p">;</span>
-<span class="n">using</span> <span class="n">std</span><span class="o">::</span><span class="n">list</span><span class="p">;</span>
-<span class="n">using</span> <span class="n">std</span><span class="o">::</span><span class="n">map</span><span class="p">;</span> 
-<span class="n">using</span> <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="p">;</span> 
+<span class="k">using</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span><span class="p">;</span>
+<span class="k">using</span> <span class="n">std</span><span class="o">::</span><span class="n">list</span><span class="p">;</span>
+<span class="k">using</span> <span class="n">std</span><span class="o">::</span><span class="n">map</span><span class="p">;</span> 
+<span class="k">using</span> <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="p">;</span> 
 
-<span class="n">class</span> <span class="n">CachePool</span><span class="p">;</span>
+<span class="k">class</span> <span class="nc">CachePool</span><span class="p">;</span>
 
-<span class="n">class</span> <span class="n">CacheConn</span> <span class="p">{</span>
-<span class="nl">public</span><span class="p">:</span>
+<span class="k">class</span> <span class="nc">CacheConn</span> <span class="p">{</span>
+<span class="k">public</span><span class="o">:</span>
 	<span class="n">CacheConn</span><span class="p">(</span><span class="k">const</span> <span class="kt">char</span><span class="o">*</span> <span class="n">server_ip</span><span class="p">,</span> <span class="kt">int</span> <span class="n">server_port</span><span class="p">,</span> <span class="kt">int</span> <span class="n">db_index</span><span class="p">,</span> <span class="k">const</span> <span class="kt">char</span><span class="o">*</span> <span class="n">password</span><span class="p">,</span> 
 		<span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">pool_name</span> <span class="o">=</span><span class="s">&#34;&#34;</span><span class="p">);</span>
 	<span class="n">CacheConn</span><span class="p">(</span><span class="n">CachePool</span><span class="o">*</span> <span class="n">pCachePool</span><span class="p">);</span>	
-	<span class="n">virtual</span> <span class="o">~</span><span class="n">CacheConn</span><span class="p">();</span>
+	<span class="k">virtual</span> <span class="o">~</span><span class="n">CacheConn</span><span class="p">();</span>
 	
 	<span class="kt">int</span> <span class="nf">Init</span><span class="p">();</span>
 	<span class="kt">void</span> <span class="nf">DeInit</span><span class="p">();</span>
@@ -906,7 +910,7 @@
 	
     <span class="kt">bool</span> <span class="nf">flushdb</span><span class="p">();</span>
 
-<span class="nl">private</span><span class="p">:</span>
+<span class="k">private</span><span class="o">:</span>
 	<span class="n">CachePool</span><span class="o">*</span> 		<span class="n">m_pCachePool</span><span class="p">;</span>
 	<span class="n">redisContext</span><span class="o">*</span> 	<span class="n">m_pContext</span><span class="p">;</span>
 	<span class="kt">uint64_t</span>		<span class="n">m_last_connect_time</span><span class="p">;</span>
@@ -918,12 +922,12 @@
 <span class="p">};</span>
 
 
-<span class="n">class</span> <span class="n">CachePool</span> <span class="p">{</span>
-<span class="nl">public</span><span class="p">:</span>
+<span class="k">class</span> <span class="nc">CachePool</span> <span class="p">{</span>
+<span class="k">public</span><span class="o">:</span>
 	<span class="c1">// db_index和mysql不同的地方 
 </span><span class="c1"></span>	<span class="n">CachePool</span><span class="p">(</span><span class="k">const</span> <span class="kt">char</span><span class="o">*</span> <span class="n">pool_name</span><span class="p">,</span> <span class="k">const</span> <span class="kt">char</span><span class="o">*</span> <span class="n">server_ip</span><span class="p">,</span> <span class="kt">int</span> <span class="n">server_port</span><span class="p">,</span> <span class="kt">int</span> <span class="n">db_index</span><span class="p">,</span> 
 		<span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">password</span><span class="p">,</span> <span class="kt">int</span> <span class="n">max_conn_cnt</span><span class="p">);</span>
-	<span class="n">virtual</span> <span class="o">~</span><span class="n">CachePool</span><span class="p">();</span>
+	<span class="k">virtual</span> <span class="o">~</span><span class="n">CachePool</span><span class="p">();</span>
 
 	<span class="kt">int</span> <span class="nf">Init</span><span class="p">();</span>
     <span class="c1">// 获取空闲的连接资源
@@ -936,7 +940,7 @@
 	<span class="k">const</span> <span class="kt">char</span><span class="o">*</span> <span class="nf">GetPassword</span><span class="p">()</span> <span class="p">{</span> <span class="k">return</span> <span class="n">m_password</span><span class="p">.</span><span class="n">c_str</span><span class="p">();</span> <span class="p">}</span>
 	<span class="kt">int</span> <span class="nf">GetServerPort</span><span class="p">()</span> <span class="p">{</span> <span class="k">return</span> <span class="n">m_server_port</span><span class="p">;</span> <span class="p">}</span>
 	<span class="kt">int</span> <span class="nf">GetDBIndex</span><span class="p">()</span> <span class="p">{</span> <span class="k">return</span> <span class="n">m_db_index</span><span class="p">;</span> <span class="p">}</span>
-<span class="nl">private</span><span class="p">:</span>
+<span class="k">private</span><span class="o">:</span>
 	<span class="n">string</span> 		<span class="n">m_pool_name</span><span class="p">;</span>
 	<span class="n">string</span>		<span class="n">m_server_ip</span><span class="p">;</span>
 	<span class="n">string</span> 		<span class="n">m_password</span><span class="p">;</span>
@@ -953,8 +957,9 @@
 
 <span class="cp">#endif </span><span class="cm">/* CACHEPOOL_H_ */</span><span class="cp">
 </span><span class="cp"></span>
-</code></pre></div><h2 id="实现-1">实现</h2>
-<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="cp">#include</span> <span class="cpf">&#34;CachePool.h&#34;</span><span class="cp">
+</code></pre></div><h3 id="实现-1">实现</h3>
+<hr>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-c++" data-lang="c++"><span class="cp">#include</span> <span class="cpf">&#34;CachePool.h&#34;</span><span class="cp">
 </span><span class="cp"></span>
 <span class="cp">#include</span> <span class="cpf">&lt;stdlib.h&gt;</span><span class="cp">
 </span><span class="cp">#include</span> <span class="cpf">&lt;string.h&gt;</span><span class="cp">
@@ -1029,7 +1034,7 @@
 </span><span class="c1"></span>	<span class="n">m_last_connect_time</span> <span class="o">=</span> <span class="n">cur_time</span><span class="p">;</span>
 
 	<span class="c1">// 1000ms超时
-</span><span class="c1"></span>	<span class="k">struct</span> <span class="n">timeval</span> <span class="n">timeout</span> <span class="o">=</span> <span class="p">{</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1000000</span><span class="p">};</span>
+</span><span class="c1"></span>	<span class="k">struct</span> <span class="nc">timeval</span> <span class="n">timeout</span> <span class="o">=</span> <span class="p">{</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1000000</span><span class="p">};</span>
 	<span class="c1">// 建立连接后使用 redisContext 来保存连接状态。
 </span><span class="c1"></span>	<span class="c1">// redisContext 在每次操作后会修改其中的 err 和  errstr 字段来表示发生的错误码（大于0）和对应的描述。
 </span><span class="c1"></span>	<span class="n">m_pContext</span> <span class="o">=</span> <span class="n">redisConnectWithTimeout</span><span class="p">(</span><span class="n">m_server_ip</span><span class="p">.</span><span class="n">c_str</span><span class="p">(),</span> <span class="n">m_server_port</span><span class="p">,</span> <span class="n">timeout</span><span class="p">);</span>
@@ -1427,7 +1432,7 @@
 	<span class="p">}</span>
 
 	<span class="kt">int</span> <span class="n">argc</span> <span class="o">=</span> <span class="n">hash</span><span class="p">.</span><span class="n">size</span><span class="p">()</span> <span class="o">*</span> <span class="mi">2</span> <span class="o">+</span> <span class="mi">2</span><span class="p">;</span>
-	<span class="k">const</span> <span class="kt">char</span> <span class="o">**</span><span class="n">argv</span> <span class="o">=</span> <span class="n">new</span> <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="p">[</span><span class="n">argc</span><span class="p">];</span>
+	<span class="k">const</span> <span class="kt">char</span> <span class="o">**</span><span class="n">argv</span> <span class="o">=</span> <span class="k">new</span> <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="p">[</span><span class="n">argc</span><span class="p">];</span>
 	<span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">argv</span><span class="p">)</span>
 	<span class="p">{</span>
 		<span class="k">return</span> <span class="n">ret_value</span><span class="p">;</span>
@@ -1446,7 +1451,7 @@
 	<span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">reply</span><span class="p">)</span>
 	<span class="p">{</span>
 		<span class="n">log_error</span><span class="p">(</span><span class="s">&#34;redisCommand failed:%s</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span> <span class="n">m_pContext</span><span class="o">-&gt;</span><span class="n">errstr</span><span class="p">);</span>
-		<span class="n">delete</span><span class="p">[]</span> <span class="n">argv</span><span class="p">;</span>
+		<span class="k">delete</span><span class="p">[]</span> <span class="n">argv</span><span class="p">;</span>
 
 		<span class="n">redisFree</span><span class="p">(</span><span class="n">m_pContext</span><span class="p">);</span>
 		<span class="n">m_pContext</span> <span class="o">=</span> <span class="nb">NULL</span><span class="p">;</span>
@@ -1455,7 +1460,7 @@
 
 	<span class="n">ret_value</span><span class="p">.</span><span class="n">append</span><span class="p">(</span><span class="n">reply</span><span class="o">-&gt;</span><span class="n">str</span><span class="p">,</span> <span class="n">reply</span><span class="o">-&gt;</span><span class="n">len</span><span class="p">);</span>
 
-	<span class="n">delete</span><span class="p">[]</span> <span class="n">argv</span><span class="p">;</span>
+	<span class="k">delete</span><span class="p">[]</span> <span class="n">argv</span><span class="p">;</span>
 	<span class="n">freeReplyObject</span><span class="p">(</span><span class="n">reply</span><span class="p">);</span>
 	<span class="k">return</span> <span class="n">ret_value</span><span class="p">;</span>
 <span class="p">}</span>
@@ -1468,7 +1473,7 @@
 	<span class="p">}</span>
 
 	<span class="kt">int</span> <span class="n">argc</span> <span class="o">=</span> <span class="n">fields</span><span class="p">.</span><span class="n">size</span><span class="p">()</span> <span class="o">+</span> <span class="mi">2</span><span class="p">;</span>
-	<span class="k">const</span> <span class="kt">char</span> <span class="o">**</span><span class="n">argv</span> <span class="o">=</span> <span class="n">new</span> <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="p">[</span><span class="n">argc</span><span class="p">];</span>
+	<span class="k">const</span> <span class="kt">char</span> <span class="o">**</span><span class="n">argv</span> <span class="o">=</span> <span class="k">new</span> <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="p">[</span><span class="n">argc</span><span class="p">];</span>
 	<span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">argv</span><span class="p">)</span>
 	<span class="p">{</span>
 		<span class="k">return</span> <span class="nb">false</span><span class="p">;</span>
@@ -1486,7 +1491,7 @@
 	<span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">reply</span><span class="p">)</span>
 	<span class="p">{</span>
 		<span class="n">log_error</span><span class="p">(</span><span class="s">&#34;redisCommand failed:%s</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span> <span class="n">m_pContext</span><span class="o">-&gt;</span><span class="n">errstr</span><span class="p">);</span>
-		<span class="n">delete</span><span class="p">[]</span> <span class="n">argv</span><span class="p">;</span>
+		<span class="k">delete</span><span class="p">[]</span> <span class="n">argv</span><span class="p">;</span>
 
 		<span class="n">redisFree</span><span class="p">(</span><span class="n">m_pContext</span><span class="p">);</span>
 		<span class="n">m_pContext</span> <span class="o">=</span> <span class="nb">NULL</span><span class="p">;</span>
@@ -1504,7 +1509,7 @@
 		<span class="p">}</span>
 	<span class="p">}</span>
 
-	<span class="n">delete</span><span class="p">[]</span> <span class="n">argv</span><span class="p">;</span>
+	<span class="k">delete</span><span class="p">[]</span> <span class="n">argv</span><span class="p">;</span>
 	<span class="n">freeReplyObject</span><span class="p">(</span><span class="n">reply</span><span class="p">);</span>
 	<span class="k">return</span> <span class="nb">true</span><span class="p">;</span>
 <span class="p">}</span>
@@ -1687,7 +1692,7 @@
 	<span class="k">for</span> <span class="p">(</span><span class="n">list</span><span class="o">&lt;</span><span class="n">CacheConn</span> <span class="o">*&gt;::</span><span class="n">iterator</span> <span class="n">it</span> <span class="o">=</span> <span class="n">m_free_list</span><span class="p">.</span><span class="n">begin</span><span class="p">();</span> <span class="n">it</span> <span class="o">!=</span> <span class="n">m_free_list</span><span class="p">.</span><span class="n">end</span><span class="p">();</span> <span class="n">it</span><span class="o">++</span><span class="p">)</span>
 	<span class="p">{</span>
 		<span class="n">CacheConn</span> <span class="o">*</span><span class="n">pConn</span> <span class="o">=</span> <span class="o">*</span><span class="n">it</span><span class="p">;</span>
-		<span class="n">delete</span> <span class="n">pConn</span><span class="p">;</span>
+		<span class="k">delete</span> <span class="n">pConn</span><span class="p">;</span>
 	<span class="p">}</span>
 
 	<span class="n">m_free_list</span><span class="p">.</span><span class="n">clear</span><span class="p">();</span>
@@ -1699,11 +1704,11 @@
 <span class="p">{</span>
 	<span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">m_cur_conn_cnt</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span>
 	<span class="p">{</span>
-		<span class="n">CacheConn</span> <span class="o">*</span><span class="n">pConn</span> <span class="o">=</span> <span class="n">new</span> <span class="n">CacheConn</span><span class="p">(</span><span class="n">m_server_ip</span><span class="p">.</span><span class="n">c_str</span><span class="p">(),</span> <span class="n">m_server_port</span><span class="p">,</span>
+		<span class="n">CacheConn</span> <span class="o">*</span><span class="n">pConn</span> <span class="o">=</span> <span class="k">new</span> <span class="n">CacheConn</span><span class="p">(</span><span class="n">m_server_ip</span><span class="p">.</span><span class="n">c_str</span><span class="p">(),</span> <span class="n">m_server_port</span><span class="p">,</span>
 										 <span class="n">m_db_index</span><span class="p">,</span> <span class="n">m_password</span><span class="p">.</span><span class="n">c_str</span><span class="p">(),</span> <span class="n">m_pool_name</span><span class="p">.</span><span class="n">c_str</span><span class="p">());</span>
 		<span class="k">if</span> <span class="p">(</span><span class="n">pConn</span><span class="o">-&gt;</span><span class="n">Init</span><span class="p">())</span>
 		<span class="p">{</span>
-			<span class="n">delete</span> <span class="n">pConn</span><span class="p">;</span>
+			<span class="k">delete</span> <span class="n">pConn</span><span class="p">;</span>
 			<span class="k">return</span> <span class="mi">1</span><span class="p">;</span>
 		<span class="p">}</span>
 
@@ -1726,13 +1731,13 @@
 		<span class="p">}</span>
 		<span class="k">else</span>
 		<span class="p">{</span>
-			<span class="n">CacheConn</span> <span class="o">*</span><span class="n">p_cache_conn</span> <span class="o">=</span> <span class="n">new</span> <span class="n">CacheConn</span><span class="p">(</span><span class="n">m_server_ip</span><span class="p">.</span><span class="n">c_str</span><span class="p">(),</span> <span class="n">m_server_port</span><span class="p">,</span>
+			<span class="n">CacheConn</span> <span class="o">*</span><span class="n">p_cache_conn</span> <span class="o">=</span> <span class="k">new</span> <span class="n">CacheConn</span><span class="p">(</span><span class="n">m_server_ip</span><span class="p">.</span><span class="n">c_str</span><span class="p">(),</span> <span class="n">m_server_port</span><span class="p">,</span>
 													<span class="n">m_db_index</span><span class="p">,</span> <span class="n">m_password</span><span class="p">.</span><span class="n">c_str</span><span class="p">(),</span> <span class="n">m_pool_name</span><span class="p">.</span><span class="n">c_str</span><span class="p">());</span>
 			<span class="kt">int</span> <span class="n">ret</span> <span class="o">=</span> <span class="n">p_cache_conn</span><span class="o">-&gt;</span><span class="n">Init</span><span class="p">();</span>
 			<span class="k">if</span> <span class="p">(</span><span class="n">ret</span><span class="p">)</span>
 			<span class="p">{</span>
 				<span class="n">log_error</span><span class="p">(</span><span class="s">&#34;Init CacheConn failed</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">);</span>
-				<span class="n">delete</span> <span class="n">p_cache_conn</span><span class="p">;</span>
+				<span class="k">delete</span> <span class="n">p_cache_conn</span><span class="p">;</span>
 				<span class="n">m_free_notify</span><span class="p">.</span><span class="n">Unlock</span><span class="p">();</span>
 				<span class="k">return</span> <span class="nb">NULL</span><span class="p">;</span>
 			<span class="p">}</span>
@@ -2090,13 +2095,18 @@
                 <div class="widget--toc">
                     <nav id="TableOfContents">
   <ol>
-    <li><a href="#头文件">头文件：</a></li>
-    <li><a href="#实现">实现：</a></li>
-  </ol>
-
-  <ol>
-    <li><a href="#头文件-1">头文件</a></li>
-    <li><a href="#实现-1">实现</a></li>
+    <li><a href="#mysql连接池">mysql连接池</a>
+      <ol>
+        <li><a href="#头文件">头文件：</a></li>
+        <li><a href="#实现">实现：</a></li>
+      </ol>
+    </li>
+    <li><a href="#redis连接池">redis连接池</a>
+      <ol>
+        <li><a href="#头文件-1">头文件</a></li>
+        <li><a href="#实现-1">实现</a></li>
+      </ol>
+    </li>
   </ol>
 </nav>
                 </div>

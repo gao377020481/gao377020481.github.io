@@ -252,7 +252,7 @@
 </header>
 
     <section class="article-content">
-    <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="cp">#include</span> <span class="cpf">&lt;stdio.h&gt;</span><span class="cp">
+    <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-c++" data-lang="c++"><span class="cp">#include</span> <span class="cpf">&lt;stdio.h&gt;</span><span class="cp">
 </span><span class="cp">#include</span> <span class="cpf">&lt;stdlib.h&gt;</span><span class="cp">
 </span><span class="cp">#include</span> <span class="cpf">&lt;string.h&gt;</span><span class="cp">
 </span><span class="cp"></span>
@@ -274,24 +274,24 @@
 </span><span class="cp">} while(0)
 </span><span class="cp"></span>
 
-<span class="k">typedef</span> <span class="k">struct</span> <span class="n">NWORKER</span> <span class="p">{</span><span class="c1">//工作线程信息
+<span class="k">typedef</span> <span class="k">struct</span> <span class="nc">NWORKER</span> <span class="p">{</span><span class="c1">//工作线程信息
 </span><span class="c1"></span>	<span class="n">pthread_t</span> <span class="kr">thread</span><span class="p">;</span> <span class="c1">//线程id
 </span><span class="c1"></span>	<span class="kt">int</span> <span class="n">terminate</span><span class="p">;</span> <span class="c1">//是否要终止
-</span><span class="c1"></span>	<span class="k">struct</span> <span class="n">NWORKQUEUE</span> <span class="o">*</span><span class="n">workqueue</span><span class="p">;</span> <span class="c1">//线程池，用于找到工作队列
-</span><span class="c1"></span>	<span class="k">struct</span> <span class="n">NWORKER</span> <span class="o">*</span><span class="n">prev</span><span class="p">;</span>
-	<span class="k">struct</span> <span class="n">NWORKER</span> <span class="o">*</span><span class="n">next</span><span class="p">;</span>
+</span><span class="c1"></span>	<span class="k">struct</span> <span class="nc">NWORKQUEUE</span> <span class="o">*</span><span class="n">workqueue</span><span class="p">;</span> <span class="c1">//线程池，用于找到工作队列
+</span><span class="c1"></span>	<span class="k">struct</span> <span class="nc">NWORKER</span> <span class="o">*</span><span class="n">prev</span><span class="p">;</span>
+	<span class="k">struct</span> <span class="nc">NWORKER</span> <span class="o">*</span><span class="n">next</span><span class="p">;</span>
 <span class="p">}</span> <span class="n">nWorker</span><span class="p">;</span>
 
-<span class="k">typedef</span> <span class="k">struct</span> <span class="n">NJOB</span> <span class="p">{</span>  <span class="c1">//工作个体
-</span><span class="c1"></span>	<span class="kt">void</span> <span class="p">(</span><span class="o">*</span><span class="n">job_function</span><span class="p">)(</span><span class="k">struct</span> <span class="n">NJOB</span> <span class="o">*</span><span class="n">job</span><span class="p">);</span> 
+<span class="k">typedef</span> <span class="k">struct</span> <span class="nc">NJOB</span> <span class="p">{</span>  <span class="c1">//工作个体
+</span><span class="c1"></span>	<span class="kt">void</span> <span class="p">(</span><span class="o">*</span><span class="n">job_function</span><span class="p">)(</span><span class="k">struct</span> <span class="nc">NJOB</span> <span class="o">*</span><span class="n">job</span><span class="p">);</span> 
 	<span class="kt">void</span> <span class="o">*</span><span class="n">user_data</span><span class="p">;</span>
-	<span class="k">struct</span> <span class="n">NJOB</span> <span class="o">*</span><span class="n">prev</span><span class="p">;</span>
-	<span class="k">struct</span> <span class="n">NJOB</span> <span class="o">*</span><span class="n">next</span><span class="p">;</span>
+	<span class="k">struct</span> <span class="nc">NJOB</span> <span class="o">*</span><span class="n">prev</span><span class="p">;</span>
+	<span class="k">struct</span> <span class="nc">NJOB</span> <span class="o">*</span><span class="n">next</span><span class="p">;</span>
 <span class="p">}</span> <span class="n">nJob</span><span class="p">;</span>
 
-<span class="k">typedef</span> <span class="k">struct</span> <span class="n">NWORKQUEUE</span> <span class="p">{</span>
-	<span class="k">struct</span> <span class="n">NWORKER</span> <span class="o">*</span><span class="n">workers</span><span class="p">;</span> <span class="c1">//所有工作线程的链表
-</span><span class="c1"></span>	<span class="k">struct</span> <span class="n">NJOB</span> <span class="o">*</span><span class="n">waiting_jobs</span><span class="p">;</span> <span class="c1">//工作队列
+<span class="k">typedef</span> <span class="k">struct</span> <span class="nc">NWORKQUEUE</span> <span class="p">{</span>
+	<span class="k">struct</span> <span class="nc">NWORKER</span> <span class="o">*</span><span class="n">workers</span><span class="p">;</span> <span class="c1">//所有工作线程的链表
+</span><span class="c1"></span>	<span class="k">struct</span> <span class="nc">NJOB</span> <span class="o">*</span><span class="n">waiting_jobs</span><span class="p">;</span> <span class="c1">//工作队列
 </span><span class="c1"></span>	<span class="n">pthread_mutex_t</span> <span class="n">jobs_mtx</span><span class="p">;</span> 
 	<span class="n">pthread_cond_t</span> <span class="n">jobs_cond</span><span class="p">;</span>
 <span class="p">}</span> <span class="n">nWorkQueue</span><span class="p">;</span>

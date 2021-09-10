@@ -21,10 +21,10 @@ DNS分层 顶级域：com org等 第二级域：baidu google等 第三级域：w
 域名服务器 根域名服务器： 共a-m十三台（十三个ip）但拥有很多镜像服务器，镜像与本体使用同一个ip，存有顶级域名服务器的ip 顶级域名服务器：管理在该顶级域名服务器下注册的二级域名 权限域名服务器：一个区域的域名解析 本地域名服务器：处理本地的请求，保存本地的映射
 域名解析方式 迭代查询：本机请求本地域名服务器，本地域名服务器开始迭代的查询各个层级服务器，先查询根获得顶级的ip然后根据获得的ip查询顶级在获得区域的ip依次迭代查到请求的映射
 递归查询：递归查询时只发出一次请求然后等待接收到最终结果，在上面的步骤中本机使用的就是递归查询
+协议报文格式 dns_dp dns_dp dns_dp dns_dp
 具体查看文档
 DNS client UDP编程 首先需要自己定义数据结构用于存储dns报文
-struct dns_header{ unsigned short id; unsigned short flags; unsigned short questions; unsigned short answer; unsigned short authority; unsigned short additional; }; struct dns_question { int length; unsigned short qtype; unsigned short qclass; unsigned char *name; }; 这里只需要question和header是因为我们作为client只实现发送A请求也就是获取域名的ipv4地址，在实现中header的授权码和附加码都不需要使用只需要使用questions id和flags即可
-先建立UDP套接字用于发送UDP报文：</description>
+struct dns_header{ unsigned short id; unsigned short flags; unsigned short questions; unsigned short answer; unsigned short authority; unsigned short additional; }; struct dns_question { int length; unsigned short qtype; unsigned short qclass; unsigned char *name; }; 这里只需要question和header是因为我们作为client只实现发送A请求也就是获取域名的ipv4地址，在实现中header的授权码和附加码都不需要使用只需要使用questions id和flags即可</description>
     </item>
     
     <item>
@@ -34,7 +34,9 @@ struct dns_header{ unsigned short id; unsigned short flags; unsigned short quest
       
       <guid>https://gao377020481.github.io/p/http%E5%AE%A2%E6%88%B7%E7%AB%AF/</guid>
       <description>HTTP 实现http客户端程序
-基础 HTTP使用TCP连接 HTTP报文格式见文档
+基础 HTTP使用TCP连接
+HTTP报文：
+ 
 实现 域名到ip地址转换(dns) 直接调用api进行转换比较简单：
 char * host_to_ip(const char* hostname) { struct hostent *host_entry = gethostbyname(hostname); if(host_entry) { return inet_ntoa(*(struct in_addr*)*host_entry -&amp;gt; h_addr_list); } return NULL; } host_entry存储了dns请求的接收，从中取出第一个ip地址并将点分十进制转换为字符串返回
 创建TCP套接字（建立连接） posix api创建

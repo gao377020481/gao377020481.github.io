@@ -139,113 +139,113 @@
 这里我只检索到了mysql-server-5.7就安装了5.7</p>
 <p>在本地win10上安装mysqlbench用于连接虚拟机的mysql服务器
 这里使用网络连接，可能是因为mysql版本的原因，本来应该在/etc/mysql中的my.cnf文件中显式的配置有基本信息，我只需要修改部分，但5.7在/etc/mysql/mysql.conf.d/mysqld.cnf,在它的基础上修改对应的bind-address为0.0.0.0保证回环地址可访问：</p>
-<pre><code>
-#
-# The MySQL database server configuration file.
-#
-# You can copy this to one of:
-# - &quot;/etc/mysql/my.cnf&quot; to set global options,
-# - &quot;~/.my.cnf&quot; to set user-specific options.
-# 
-# One can use all long options that the program supports.
-# Run program with --help to get a list of available options and with
-# --print-defaults to see which it would actually understand and use.
-#
-# For explanations see
-# http://dev.mysql.com/doc/mysql/en/server-system-variables.html
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-haskell" data-lang="haskell">
+<span class="o">#</span>
+<span class="o">#</span> <span class="kt">The</span> <span class="kt">MySQL</span> <span class="n">database</span> <span class="n">server</span> <span class="n">configuration</span> <span class="n">file</span><span class="o">.</span>
+<span class="o">#</span>
+<span class="o">#</span> <span class="kt">You</span> <span class="n">can</span> <span class="n">copy</span> <span class="n">this</span> <span class="n">to</span> <span class="n">one</span> <span class="kr">of</span><span class="kt">:</span>
+<span class="o">#</span> <span class="o">-</span> <span class="s">&#34;/etc/mysql/my.cnf&#34;</span> <span class="n">to</span> <span class="n">set</span> <span class="n">global</span> <span class="n">options</span><span class="p">,</span>
+<span class="o">#</span> <span class="o">-</span> <span class="s">&#34;~/.my.cnf&#34;</span> <span class="n">to</span> <span class="n">set</span> <span class="n">user</span><span class="o">-</span><span class="n">specific</span> <span class="n">options</span><span class="o">.</span>
+<span class="o">#</span> 
+<span class="o">#</span> <span class="kt">One</span> <span class="n">can</span> <span class="n">use</span> <span class="n">all</span> <span class="n">long</span> <span class="n">options</span> <span class="n">that</span> <span class="n">the</span> <span class="n">program</span> <span class="n">supports</span><span class="o">.</span>
+<span class="o">#</span> <span class="kt">Run</span> <span class="n">program</span> <span class="n">with</span> <span class="c1">--help to get a list of available options and with</span>
+<span class="o">#</span> <span class="c1">--print-defaults to see which it would actually understand and use.</span>
+<span class="o">#</span>
+<span class="o">#</span> <span class="kt">For</span> <span class="n">explanations</span> <span class="n">see</span>
+<span class="o">#</span> <span class="n">http</span><span class="kt">://</span><span class="n">dev</span><span class="o">.</span><span class="n">mysql</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">doc</span><span class="o">/</span><span class="n">mysql</span><span class="o">/</span><span class="n">en</span><span class="o">/</span><span class="n">server</span><span class="o">-</span><span class="n">system</span><span class="o">-</span><span class="n">variables</span><span class="o">.</span><span class="n">html</span>
 
-# This will be passed to all mysql clients
-# It has been reported that passwords should be enclosed with ticks/quotes
-# escpecially if they contain &quot;#&quot; chars...
-# Remember to edit /etc/mysql/debian.cnf when changing the socket location.
+<span class="o">#</span> <span class="kt">This</span> <span class="n">will</span> <span class="n">be</span> <span class="n">passed</span> <span class="n">to</span> <span class="n">all</span> <span class="n">mysql</span> <span class="n">clients</span>
+<span class="o">#</span> <span class="kt">It</span> <span class="n">has</span> <span class="n">been</span> <span class="n">reported</span> <span class="n">that</span> <span class="n">passwords</span> <span class="n">should</span> <span class="n">be</span> <span class="n">enclosed</span> <span class="n">with</span> <span class="n">ticks</span><span class="o">/</span><span class="n">quotes</span>
+<span class="o">#</span> <span class="n">escpecially</span> <span class="kr">if</span> <span class="n">they</span> <span class="n">contain</span> <span class="s">&#34;#&#34;</span> <span class="n">chars</span><span class="o">...</span>
+<span class="o">#</span> <span class="kt">Remember</span> <span class="n">to</span> <span class="n">edit</span> <span class="o">/</span><span class="n">etc</span><span class="o">/</span><span class="n">mysql</span><span class="o">/</span><span class="n">debian</span><span class="o">.</span><span class="n">cnf</span> <span class="n">when</span> <span class="n">changing</span> <span class="n">the</span> <span class="n">socket</span> <span class="n">location</span><span class="o">.</span>
 
-# Here is entries for some specific programs
-# The following values assume you have at least 32M ram
+<span class="o">#</span> <span class="kt">Here</span> <span class="n">is</span> <span class="n">entries</span> <span class="n">for</span> <span class="n">some</span> <span class="n">specific</span> <span class="n">programs</span>
+<span class="o">#</span> <span class="kt">The</span> <span class="n">following</span> <span class="n">values</span> <span class="n">assume</span> <span class="n">you</span> <span class="n">have</span> <span class="n">at</span> <span class="n">least</span> <span class="mi">32</span><span class="kt">M</span> <span class="n">ram</span>
 
-[mysqld_safe]
-socket          = /var/run/mysqld/mysqld.sock
-nice            = 0
+<span class="p">[</span><span class="n">mysqld_safe</span><span class="p">]</span>
+<span class="nf">socket</span>          <span class="ow">=</span> <span class="o">/</span><span class="n">var</span><span class="o">/</span><span class="n">run</span><span class="o">/</span><span class="n">mysqld</span><span class="o">/</span><span class="n">mysqld</span><span class="o">.</span><span class="n">sock</span>
+<span class="nf">nice</span>            <span class="ow">=</span> <span class="mi">0</span>
 
-[mysqld]
-#
-# * Basic Settings
-#
-user            = mysql
-pid-file        = /var/run/mysqld/mysqld.pid
-socket          = /var/run/mysqld/mysqld.sock
-port            = 3306
-basedir         = /usr
-datadir         = /var/lib/mysql
-tmpdir          = /tmp
-lc-messages-dir = /usr/share/mysql
-skip-external-locking
-#
-# Instead of skip-networking the default is now to listen only on
-# localhost which is more compatible and is not less secure.
-bind-address            = 0.0.0.0
-#
-# * Fine Tuning
-#
-key_buffer_size         = 16M
-max_allowed_packet      = 16M
-thread_stack            = 192K
-thread_cache_size       = 8
-# This replaces the startup script and checks MyISAM tables if needed
-# the first time they are touched
-myisam-recover-options  = BACKUP
-#max_connections        = 100
-#table_cache            = 64
-#thread_concurrency     = 10
-#
-# * Query Cache Configuration
-#
-query_cache_limit       = 1M
-query_cache_size        = 16M
-#
-# * Logging and Replication
-#
-# Both location gets rotated by the cronjob.
-# Be aware that this log type is a performance killer.
-# As of 5.1 you can enable the log at runtime!
-#general_log_file        = /var/log/mysql/mysql.log
-#general_log             = 1
-#
-# Error log - should be very few entries.
-#
-log_error = /var/log/mysql/error.log
-#
-# Here you can see queries with especially long duration
-#log_slow_queries       = /var/log/mysql/mysql-slow.log
-#long_query_time = 2
-#log-queries-not-using-indexes
-#
-# The following can be used as easy to replay backup logs or for replication.
-# note: if you are setting up a replication slave, see README.Debian about
-#       other settings you may need to change.
-#server-id              = 1
-#log_bin                        = /var/log/mysql/mysql-bin.log
-expire_logs_days        = 10
-max_binlog_size   = 100M
-#binlog_do_db           = include_database_name
-#binlog_ignore_db       = include_database_name
-#
-# * InnoDB
-#
-# InnoDB is enabled by default with a 10MB datafile in /var/lib/mysql/.
-# Read the manual for more InnoDB related options. There are many!
-#
-# * Security Features
-#
-# Read the manual, too, if you want chroot!
-# chroot = /var/lib/mysql/
-#
-# For generating SSL certificates I recommend the OpenSSL GUI &quot;tinyca&quot;.
-#
-# ssl-ca=/etc/mysql/cacert.pem
-# ssl-cert=/etc/mysql/server-cert.pem
-# ssl-key=/etc/mysql/server-key.pem
+<span class="p">[</span><span class="n">mysqld</span><span class="p">]</span>
+<span class="o">#</span>
+<span class="o">#</span> <span class="o">*</span> <span class="kt">Basic</span> <span class="kt">Settings</span>
+<span class="o">#</span>
+<span class="nf">user</span>            <span class="ow">=</span> <span class="n">mysql</span>
+<span class="nf">pid</span><span class="o">-</span><span class="n">file</span>        <span class="ow">=</span> <span class="o">/</span><span class="n">var</span><span class="o">/</span><span class="n">run</span><span class="o">/</span><span class="n">mysqld</span><span class="o">/</span><span class="n">mysqld</span><span class="o">.</span><span class="n">pid</span>
+<span class="nf">socket</span>          <span class="ow">=</span> <span class="o">/</span><span class="n">var</span><span class="o">/</span><span class="n">run</span><span class="o">/</span><span class="n">mysqld</span><span class="o">/</span><span class="n">mysqld</span><span class="o">.</span><span class="n">sock</span>
+<span class="nf">port</span>            <span class="ow">=</span> <span class="mi">3306</span>
+<span class="nf">basedir</span>         <span class="ow">=</span> <span class="o">/</span><span class="n">usr</span>
+<span class="nf">datadir</span>         <span class="ow">=</span> <span class="o">/</span><span class="n">var</span><span class="o">/</span><span class="n">lib</span><span class="o">/</span><span class="n">mysql</span>
+<span class="nf">tmpdir</span>          <span class="ow">=</span> <span class="o">/</span><span class="n">tmp</span>
+<span class="nf">lc</span><span class="o">-</span><span class="n">messages</span><span class="o">-</span><span class="n">dir</span> <span class="ow">=</span> <span class="o">/</span><span class="n">usr</span><span class="o">/</span><span class="n">share</span><span class="o">/</span><span class="n">mysql</span>
+<span class="nf">skip</span><span class="o">-</span><span class="n">external</span><span class="o">-</span><span class="n">locking</span>
+<span class="o">#</span>
+<span class="o">#</span> <span class="kt">Instead</span> <span class="kr">of</span> <span class="n">skip</span><span class="o">-</span><span class="n">networking</span> <span class="n">the</span> <span class="kr">default</span> <span class="n">is</span> <span class="n">now</span> <span class="n">to</span> <span class="n">listen</span> <span class="n">only</span> <span class="n">on</span>
+<span class="o">#</span> <span class="n">localhost</span> <span class="n">which</span> <span class="n">is</span> <span class="n">more</span> <span class="n">compatible</span> <span class="n">and</span> <span class="n">is</span> <span class="n">not</span> <span class="n">less</span> <span class="n">secure</span><span class="o">.</span>
+<span class="nf">bind</span><span class="o">-</span><span class="n">address</span>            <span class="ow">=</span> <span class="mf">0.0</span><span class="o">.</span><span class="mf">0.0</span>
+<span class="o">#</span>
+<span class="o">#</span> <span class="o">*</span> <span class="kt">Fine</span> <span class="kt">Tuning</span>
+<span class="o">#</span>
+<span class="nf">key_buffer_size</span>         <span class="ow">=</span> <span class="mi">16</span><span class="kt">M</span>
+<span class="nf">max_allowed_packet</span>      <span class="ow">=</span> <span class="mi">16</span><span class="kt">M</span>
+<span class="nf">thread_stack</span>            <span class="ow">=</span> <span class="mi">192</span><span class="kt">K</span>
+<span class="nf">thread_cache_size</span>       <span class="ow">=</span> <span class="mi">8</span>
+<span class="o">#</span> <span class="kt">This</span> <span class="n">replaces</span> <span class="n">the</span> <span class="n">startup</span> <span class="n">script</span> <span class="n">and</span> <span class="n">checks</span> <span class="kt">MyISAM</span> <span class="n">tables</span> <span class="kr">if</span> <span class="n">needed</span>
+<span class="o">#</span> <span class="n">the</span> <span class="n">first</span> <span class="n">time</span> <span class="n">they</span> <span class="n">are</span> <span class="n">touched</span>
+<span class="nf">myisam</span><span class="o">-</span><span class="n">recover</span><span class="o">-</span><span class="n">options</span>  <span class="ow">=</span> <span class="kt">BACKUP</span>
+<span class="o">#</span><span class="n">max_connections</span>        <span class="ow">=</span> <span class="mi">100</span>
+<span class="o">#</span><span class="n">table_cache</span>            <span class="ow">=</span> <span class="mi">64</span>
+<span class="o">#</span><span class="n">thread_concurrency</span>     <span class="ow">=</span> <span class="mi">10</span>
+<span class="o">#</span>
+<span class="o">#</span> <span class="o">*</span> <span class="kt">Query</span> <span class="kt">Cache</span> <span class="kt">Configuration</span>
+<span class="o">#</span>
+<span class="nf">query_cache_limit</span>       <span class="ow">=</span> <span class="mi">1</span><span class="kt">M</span>
+<span class="nf">query_cache_size</span>        <span class="ow">=</span> <span class="mi">16</span><span class="kt">M</span>
+<span class="o">#</span>
+<span class="o">#</span> <span class="o">*</span> <span class="kt">Logging</span> <span class="n">and</span> <span class="kt">Replication</span>
+<span class="o">#</span>
+<span class="o">#</span> <span class="kt">Both</span> <span class="n">location</span> <span class="n">gets</span> <span class="n">rotated</span> <span class="n">by</span> <span class="n">the</span> <span class="n">cronjob</span><span class="o">.</span>
+<span class="o">#</span> <span class="kt">Be</span> <span class="n">aware</span> <span class="n">that</span> <span class="n">this</span> <span class="n">log</span> <span class="kr">type</span> <span class="n">is</span> <span class="n">a</span> <span class="n">performance</span> <span class="n">killer</span><span class="o">.</span>
+<span class="o">#</span> <span class="kt">As</span> <span class="kr">of</span> <span class="mf">5.1</span> <span class="n">you</span> <span class="n">can</span> <span class="n">enable</span> <span class="n">the</span> <span class="n">log</span> <span class="n">at</span> <span class="n">runtime</span><span class="o">!</span>
+<span class="o">#</span><span class="n">general_log_file</span>        <span class="ow">=</span> <span class="o">/</span><span class="n">var</span><span class="o">/</span><span class="n">log</span><span class="o">/</span><span class="n">mysql</span><span class="o">/</span><span class="n">mysql</span><span class="o">.</span><span class="n">log</span>
+<span class="o">#</span><span class="n">general_log</span>             <span class="ow">=</span> <span class="mi">1</span>
+<span class="o">#</span>
+<span class="o">#</span> <span class="kt">Error</span> <span class="n">log</span> <span class="o">-</span> <span class="n">should</span> <span class="n">be</span> <span class="n">very</span> <span class="n">few</span> <span class="n">entries</span><span class="o">.</span>
+<span class="o">#</span>
+<span class="nf">log_error</span> <span class="ow">=</span> <span class="o">/</span><span class="n">var</span><span class="o">/</span><span class="n">log</span><span class="o">/</span><span class="n">mysql</span><span class="o">/</span><span class="ne">error</span><span class="o">.</span><span class="n">log</span>
+<span class="o">#</span>
+<span class="o">#</span> <span class="kt">Here</span> <span class="n">you</span> <span class="n">can</span> <span class="n">see</span> <span class="n">queries</span> <span class="n">with</span> <span class="n">especially</span> <span class="n">long</span> <span class="n">duration</span>
+<span class="o">#</span><span class="n">log_slow_queries</span>       <span class="ow">=</span> <span class="o">/</span><span class="n">var</span><span class="o">/</span><span class="n">log</span><span class="o">/</span><span class="n">mysql</span><span class="o">/</span><span class="n">mysql</span><span class="o">-</span><span class="n">slow</span><span class="o">.</span><span class="n">log</span>
+<span class="o">#</span><span class="n">long_query_time</span> <span class="ow">=</span> <span class="mi">2</span>
+<span class="o">#</span><span class="n">log</span><span class="o">-</span><span class="n">queries</span><span class="o">-</span><span class="n">not</span><span class="o">-</span><span class="n">using</span><span class="o">-</span><span class="n">indexes</span>
+<span class="o">#</span>
+<span class="o">#</span> <span class="kt">The</span> <span class="n">following</span> <span class="n">can</span> <span class="n">be</span> <span class="n">used</span> <span class="n">as</span> <span class="n">easy</span> <span class="n">to</span> <span class="n">replay</span> <span class="n">backup</span> <span class="n">logs</span> <span class="n">or</span> <span class="n">for</span> <span class="n">replication</span><span class="o">.</span>
+<span class="o">#</span> <span class="n">note</span><span class="kt">:</span> <span class="kr">if</span> <span class="n">you</span> <span class="n">are</span> <span class="n">setting</span> <span class="n">up</span> <span class="n">a</span> <span class="n">replication</span> <span class="n">slave</span><span class="p">,</span> <span class="n">see</span> <span class="kt">README</span><span class="o">.</span><span class="kt">Debian</span> <span class="n">about</span>
+<span class="o">#</span>       <span class="n">other</span> <span class="n">settings</span> <span class="n">you</span> <span class="n">may</span> <span class="n">need</span> <span class="n">to</span> <span class="n">change</span><span class="o">.</span>
+<span class="o">#</span><span class="n">server</span><span class="o">-</span><span class="n">id</span>              <span class="ow">=</span> <span class="mi">1</span>
+<span class="o">#</span><span class="n">log_bin</span>                        <span class="ow">=</span> <span class="o">/</span><span class="n">var</span><span class="o">/</span><span class="n">log</span><span class="o">/</span><span class="n">mysql</span><span class="o">/</span><span class="n">mysql</span><span class="o">-</span><span class="n">bin</span><span class="o">.</span><span class="n">log</span>
+<span class="nf">expire_logs_days</span>        <span class="ow">=</span> <span class="mi">10</span>
+<span class="nf">max_binlog_size</span>   <span class="ow">=</span> <span class="mi">100</span><span class="kt">M</span>
+<span class="o">#</span><span class="n">binlog_do_db</span>           <span class="ow">=</span> <span class="n">include_database_name</span>
+<span class="o">#</span><span class="n">binlog_ignore_db</span>       <span class="ow">=</span> <span class="n">include_database_name</span>
+<span class="o">#</span>
+<span class="o">#</span> <span class="o">*</span> <span class="kt">InnoDB</span>
+<span class="o">#</span>
+<span class="o">#</span> <span class="kt">InnoDB</span> <span class="n">is</span> <span class="n">enabled</span> <span class="n">by</span> <span class="kr">default</span> <span class="n">with</span> <span class="n">a</span> <span class="mi">10</span><span class="kt">MB</span> <span class="n">datafile</span> <span class="kr">in</span> <span class="o">/</span><span class="n">var</span><span class="o">/</span><span class="n">lib</span><span class="o">/</span><span class="n">mysql</span><span class="o">/.</span>
+<span class="o">#</span> <span class="kt">Read</span> <span class="n">the</span> <span class="n">manual</span> <span class="n">for</span> <span class="n">more</span> <span class="kt">InnoDB</span> <span class="n">related</span> <span class="n">options</span><span class="o">.</span> <span class="kt">There</span> <span class="n">are</span> <span class="n">many</span><span class="o">!</span>
+<span class="o">#</span>
+<span class="o">#</span> <span class="o">*</span> <span class="kt">Security</span> <span class="kt">Features</span>
+<span class="o">#</span>
+<span class="o">#</span> <span class="kt">Read</span> <span class="n">the</span> <span class="n">manual</span><span class="p">,</span> <span class="n">too</span><span class="p">,</span> <span class="kr">if</span> <span class="n">you</span> <span class="n">want</span> <span class="n">chroot</span><span class="o">!</span>
+<span class="o">#</span> <span class="n">chroot</span> <span class="ow">=</span> <span class="o">/</span><span class="n">var</span><span class="o">/</span><span class="n">lib</span><span class="o">/</span><span class="n">mysql</span><span class="o">/</span>
+<span class="o">#</span>
+<span class="o">#</span> <span class="kt">For</span> <span class="n">generating</span> <span class="kt">SSL</span> <span class="n">certificates</span> <span class="kt">I</span> <span class="n">recommend</span> <span class="n">the</span> <span class="kt">OpenSSL</span> <span class="kt">GUI</span> <span class="s">&#34;tinyca&#34;</span><span class="o">.</span>
+<span class="o">#</span>
+<span class="o">#</span> <span class="n">ssl</span><span class="o">-</span><span class="n">ca</span><span class="o">=/</span><span class="n">etc</span><span class="o">/</span><span class="n">mysql</span><span class="o">/</span><span class="n">cacert</span><span class="o">.</span><span class="n">pem</span>
+<span class="o">#</span> <span class="n">ssl</span><span class="o">-</span><span class="n">cert</span><span class="o">=/</span><span class="n">etc</span><span class="o">/</span><span class="n">mysql</span><span class="o">/</span><span class="n">server</span><span class="o">-</span><span class="n">cert</span><span class="o">.</span><span class="n">pem</span>
+<span class="o">#</span> <span class="n">ssl</span><span class="o">-</span><span class="n">key</span><span class="o">=/</span><span class="n">etc</span><span class="o">/</span><span class="n">mysql</span><span class="o">/</span><span class="n">server</span><span class="o">-</span><span class="n">key</span><span class="o">.</span><span class="n">pem</span>
 
-</code></pre><p>这样保证win10的mysqlbench可以连接到虚拟机的mysql服务器</p>
+</code></pre></div><p>这样保证win10的mysqlbench可以连接到虚拟机的mysql服务器</p>
 <p>但是还需要在mysql中设置对应用户并使之具有外部访问的权限和操作数据库的权限，我这里直接新建gao用户并赋予外部访问权限和操作权限：</p>
 <pre><code>CREATE USER 'gao'@'%' IDENTIFIED BY 'password';
 </code></pre><p>%号表示可以被任意位置访问也就允许了远程ip访问
