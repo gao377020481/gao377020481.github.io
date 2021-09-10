@@ -1,0 +1,1006 @@
+<!DOCTYPE html>
+<html lang="en-us">
+    <head><meta charset='utf-8'>
+<meta name='viewport' content='width=device-width, initial-scale=1'><meta name='description' content='基础知识'><title>定时器</title>
+
+<link rel='canonical' href='https://gao377020481.github.io/p/%E5%AE%9A%E6%97%B6%E5%99%A8/'>
+
+<link rel="stylesheet" href="/scss/style.min.css"><meta property='og:title' content='定时器'>
+<meta property='og:description' content='基础知识'>
+<meta property='og:url' content='https://gao377020481.github.io/p/%E5%AE%9A%E6%97%B6%E5%99%A8/'>
+<meta property='og:site_name' content='Gao&#39;s happy day'>
+<meta property='og:type' content='article'><meta property='article:section' content='Post' /><meta property='article:tag' content='服务器' /><meta property='article:published_time' content='2020-09-10T00:00:00&#43;00:00'/><meta property='article:modified_time' content='2020-09-10T00:00:00&#43;00:00'/><meta property='og:image' content='https://gao377020481.github.io/p/%E5%AE%9A%E6%97%B6%E5%99%A8/427.jpg' />
+<meta name="twitter:title" content="定时器">
+<meta name="twitter:description" content="基础知识"><meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:image" content='https://gao377020481.github.io/p/%E5%AE%9A%E6%97%B6%E5%99%A8/427.jpg' />
+    </head>
+    <body class="
+    article-page has-toc
+">
+    <script>
+        (function() {
+            const colorSchemeKey = 'StackColorScheme';
+            if(!localStorage.getItem(colorSchemeKey)){
+                localStorage.setItem(colorSchemeKey, "auto");
+            }
+        })();
+    </script><script>
+    (function() {
+        const colorSchemeKey = 'StackColorScheme';
+        const colorSchemeItem = localStorage.getItem(colorSchemeKey);
+        const supportDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches === true;
+
+        if (colorSchemeItem == 'dark' || colorSchemeItem === 'auto' && supportDarkMode) {
+            
+
+            document.documentElement.dataset.scheme = 'dark';
+        } else {
+            document.documentElement.dataset.scheme = 'light';
+        }
+    })();
+</script>
+<div class="container main-container flex 
+    
+        extended
+    
+">
+    
+        <div id="article-toolbar">
+            <a href="https://gao377020481.github.io" class="back-home">
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-chevron-left" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <polyline points="15 6 9 12 15 18" />
+</svg>
+
+
+
+                <span>Back</span>
+            </a>
+        </div>
+    
+<main class="main full-width">
+    <article class="has-image main-article">
+    <header class="article-header">
+        <div class="article-image">
+            <a href="/p/%E5%AE%9A%E6%97%B6%E5%99%A8/">
+                <img src="/p/%E5%AE%9A%E6%97%B6%E5%99%A8/427_hud2c5f23b59d3c6c6e1b3f4674af3ff5b_6078631_800x0_resize_q75_box.jpg"
+                        srcset="/p/%E5%AE%9A%E6%97%B6%E5%99%A8/427_hud2c5f23b59d3c6c6e1b3f4674af3ff5b_6078631_800x0_resize_q75_box.jpg 800w, /p/%E5%AE%9A%E6%97%B6%E5%99%A8/427_hud2c5f23b59d3c6c6e1b3f4674af3ff5b_6078631_1600x0_resize_q75_box.jpg 1600w"
+                        width="800" 
+                        height="568" 
+                        loading="lazy"
+                        alt="Featured image of post 定时器" />
+                
+            </a>
+        </div>
+    
+
+    <div class="article-details">
+    
+    <header class="article-category">
+        
+            <a href="/categories/%E7%BD%91%E7%BB%9C%E7%BC%96%E7%A8%8B/" style="background-color: #2a9d8f; color: #fff;">
+                网络编程
+            </a>
+        
+    </header>
+    
+
+    <h2 class="article-title">
+        <a href="/p/%E5%AE%9A%E6%97%B6%E5%99%A8/">定时器</a>
+    </h2>
+
+    
+    <h3 class="article-subtitle">
+        基础知识
+    </h3>
+    
+
+    
+    <footer class="article-time">
+        
+            <div>
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-calendar-time" width="56" height="56" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <path d="M11.795 21h-6.795a2 2 0 0 1 -2 -2v-12a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v4" />
+  <circle cx="18" cy="18" r="4" />
+  <path d="M15 3v4" />
+  <path d="M7 3v4" />
+  <path d="M3 11h16" />
+  <path d="M18 16.496v1.504l1 1" />
+</svg>
+                <time class="article-time--published">Sep 10, 2020</time>
+            </div>
+        
+
+        
+            <div>
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="12" r="9" />
+  <polyline points="12 7 12 12 15 15" />
+</svg>
+
+
+
+                <time class="article-time--reading">
+                    6 minute read
+                </time>
+            </div>
+        
+    </footer>
+    
+</div>
+</header>
+
+    <section class="article-content">
+    <h1 id="font-size--10定时器-font"><!-- raw HTML omitted -->定时器 <!-- raw HTML omitted --></h1>
+<p>定时器作用很多，常见于心跳检测，冷却等等
+实现时区别主要在于定时器队列的管控（排序）</p>
+<h2 id="font-size--6-color--red--基本方案font"><!-- raw HTML omitted --> 基本方案：<!-- raw HTML omitted --></h2>
+<p><!-- raw HTML omitted -->1. 红黑树：<!-- raw HTML omitted --> 
+<!-- raw HTML omitted -->
+使用红黑树对定时器排序，排序依据为定时器过期时间，每隔单位时间检查红黑树中最小时间是否小于等于当前时间，如果小于等于就删除节点并触发节点的callback。时间复杂度增删O(logn)，Nginx使用红黑树。删除添加操作自旋。
+<!-- raw HTML omitted --></p>
+<p><!-- raw HTML omitted -->2. 最小堆：<!-- raw HTML omitted --></p>
+<!-- raw HTML omitted -->
+<p>最小堆根节点最小，直接拿出根节点与当前时间比较即可，删除操作将根节点与末尾节点对换并删除末尾节点然后将新的根节点下沉，添加时加入末尾节点并上升。</p>
+<!-- raw HTML omitted -->
+<p><!-- raw HTML omitted --> 3. 时间轮： <!-- raw HTML omitted --></p>
+<!-- raw HTML omitted -->
+<p>时间轮可以分为单层级与多层级。简单的单层级时间轮使用初始化好的链表数组来存储对应的事件节点链表，时间数据结构中一般包含引用计数，该数据结构只有在引用计数置零后销毁，一般也代表着事件对应的资源可以释放。单层时间轮的大小至少需要大于最长定时时间/单位时间，举例：每5秒发送一个心跳包，连接收到心跳包时需要开启一个10秒的定时器并将事件引用计数加一（事件数据结构插入链表数组中10秒后的链表中），也就是最长定时10秒，10秒后检查该连接对应的事件并将引用计数减一，如果减一后为0就说明连接超时，释放所有资源，关闭事件。在该例子中，初始化的链表数组大小至少为11，因为假如在第0秒来一个心跳包，我们就需要在第10号位置将该连接对应的事件节点加入事件链表中，如果小于11，比如为8，那从0开始往后10个的位置就是在2号位置，那2秒后就得触发了，这与我们设置的10秒定时时间不一致。</p>
+<!-- raw HTML omitted -->
+<h2 id="font-color--red--size--6代码实现font"><!-- raw HTML omitted -->代码实现：<!-- raw HTML omitted --></h2>
+<p><!-- raw HTML omitted --> 1. 红黑树：<!-- raw HTML omitted --></p>
+<p>红黑树数据结构直接使用nginx自带的rbtree头文件，就不自己写了</p>
+<p><!-- raw HTML omitted --> 红黑树定时器头文件： <!-- raw HTML omitted --></p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-c++" data-lang="c++"><span class="cp">#ifndef _MARK_RBT_
+</span><span class="cp">#define _MARK_RBT_
+</span><span class="cp"></span>
+<span class="cp">#include</span> <span class="cpf">&lt;stdio.h&gt;</span><span class="cp">
+</span><span class="cp">#include</span> <span class="cpf">&lt;stdint.h&gt;</span><span class="cp">
+</span><span class="cp">#include</span> <span class="cpf">&lt;unistd.h&gt;</span><span class="cp">
+</span><span class="cp">#include</span> <span class="cpf">&lt;stdlib.h&gt;</span><span class="cp">
+</span><span class="cp">#include</span> <span class="cpf">&lt;stddef.h&gt;</span><span class="cp">
+</span><span class="cp"></span>
+<span class="cp">#if defined(__APPLE__)
+</span><span class="cp">#include</span> <span class="cpf">&lt;AvailabilityMacros.h&gt;</span><span class="cp">
+</span><span class="cp">#include</span> <span class="cpf">&lt;sys/time.h&gt;</span><span class="cp">
+</span><span class="cp">#include</span> <span class="cpf">&lt;mach/task.h&gt;</span><span class="cp">
+</span><span class="cp">#include</span> <span class="cpf">&lt;mach/mach.h&gt;</span><span class="cp">
+</span><span class="cp">#else
+</span><span class="cp">#include</span> <span class="cpf">&lt;time.h&gt;</span><span class="cp">
+</span><span class="cp">#endif
+</span><span class="cp"></span>
+<span class="cp">#include</span> <span class="cpf">&#34;rbtree.h&#34;</span><span class="cp">
+</span><span class="cp"></span>
+<span class="n">ngx_rbtree_t</span>              <span class="n">timer</span><span class="p">;</span>
+<span class="k">static</span> <span class="n">ngx_rbtree_node_t</span>  <span class="n">sentinel</span><span class="p">;</span>
+
+<span class="k">typedef</span> <span class="k">struct</span> <span class="nc">timer_entry_s</span> <span class="n">timer_entry_t</span><span class="p">;</span>
+<span class="k">typedef</span> <span class="nf">void</span> <span class="p">(</span><span class="o">*</span><span class="n">timer_handler_pt</span><span class="p">)(</span><span class="n">timer_entry_t</span> <span class="o">*</span><span class="n">ev</span><span class="p">);</span>
+
+<span class="k">struct</span> <span class="nc">timer_entry_s</span> <span class="p">{</span>
+    <span class="n">ngx_rbtree_node_t</span> <span class="n">timer</span><span class="p">;</span>
+    <span class="n">timer_handler_pt</span> <span class="n">handler</span><span class="p">;</span>
+<span class="p">};</span>
+
+<span class="k">static</span> <span class="kt">uint32_t</span>
+<span class="nf">current_time</span><span class="p">()</span> <span class="p">{</span>
+	<span class="kt">uint32_t</span> <span class="n">t</span><span class="p">;</span>
+<span class="cp">#if !defined(__APPLE__) || defined(AVAILABLE_MAC_OS_X_VERSION_10_12_AND_LATER)
+</span><span class="cp"></span>	<span class="k">struct</span> <span class="nc">timespec</span> <span class="n">ti</span><span class="p">;</span>
+	<span class="n">clock_gettime</span><span class="p">(</span><span class="n">CLOCK_MONOTONIC</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">ti</span><span class="p">);</span>
+	<span class="n">t</span> <span class="o">=</span> <span class="p">(</span><span class="kt">uint32_t</span><span class="p">)</span><span class="n">ti</span><span class="p">.</span><span class="n">tv_sec</span> <span class="o">*</span> <span class="mi">1000</span><span class="p">;</span>
+	<span class="n">t</span> <span class="o">+=</span> <span class="n">ti</span><span class="p">.</span><span class="n">tv_nsec</span> <span class="o">/</span> <span class="mi">1000000</span><span class="p">;</span>
+<span class="cp">#else
+</span><span class="cp"></span>	<span class="k">struct</span> <span class="nc">timeval</span> <span class="n">tv</span><span class="p">;</span>
+	<span class="n">gettimeofday</span><span class="p">(</span><span class="o">&amp;</span><span class="n">tv</span><span class="p">,</span> <span class="nb">NULL</span><span class="p">);</span>
+	<span class="n">t</span> <span class="o">=</span> <span class="p">(</span><span class="kt">uint32_t</span><span class="p">)</span><span class="n">tv</span><span class="p">.</span><span class="n">tv_sec</span> <span class="o">*</span> <span class="mi">1000</span><span class="p">;</span>
+	<span class="n">t</span> <span class="o">+=</span> <span class="n">tv</span><span class="p">.</span><span class="n">tv_usec</span> <span class="o">/</span> <span class="mi">1000</span><span class="p">;</span>
+<span class="cp">#endif
+</span><span class="cp"></span>	<span class="k">return</span> <span class="n">t</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kt">int</span> <span class="nf">init_timer</span><span class="p">()</span> <span class="p">{</span>
+    <span class="n">ngx_rbtree_init</span><span class="p">(</span><span class="o">&amp;</span><span class="n">timer</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">sentinel</span><span class="p">,</span> <span class="n">ngx_rbtree_insert_timer_value</span><span class="p">);</span>
+    <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kt">void</span> <span class="nf">add_timer</span><span class="p">(</span><span class="n">timer_entry_t</span> <span class="o">*</span><span class="n">te</span><span class="p">,</span> <span class="kt">uint32_t</span> <span class="n">msec</span><span class="p">)</span> <span class="p">{</span>
+    <span class="n">msec</span> <span class="o">+=</span> <span class="n">current_time</span><span class="p">();</span>
+    <span class="n">printf</span><span class="p">(</span><span class="s">&#34;add_timer expire at msec = %u</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span> <span class="n">msec</span><span class="p">);</span>
+    <span class="n">te</span><span class="o">-&gt;</span><span class="n">timer</span><span class="p">.</span><span class="n">key</span> <span class="o">=</span> <span class="n">msec</span><span class="p">;</span>
+    <span class="n">ngx_rbtree_insert</span><span class="p">(</span><span class="o">&amp;</span><span class="n">timer</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">te</span><span class="o">-&gt;</span><span class="n">timer</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="kt">void</span> <span class="nf">del_timer</span><span class="p">(</span><span class="n">timer_entry_t</span> <span class="o">*</span><span class="n">te</span><span class="p">)</span> <span class="p">{</span>
+    <span class="n">ngx_rbtree_delete</span><span class="p">(</span><span class="o">&amp;</span><span class="n">timer</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">te</span><span class="o">-&gt;</span><span class="n">timer</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="kt">void</span> <span class="nf">expire_timer</span><span class="p">()</span> <span class="p">{</span>
+    <span class="n">timer_entry_t</span> <span class="o">*</span><span class="n">te</span><span class="p">;</span>
+    <span class="n">ngx_rbtree_node_t</span> <span class="o">*</span><span class="n">sentinel</span><span class="p">,</span> <span class="o">*</span><span class="n">root</span><span class="p">,</span> <span class="o">*</span><span class="n">node</span><span class="p">;</span>
+    <span class="n">sentinel</span> <span class="o">=</span> <span class="n">timer</span><span class="p">.</span><span class="n">sentinel</span><span class="p">;</span>
+    <span class="kt">uint32_t</span> <span class="n">now</span> <span class="o">=</span> <span class="n">current_time</span><span class="p">();</span>
+    <span class="k">for</span> <span class="p">(;;)</span> <span class="p">{</span>
+        <span class="n">root</span> <span class="o">=</span> <span class="n">timer</span><span class="p">.</span><span class="n">root</span><span class="p">;</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">root</span> <span class="o">==</span> <span class="n">sentinel</span><span class="p">)</span> <span class="k">break</span><span class="p">;</span>
+        <span class="n">node</span> <span class="o">=</span> <span class="n">ngx_rbtree_min</span><span class="p">(</span><span class="n">root</span><span class="p">,</span> <span class="n">sentinel</span><span class="p">);</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">node</span><span class="o">-&gt;</span><span class="n">key</span> <span class="o">&gt;</span> <span class="n">now</span><span class="p">)</span> <span class="k">break</span><span class="p">;</span>
+        <span class="n">printf</span><span class="p">(</span><span class="s">&#34;touch timer expire time=%u, now = %u</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span> <span class="n">node</span><span class="o">-&gt;</span><span class="n">key</span><span class="p">,</span> <span class="n">now</span><span class="p">);</span>
+        <span class="n">te</span> <span class="o">=</span> <span class="p">(</span><span class="n">timer_entry_t</span> <span class="o">*</span><span class="p">)</span> <span class="p">((</span><span class="kt">char</span> <span class="o">*</span><span class="p">)</span> <span class="n">node</span> <span class="o">-</span> <span class="n">offsetof</span><span class="p">(</span><span class="n">timer_entry_t</span><span class="p">,</span> <span class="n">timer</span><span class="p">));</span>
+        <span class="n">te</span><span class="o">-&gt;</span><span class="n">handler</span><span class="p">(</span><span class="n">te</span><span class="p">);</span>
+        <span class="n">ngx_rbtree_delete</span><span class="p">(</span><span class="o">&amp;</span><span class="n">timer</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">te</span><span class="o">-&gt;</span><span class="n">timer</span><span class="p">);</span>
+        <span class="n">free</span><span class="p">(</span><span class="n">te</span><span class="p">);</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="cp">#endif
+</span><span class="cp"></span>
+</code></pre></div><!-- raw HTML omitted -->
+<p>expire_timer() 检查红黑树中是否有过期定时器，清理所有过期定时器并触发对应的回调函数</p>
+<p>add_timer 向红黑树中插入事件，使用nginx定时器专用的红黑树插入函数，这里红黑树使用黑色哨兵sentinel，其含义如下：</p>
+<pre><code>红黑树有一个性质是：
+叶结点的左右两边必须为黑色。也就是本来叶结点如果没有左右孩子直接初始化为NULL就是了，但它居然要黑色，意味着我需要新分配两块内存空间啥数据也不保存，tm就是为了给它涂上黑色然后挂到叶结点的left、right。
+当叶结点多起来的时候你说多浪费内存空间？理想的二叉树结构是为了让我们保存数据（key），而不是为了保存颜色吧？
+所以哨兵这个外援就来了，我们申请一块内存命名为哨兵，然后把这块内存涂上黑色，之后所有没有孩子的叶结点left、right都指向这个已涂上黑色的哨兵。以上是红黑树哨兵的作用。
+</code></pre><p>其他函数较简单</p>
+<!-- raw HTML omitted -->
+<p><!-- raw HTML omitted --> 红黑树定时器主文件： <!-- raw HTML omitted --></p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-c++" data-lang="c++"><span class="cp">#include</span> <span class="cpf">&lt;stdio.h&gt;</span><span class="cp">
+</span><span class="cp">#include</span> <span class="cpf">&lt;string.h&gt;</span><span class="cp">
+</span><span class="cp">#include</span> <span class="cpf">&#34;rbt-timer.h&#34;</span><span class="cp">
+</span><span class="cp"></span>
+<span class="kt">void</span> <span class="nf">print_hello</span><span class="p">(</span><span class="n">timer_entry_t</span> <span class="o">*</span><span class="n">te</span><span class="p">)</span> <span class="p">{</span>
+    <span class="n">printf</span><span class="p">(</span><span class="s">&#34;hello world time = %u</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span> <span class="n">te</span><span class="o">-&gt;</span><span class="n">timer</span><span class="p">.</span><span class="n">key</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="n">init_timer</span><span class="p">();</span>
+    <span class="n">timer_entry_t</span> <span class="o">*</span><span class="n">te</span> <span class="o">=</span> <span class="n">malloc</span><span class="p">(</span><span class="k">sizeof</span><span class="p">(</span><span class="n">timer_entry_t</span><span class="p">));</span>
+    <span class="n">memset</span><span class="p">(</span><span class="n">te</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">timer_entry_t</span><span class="p">));</span>
+    <span class="n">te</span><span class="o">-&gt;</span><span class="n">handler</span> <span class="o">=</span> <span class="n">print_hello</span><span class="p">;</span>
+    <span class="n">add_timer</span><span class="p">(</span><span class="n">te</span><span class="p">,</span> <span class="mi">3000</span><span class="p">);</span>
+    <span class="k">for</span> <span class="p">(;;)</span> <span class="p">{</span>
+        <span class="n">expire_timer</span><span class="p">();</span>
+        <span class="n">usleep</span><span class="p">(</span><span class="mi">10000</span><span class="p">);</span>
+    <span class="p">}</span>
+    <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div><!-- raw HTML omitted -->
+<p>主函数中主事件循环使用单位10秒usleep(10000),usleep中参数单位为ms</p>
+<!-- raw HTML omitted -->
+<p><!-- raw HTML omitted --> 2. 最小堆：<!-- raw HTML omitted --></p>
+<!-- raw HTML omitted -->
+<p><!-- raw HTML omitted --> 最小堆定时器头文件： <!-- raw HTML omitted --></p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-c++" data-lang="c++"><span class="cp">#pragma once
+</span><span class="cp"></span>
+<span class="cp">#include</span> <span class="cpf">&lt;vector&gt;</span><span class="cp">
+</span><span class="cp">#include</span> <span class="cpf">&lt;map&gt;</span><span class="cp">
+</span><span class="cp"></span><span class="k">using</span> <span class="k">namespace</span> <span class="n">std</span><span class="p">;</span>
+
+<span class="k">typedef</span> <span class="nf">void</span> <span class="p">(</span><span class="o">*</span><span class="n">TimerHandler</span><span class="p">)</span> <span class="p">(</span><span class="k">struct</span> <span class="nc">TimerNode</span> <span class="o">*</span><span class="n">node</span><span class="p">);</span>
+
+<span class="k">struct</span> <span class="nc">TimerNode</span> <span class="p">{</span>
+    <span class="kt">int</span> <span class="n">idx</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+    <span class="kt">int</span> <span class="n">id</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+    <span class="kt">unsigned</span> <span class="kt">int</span> <span class="n">expire</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+    <span class="n">TimerHandler</span> <span class="n">cb</span> <span class="o">=</span> <span class="nb">NULL</span><span class="p">;</span>
+<span class="p">};</span>
+
+<span class="k">class</span> <span class="nc">MinHeapTimer</span> <span class="p">{</span>
+<span class="k">public</span><span class="o">:</span>
+    <span class="n">MinHeapTimer</span><span class="p">()</span> <span class="p">{</span>
+        <span class="n">_heap</span><span class="p">.</span><span class="n">clear</span><span class="p">();</span>
+        <span class="n">_map</span><span class="p">.</span><span class="n">clear</span><span class="p">();</span>
+    <span class="p">}</span>
+    <span class="k">static</span> <span class="kr">inline</span> <span class="kt">int</span> <span class="nf">Count</span><span class="p">()</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="o">++</span><span class="n">_count</span><span class="p">;</span>
+    <span class="p">}</span>
+
+    <span class="kt">int</span> <span class="nf">AddTimer</span><span class="p">(</span><span class="kt">uint32_t</span> <span class="n">expire</span><span class="p">,</span> <span class="n">TimerHandler</span> <span class="n">cb</span><span class="p">);</span>
+    <span class="kt">bool</span> <span class="nf">DelTimer</span><span class="p">(</span><span class="kt">int</span> <span class="n">id</span><span class="p">);</span>
+    <span class="kt">void</span> <span class="nf">ExpireTimer</span><span class="p">();</span>
+
+<span class="k">private</span><span class="o">:</span>
+    <span class="kr">inline</span> <span class="kt">bool</span> <span class="n">_lessThan</span><span class="p">(</span><span class="kt">int</span> <span class="n">lhs</span><span class="p">,</span> <span class="kt">int</span> <span class="n">rhs</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="n">_heap</span><span class="p">[</span><span class="n">lhs</span><span class="p">]</span><span class="o">-&gt;</span><span class="n">expire</span> <span class="o">&lt;</span> <span class="n">_heap</span><span class="p">[</span><span class="n">rhs</span><span class="p">]</span><span class="o">-&gt;</span><span class="n">expire</span><span class="p">;</span>
+    <span class="p">}</span>
+    <span class="kt">bool</span> <span class="nf">_shiftDown</span><span class="p">(</span><span class="kt">int</span> <span class="n">pos</span><span class="p">);</span>
+    <span class="kt">void</span> <span class="nf">_shiftUp</span><span class="p">(</span><span class="kt">int</span> <span class="n">pos</span><span class="p">);</span>
+    <span class="kt">void</span> <span class="nf">_delNode</span><span class="p">(</span><span class="n">TimerNode</span> <span class="o">*</span><span class="n">node</span><span class="p">);</span>
+
+<span class="k">private</span><span class="o">:</span>
+    <span class="n">vector</span><span class="o">&lt;</span><span class="n">TimerNode</span><span class="o">*&gt;</span>  <span class="n">_heap</span><span class="p">;</span>
+    <span class="n">map</span><span class="o">&lt;</span><span class="kt">int</span><span class="p">,</span> <span class="n">TimerNode</span><span class="o">*&gt;</span> <span class="n">_map</span><span class="p">;</span>
+    <span class="k">static</span> <span class="kt">int</span> <span class="n">_count</span><span class="p">;</span>
+<span class="p">};</span>
+
+<span class="kt">int</span> <span class="n">MinHeapTimer</span><span class="o">::</span><span class="n">_count</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+ 
+</code></pre></div><!-- raw HTML omitted -->
+<p>需要分析的是struct TimerNode这个数据结构，idx指示在最小堆数组中的位置，用于在定时器过期时确认位置，id用于与_map协作以快速定位并删除特定id的节点，id的值自增长，expire为定时长度，cd是回调函数,具体可以看代码。</p>
+<!-- raw HTML omitted -->
+<p><!-- raw HTML omitted --> 最小堆定时器主文件： <!-- raw HTML omitted --></p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-c++" data-lang="c++"><span class="cp">#include</span> <span class="cpf">&lt;unistd.h&gt;</span><span class="cp">
+</span><span class="cp">#if defined(__APPLE__)
+</span><span class="cp">#include</span> <span class="cpf">&lt;AvailabilityMacros.h&gt;</span><span class="cp">
+</span><span class="cp">#include</span> <span class="cpf">&lt;sys/time.h&gt;</span><span class="cp">
+</span><span class="cp">#include</span> <span class="cpf">&lt;mach/task.h&gt;</span><span class="cp">
+</span><span class="cp">#include</span> <span class="cpf">&lt;mach/mach.h&gt;</span><span class="cp">
+</span><span class="cp">#else
+</span><span class="cp">#include</span> <span class="cpf">&lt;time.h&gt;</span><span class="cp">
+</span><span class="cp">#endif
+</span><span class="cp"></span>
+<span class="cp">#include</span> <span class="cpf">&lt;iostream&gt;</span><span class="cp">
+</span><span class="cp"></span>
+<span class="cp">#include</span> <span class="cpf">&#34;minheap.h&#34;</span><span class="cp">
+</span><span class="cp"></span>
+<span class="k">static</span> <span class="kt">uint32_t</span>
+<span class="nf">current_time</span><span class="p">()</span> <span class="p">{</span>
+	<span class="kt">uint32_t</span> <span class="n">t</span><span class="p">;</span>
+<span class="cp">#if !defined(__APPLE__) || defined(AVAILABLE_MAC_OS_X_VERSION_10_12_AND_LATER)
+</span><span class="cp"></span>	<span class="k">struct</span> <span class="nc">timespec</span> <span class="n">ti</span><span class="p">;</span>
+	<span class="n">clock_gettime</span><span class="p">(</span><span class="n">CLOCK_MONOTONIC</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">ti</span><span class="p">);</span>
+	<span class="n">t</span> <span class="o">=</span> <span class="p">(</span><span class="kt">uint32_t</span><span class="p">)</span><span class="n">ti</span><span class="p">.</span><span class="n">tv_sec</span> <span class="o">*</span> <span class="mi">1000</span><span class="p">;</span>
+	<span class="n">t</span> <span class="o">+=</span> <span class="n">ti</span><span class="p">.</span><span class="n">tv_nsec</span> <span class="o">/</span> <span class="mi">1000000</span><span class="p">;</span>
+<span class="cp">#else
+</span><span class="cp"></span>	<span class="k">struct</span> <span class="nc">timeval</span> <span class="n">tv</span><span class="p">;</span>
+	<span class="n">gettimeofday</span><span class="p">(</span><span class="o">&amp;</span><span class="n">tv</span><span class="p">,</span> <span class="nb">NULL</span><span class="p">);</span>
+	<span class="n">t</span> <span class="o">=</span> <span class="p">(</span><span class="kt">uint32_t</span><span class="p">)</span><span class="n">tv</span><span class="p">.</span><span class="n">tv_sec</span> <span class="o">*</span> <span class="mi">1000</span><span class="p">;</span>
+	<span class="n">t</span> <span class="o">+=</span> <span class="n">tv</span><span class="p">.</span><span class="n">tv_usec</span> <span class="o">/</span> <span class="mi">1000</span><span class="p">;</span>
+<span class="cp">#endif
+</span><span class="cp"></span>	<span class="k">return</span> <span class="n">t</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kt">int</span> <span class="n">MinHeapTimer</span><span class="o">::</span><span class="n">AddTimer</span><span class="p">(</span><span class="kt">uint32_t</span> <span class="n">expire</span><span class="p">,</span> <span class="n">TimerHandler</span> <span class="n">cb</span><span class="p">)</span> <span class="p">{</span>
+    <span class="kt">int64_t</span> <span class="n">timeout</span> <span class="o">=</span> <span class="n">current_time</span><span class="p">()</span> <span class="o">+</span> <span class="n">expire</span><span class="p">;</span>
+    <span class="n">TimerNode</span><span class="o">*</span> <span class="n">node</span> <span class="o">=</span> <span class="k">new</span> <span class="n">TimerNode</span><span class="p">;</span>
+    <span class="kt">int</span> <span class="n">id</span> <span class="o">=</span> <span class="n">Count</span><span class="p">();</span>
+    <span class="n">node</span><span class="o">-&gt;</span><span class="n">id</span> <span class="o">=</span> <span class="n">id</span><span class="p">;</span>
+    <span class="n">node</span><span class="o">-&gt;</span><span class="n">expire</span> <span class="o">=</span> <span class="n">timeout</span><span class="p">;</span>
+    <span class="n">node</span><span class="o">-&gt;</span><span class="n">cb</span> <span class="o">=</span> <span class="n">cb</span><span class="p">;</span>
+    <span class="n">node</span><span class="o">-&gt;</span><span class="n">idx</span> <span class="o">=</span> <span class="p">(</span><span class="kt">int</span><span class="p">)</span><span class="n">_heap</span><span class="p">.</span><span class="n">size</span><span class="p">();</span>
+    <span class="n">_heap</span><span class="p">.</span><span class="n">push_back</span><span class="p">(</span><span class="n">node</span><span class="p">);</span>
+    <span class="n">_shiftUp</span><span class="p">((</span><span class="kt">int</span><span class="p">)</span><span class="n">_heap</span><span class="p">.</span><span class="n">size</span><span class="p">()</span> <span class="o">-</span> <span class="mi">1</span><span class="p">);</span>
+    <span class="n">_map</span><span class="p">.</span><span class="n">insert</span><span class="p">(</span><span class="n">make_pair</span><span class="p">(</span><span class="n">id</span><span class="p">,</span> <span class="n">node</span><span class="p">));</span>
+    <span class="k">return</span> <span class="n">id</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kt">bool</span> <span class="n">MinHeapTimer</span><span class="o">::</span><span class="n">DelTimer</span><span class="p">(</span><span class="kt">int</span> <span class="n">id</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="k">auto</span> <span class="n">iter</span> <span class="o">=</span> <span class="n">_map</span><span class="p">.</span><span class="n">find</span><span class="p">(</span><span class="n">id</span><span class="p">);</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">iter</span> <span class="o">==</span> <span class="n">_map</span><span class="p">.</span><span class="n">end</span><span class="p">())</span>
+        <span class="k">return</span> <span class="nb">false</span><span class="p">;</span>
+    <span class="n">_delNode</span><span class="p">(</span><span class="n">iter</span><span class="o">-&gt;</span><span class="n">second</span><span class="p">);</span>
+    <span class="k">return</span> <span class="nb">true</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kt">void</span> <span class="n">MinHeapTimer</span><span class="o">::</span><span class="n">_delNode</span><span class="p">(</span><span class="n">TimerNode</span> <span class="o">*</span><span class="n">node</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="kt">int</span> <span class="n">last</span> <span class="o">=</span> <span class="p">(</span><span class="kt">int</span><span class="p">)</span><span class="n">_heap</span><span class="p">.</span><span class="n">size</span><span class="p">()</span> <span class="o">-</span> <span class="mi">1</span><span class="p">;</span>
+    <span class="kt">int</span> <span class="n">idx</span> <span class="o">=</span> <span class="n">node</span><span class="o">-&gt;</span><span class="n">idx</span><span class="p">;</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">idx</span> <span class="o">!=</span> <span class="n">last</span><span class="p">)</span> <span class="p">{</span>
+        <span class="n">std</span><span class="o">::</span><span class="n">swap</span><span class="p">(</span><span class="n">_heap</span><span class="p">[</span><span class="n">idx</span><span class="p">],</span> <span class="n">_heap</span><span class="p">[</span><span class="n">last</span><span class="p">]);</span>
+        <span class="n">_heap</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span><span class="o">-&gt;</span><span class="n">idx</span> <span class="o">=</span> <span class="n">idx</span><span class="p">;</span>
+        <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">_shiftDown</span><span class="p">(</span><span class="n">idx</span><span class="p">))</span> <span class="p">{</span>
+            <span class="n">_shiftUp</span><span class="p">(</span><span class="n">idx</span><span class="p">);</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+    <span class="n">_heap</span><span class="p">.</span><span class="n">pop_back</span><span class="p">();</span>
+    <span class="n">_map</span><span class="p">.</span><span class="n">erase</span><span class="p">(</span><span class="n">node</span><span class="o">-&gt;</span><span class="n">id</span><span class="p">);</span>
+    <span class="k">delete</span> <span class="n">node</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kt">void</span> <span class="n">MinHeapTimer</span><span class="o">::</span><span class="n">ExpireTimer</span><span class="p">()</span>
+<span class="p">{</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">_heap</span><span class="p">.</span><span class="n">empty</span><span class="p">())</span> <span class="k">return</span><span class="p">;</span>
+    <span class="kt">uint32_t</span> <span class="n">now</span> <span class="o">=</span> <span class="n">current_time</span><span class="p">();</span>
+    <span class="k">do</span> <span class="p">{</span>
+        <span class="n">TimerNode</span><span class="o">*</span> <span class="n">node</span> <span class="o">=</span> <span class="n">_heap</span><span class="p">.</span><span class="n">front</span><span class="p">();</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">now</span> <span class="o">&lt;</span> <span class="n">node</span><span class="o">-&gt;</span><span class="n">expire</span><span class="p">)</span>
+            <span class="k">break</span><span class="p">;</span>
+        <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">_heap</span><span class="p">.</span><span class="n">size</span><span class="p">();</span>  <span class="n">i</span><span class="o">++</span><span class="p">)</span>
+            <span class="n">std</span><span class="o">::</span><span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="s">&#34;touch    idx: &#34;</span> <span class="o">&lt;&lt;</span> <span class="n">_heap</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">-&gt;</span><span class="n">idx</span> 
+                <span class="o">&lt;&lt;</span> <span class="s">&#34; id: &#34;</span> <span class="o">&lt;&lt;</span> <span class="n">_heap</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">-&gt;</span><span class="n">id</span> <span class="o">&lt;&lt;</span> <span class="s">&#34; expire: &#34;</span>
+                <span class="o">&lt;&lt;</span> <span class="n">_heap</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">-&gt;</span><span class="n">expire</span> <span class="o">&lt;&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">node</span><span class="o">-&gt;</span><span class="n">cb</span><span class="p">)</span> <span class="p">{</span>
+            <span class="n">node</span><span class="o">-&gt;</span><span class="n">cb</span><span class="p">(</span><span class="n">node</span><span class="p">);</span>
+        <span class="p">}</span>
+        <span class="n">_delNode</span><span class="p">(</span><span class="n">node</span><span class="p">);</span>
+    <span class="p">}</span> <span class="k">while</span><span class="p">(</span><span class="o">!</span><span class="n">_heap</span><span class="p">.</span><span class="n">empty</span><span class="p">());</span>
+<span class="p">}</span>
+
+<span class="kt">bool</span> <span class="n">MinHeapTimer</span><span class="o">::</span><span class="n">_shiftDown</span><span class="p">(</span><span class="kt">int</span> <span class="n">pos</span><span class="p">){</span>
+    <span class="kt">int</span> <span class="n">last</span> <span class="o">=</span> <span class="p">(</span><span class="kt">int</span><span class="p">)</span><span class="n">_heap</span><span class="p">.</span><span class="n">size</span><span class="p">()</span><span class="o">-</span><span class="mi">1</span><span class="p">;</span>
+    <span class="kt">int</span> <span class="n">idx</span> <span class="o">=</span> <span class="n">pos</span><span class="p">;</span>
+    <span class="k">for</span> <span class="p">(;;)</span> <span class="p">{</span>
+        <span class="kt">int</span> <span class="n">left</span> <span class="o">=</span> <span class="mi">2</span> <span class="o">*</span> <span class="n">idx</span> <span class="o">+</span> <span class="mi">1</span><span class="p">;</span>
+        <span class="k">if</span> <span class="p">((</span><span class="n">left</span> <span class="o">&gt;=</span> <span class="n">last</span><span class="p">)</span> <span class="o">||</span> <span class="p">(</span><span class="n">left</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">))</span> <span class="p">{</span>
+            <span class="k">break</span><span class="p">;</span>
+        <span class="p">}</span>
+        <span class="kt">int</span> <span class="n">min</span> <span class="o">=</span> <span class="n">left</span><span class="p">;</span> <span class="c1">// left child
+</span><span class="c1"></span>        <span class="kt">int</span> <span class="n">right</span> <span class="o">=</span> <span class="n">left</span> <span class="o">+</span> <span class="mi">1</span><span class="p">;</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">right</span> <span class="o">&lt;</span> <span class="n">last</span> <span class="o">&amp;&amp;</span> <span class="o">!</span><span class="n">_lessThan</span><span class="p">(</span><span class="n">left</span><span class="p">,</span> <span class="n">right</span><span class="p">))</span> <span class="p">{</span>
+            <span class="n">min</span> <span class="o">=</span> <span class="n">right</span><span class="p">;</span> <span class="c1">// right child
+</span><span class="c1"></span>        <span class="p">}</span>
+        <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="n">_lessThan</span><span class="p">(</span><span class="n">min</span><span class="p">,</span> <span class="n">idx</span><span class="p">))</span> <span class="p">{</span>
+            <span class="k">break</span><span class="p">;</span>
+        <span class="p">}</span>
+        <span class="n">std</span><span class="o">::</span><span class="n">swap</span><span class="p">(</span><span class="n">_heap</span><span class="p">[</span><span class="n">idx</span><span class="p">],</span> <span class="n">_heap</span><span class="p">[</span><span class="n">min</span><span class="p">]);</span>
+        <span class="n">_heap</span><span class="p">[</span><span class="n">idx</span><span class="p">]</span><span class="o">-&gt;</span><span class="n">idx</span> <span class="o">=</span> <span class="n">idx</span><span class="p">;</span>
+        <span class="n">_heap</span><span class="p">[</span><span class="n">min</span><span class="p">]</span><span class="o">-&gt;</span><span class="n">idx</span> <span class="o">=</span> <span class="n">min</span><span class="p">;</span>
+        <span class="n">idx</span> <span class="o">=</span> <span class="n">min</span><span class="p">;</span>
+    <span class="p">}</span>
+    <span class="k">return</span> <span class="n">idx</span> <span class="o">&gt;</span> <span class="n">pos</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kt">void</span> <span class="n">MinHeapTimer</span><span class="o">::</span><span class="n">_shiftUp</span><span class="p">(</span><span class="kt">int</span> <span class="n">pos</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="k">for</span> <span class="p">(;;)</span> <span class="p">{</span>
+        <span class="kt">int</span> <span class="n">parent</span> <span class="o">=</span> <span class="p">(</span><span class="n">pos</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">/</span> <span class="mi">2</span><span class="p">;</span> <span class="c1">// parent node
+</span><span class="c1"></span>        <span class="k">if</span> <span class="p">(</span><span class="n">parent</span> <span class="o">==</span> <span class="n">pos</span> <span class="o">||</span> <span class="o">!</span><span class="n">_lessThan</span><span class="p">(</span><span class="n">pos</span><span class="p">,</span> <span class="n">parent</span><span class="p">))</span> <span class="p">{</span>
+            <span class="k">break</span><span class="p">;</span>
+        <span class="p">}</span>
+        <span class="n">std</span><span class="o">::</span><span class="n">swap</span><span class="p">(</span><span class="n">_heap</span><span class="p">[</span><span class="n">parent</span><span class="p">],</span> <span class="n">_heap</span><span class="p">[</span><span class="n">pos</span><span class="p">]);</span>
+        <span class="n">_heap</span><span class="p">[</span><span class="n">parent</span><span class="p">]</span><span class="o">-&gt;</span><span class="n">idx</span> <span class="o">=</span> <span class="n">parent</span><span class="p">;</span>
+        <span class="n">_heap</span><span class="p">[</span><span class="n">pos</span><span class="p">]</span><span class="o">-&gt;</span><span class="n">idx</span> <span class="o">=</span> <span class="n">pos</span><span class="p">;</span>
+        <span class="n">pos</span> <span class="o">=</span> <span class="n">parent</span><span class="p">;</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+
+<span class="kt">void</span> <span class="nf">print_hello</span><span class="p">(</span><span class="n">TimerNode</span> <span class="o">*</span><span class="n">te</span><span class="p">)</span> <span class="p">{</span>
+    <span class="n">std</span><span class="o">::</span><span class="n">cout</span> <span class="o">&lt;&lt;</span>  <span class="s">&#34;hello world time = &#34;</span> <span class="o">&lt;&lt;</span> <span class="n">te</span><span class="o">-&gt;</span><span class="n">idx</span> <span class="o">&lt;&lt;</span> <span class="s">&#34;</span><span class="se">\t</span><span class="s">&#34;</span> <span class="o">&lt;&lt;</span> <span class="n">te</span><span class="o">-&gt;</span><span class="n">id</span> <span class="o">&lt;&lt;</span> <span class="n">std</span><span class="o">::</span><span class="n">endl</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+    <span class="n">MinHeapTimer</span> <span class="n">mht</span><span class="p">;</span>
+    <span class="n">mht</span><span class="p">.</span><span class="n">AddTimer</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="n">print_hello</span><span class="p">);</span>
+    <span class="n">mht</span><span class="p">.</span><span class="n">AddTimer</span><span class="p">(</span><span class="mi">1000</span><span class="p">,</span> <span class="n">print_hello</span><span class="p">);</span>
+    <span class="n">mht</span><span class="p">.</span><span class="n">AddTimer</span><span class="p">(</span><span class="mi">7000</span><span class="p">,</span> <span class="n">print_hello</span><span class="p">);</span>
+    <span class="n">mht</span><span class="p">.</span><span class="n">AddTimer</span><span class="p">(</span><span class="mi">2000</span><span class="p">,</span> <span class="n">print_hello</span><span class="p">);</span>
+    <span class="n">mht</span><span class="p">.</span><span class="n">AddTimer</span><span class="p">(</span><span class="mi">9000</span><span class="p">,</span> <span class="n">print_hello</span><span class="p">);</span>
+    <span class="n">mht</span><span class="p">.</span><span class="n">AddTimer</span><span class="p">(</span><span class="mi">10000</span><span class="p">,</span> <span class="n">print_hello</span><span class="p">);</span>
+    <span class="n">mht</span><span class="p">.</span><span class="n">AddTimer</span><span class="p">(</span><span class="mi">6000</span><span class="p">,</span> <span class="n">print_hello</span><span class="p">);</span>
+    <span class="n">mht</span><span class="p">.</span><span class="n">AddTimer</span><span class="p">(</span><span class="mi">3000</span><span class="p">,</span> <span class="n">print_hello</span><span class="p">);</span>
+    <span class="k">for</span> <span class="p">(;;)</span> <span class="p">{</span>
+        <span class="n">mht</span><span class="p">.</span><span class="n">ExpireTimer</span><span class="p">();</span>
+        <span class="n">usleep</span><span class="p">(</span><span class="mi">10000</span><span class="p">);</span>
+    <span class="p">}</span>
+    <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+
+</code></pre></div><!-- raw HTML omitted -->
+<p>思路与红黑树的大致相同，不做赘述</p>
+<!-- raw HTML omitted -->
+<p><!-- raw HTML omitted --> 3. 单层时间轮：<!-- raw HTML omitted --></p>
+<!-- raw HTML omitted -->
+<p>与最小堆不同，我们这里需要使用静态数组，宏定义数组大小即可，最长定时时间10秒，单位时间1秒，所以使用大于10的数组大小。</p>
+<!-- raw HTML omitted -->
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-c++" data-lang="c++">
+<span class="cp">#include</span> <span class="cpf">&lt;unistd.h&gt;</span><span class="cp">
+</span><span class="cp">#include</span> <span class="cpf">&lt;stdio.h&gt;</span><span class="cp">
+</span><span class="cp">#include</span> <span class="cpf">&lt;string.h&gt;</span><span class="cp">
+</span><span class="cp">#include</span> <span class="cpf">&lt;stdint.h&gt;</span><span class="cp">
+</span><span class="cp"></span>
+<span class="cp">#if defined(__APPLE__)
+</span><span class="cp">#include</span> <span class="cpf">&lt;AvailabilityMacros.h&gt;</span><span class="cp">
+</span><span class="cp">#include</span> <span class="cpf">&lt;sys/time.h&gt;</span><span class="cp">
+</span><span class="cp">#include</span> <span class="cpf">&lt;mach/task.h&gt;</span><span class="cp">
+</span><span class="cp">#include</span> <span class="cpf">&lt;mach/mach.h&gt;</span><span class="cp">
+</span><span class="cp">#else
+</span><span class="cp">#include</span> <span class="cpf">&lt;time.h&gt;</span><span class="cp">
+</span><span class="cp">#endif
+</span><span class="cp"></span>
+<span class="cp">#define MAX_TIMER ((1&lt;&lt;17)-1)
+</span><span class="cp">#define MAX_CONN ((1&lt;&lt;16)-1)
+</span><span class="cp"></span>
+<span class="k">typedef</span> <span class="k">struct</span> <span class="nc">conn_node</span> <span class="p">{</span> <span class="c1">//也可以考虑添加callback
+</span><span class="c1"></span>    <span class="kt">uint8_t</span> <span class="n">used</span><span class="p">;</span>
+    <span class="kt">int</span> <span class="n">id</span><span class="p">;</span>
+<span class="p">}</span> <span class="n">conn_node_t</span><span class="p">;</span>
+
+<span class="k">typedef</span> <span class="k">struct</span> <span class="nc">timer_node</span> <span class="p">{</span> <span class="c1">//定时器节点
+</span><span class="c1"></span>	<span class="k">struct</span> <span class="nc">timer_node</span> <span class="o">*</span><span class="n">next</span><span class="p">;</span>
+    <span class="k">struct</span> <span class="nc">conn_node</span> <span class="o">*</span><span class="n">node</span><span class="p">;</span>
+    <span class="kt">uint32_t</span> <span class="n">idx</span><span class="p">;</span> 
+<span class="p">}</span> <span class="n">timer_node_t</span><span class="p">;</span>
+
+<span class="k">static</span> <span class="n">timer_node_t</span> <span class="n">timer_nodes</span><span class="p">[</span><span class="n">MAX_TIMER</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="mi">0</span><span class="p">};</span> <span class="c1">//所有定时器节点存储
+</span><span class="c1"></span><span class="k">static</span> <span class="n">conn_node_t</span> <span class="n">conn_nodes</span><span class="p">[</span><span class="n">MAX_CONN</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="mi">0</span><span class="p">};</span><span class="c1">//所有连接节点存储
+</span><span class="c1"></span>
+
+
+<span class="k">static</span> <span class="kt">uint32_t</span> <span class="n">t_iter</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="c1">//创建过的定时器节点数目
+</span><span class="c1"></span><span class="k">static</span> <span class="kt">uint32_t</span> <span class="n">c_iter</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span><span class="c1">//创建过的连接节点数目
+</span><span class="c1"></span>
+<span class="n">timer_node_t</span> <span class="o">*</span> <span class="nf">get_timer_node</span><span class="p">()</span> <span class="p">{</span> <span class="c1">// 注意：没有检测定时任务数超过 MAX_TIMER 的情况！！！
+</span><span class="c1"></span>    <span class="n">t_iter</span><span class="o">++</span><span class="p">;</span>
+    <span class="k">while</span> <span class="p">(</span><span class="n">timer_nodes</span><span class="p">[</span><span class="n">t_iter</span> <span class="o">&amp;</span> <span class="n">MAX_TIMER</span><span class="p">].</span><span class="n">idx</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+        <span class="n">t_iter</span><span class="o">++</span><span class="p">;</span> <span class="c1">//这个定时器节点正在被使用，换下一个试试
+</span><span class="c1"></span>    <span class="p">}</span>
+    <span class="n">timer_nodes</span><span class="p">[</span><span class="n">t_iter</span><span class="p">].</span><span class="n">idx</span> <span class="o">=</span> <span class="n">t_iter</span><span class="p">;</span>
+    <span class="k">return</span> <span class="o">&amp;</span><span class="n">timer_nodes</span><span class="p">[</span><span class="n">t_iter</span><span class="p">];</span>
+<span class="p">}</span>
+
+<span class="n">conn_node_t</span> <span class="o">*</span> <span class="nf">get_conn_node</span><span class="p">()</span> <span class="p">{</span> <span class="c1">// 注意：没有检测连接数超过 MAX_CONN 的情况
+</span><span class="c1"></span>    <span class="n">c_iter</span><span class="o">++</span><span class="p">;</span>
+    <span class="k">while</span> <span class="p">(</span><span class="n">conn_nodes</span><span class="p">[</span><span class="n">c_iter</span> <span class="o">&amp;</span> <span class="n">MAX_CONN</span><span class="p">].</span><span class="n">used</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+        <span class="n">c_iter</span><span class="o">++</span><span class="p">;</span><span class="c1">//这个连接节点正在被使用，换下一个试试
+</span><span class="c1"></span>    <span class="p">}</span>
+    <span class="k">return</span> <span class="o">&amp;</span><span class="n">conn_nodes</span><span class="p">[</span><span class="n">c_iter</span><span class="p">];</span>
+<span class="p">}</span>
+
+<span class="cp">#define TW_SIZE 16
+</span><span class="cp">#define EXPIRE 10
+</span><span class="cp">#define TW_MASK (TW_SIZE - 1)
+</span><span class="cp"></span><span class="k">static</span> <span class="kt">uint32_t</span> <span class="n">tick</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+
+<span class="k">typedef</span> <span class="k">struct</span> <span class="nc">link_list</span> <span class="p">{</span>
+	<span class="n">timer_node_t</span> <span class="n">head</span><span class="p">;</span>
+	<span class="n">timer_node_t</span> <span class="o">*</span><span class="n">tail</span><span class="p">;</span>
+<span class="p">}</span><span class="n">link_list_t</span><span class="p">;</span>
+
+<span class="kt">void</span> <span class="nf">add_conn</span><span class="p">(</span><span class="n">link_list_t</span> <span class="o">*</span><span class="n">tw</span><span class="p">,</span> <span class="n">conn_node_t</span> <span class="o">*</span><span class="n">cnode</span><span class="p">,</span> <span class="kt">int</span> <span class="n">delay</span><span class="p">)</span> <span class="p">{</span>
+    <span class="n">link_list_t</span> <span class="o">*</span><span class="n">list</span> <span class="o">=</span> <span class="o">&amp;</span><span class="n">tw</span><span class="p">[(</span><span class="n">tick</span><span class="o">+</span><span class="n">EXPIRE</span><span class="o">+</span><span class="n">delay</span><span class="p">)</span> <span class="o">&amp;</span> <span class="n">TW_MASK</span><span class="p">];</span>
+    <span class="n">timer_node_t</span> <span class="o">*</span> <span class="n">tnode</span> <span class="o">=</span> <span class="n">get_timer_node</span><span class="p">();</span>
+    <span class="n">cnode</span><span class="o">-&gt;</span><span class="n">used</span><span class="o">++</span><span class="p">;</span>
+    <span class="n">tnode</span><span class="o">-&gt;</span><span class="n">node</span> <span class="o">=</span> <span class="n">cnode</span><span class="p">;</span>
+    <span class="n">list</span><span class="o">-&gt;</span><span class="n">tail</span><span class="o">-&gt;</span><span class="n">next</span> <span class="o">=</span> <span class="n">tnode</span><span class="p">;</span>
+	<span class="n">list</span><span class="o">-&gt;</span><span class="n">tail</span> <span class="o">=</span> <span class="n">tnode</span><span class="p">;</span>
+	<span class="n">tnode</span><span class="o">-&gt;</span><span class="n">next</span> <span class="o">=</span> <span class="nb">NULL</span><span class="p">;</span>
+<span class="p">}</span> <span class="c1">//尾插，因为先到的定时任务需要先访问，比较严谨
+</span><span class="c1"></span>
+<span class="kt">void</span> <span class="nf">link_clear</span><span class="p">(</span><span class="n">link_list_t</span> <span class="o">*</span><span class="n">list</span><span class="p">)</span> <span class="p">{</span>
+	<span class="n">list</span><span class="o">-&gt;</span><span class="n">head</span><span class="p">.</span><span class="n">next</span> <span class="o">=</span> <span class="nb">NULL</span><span class="p">;</span>
+	<span class="n">list</span><span class="o">-&gt;</span><span class="n">tail</span> <span class="o">=</span> <span class="o">&amp;</span><span class="p">(</span><span class="n">list</span><span class="o">-&gt;</span><span class="n">head</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="kt">void</span> <span class="nf">check_conn</span><span class="p">(</span><span class="n">link_list_t</span> <span class="o">*</span><span class="n">tw</span><span class="p">)</span> <span class="p">{</span>
+    <span class="kt">int32_t</span> <span class="n">itick</span> <span class="o">=</span> <span class="n">tick</span><span class="p">;</span> <span class="c1">//获取当前时间戳
+</span><span class="c1"></span>    <span class="n">tick</span><span class="o">++</span><span class="p">;</span><span class="c1">//全局时间戳加一
+</span><span class="c1"></span>    <span class="n">link_list_t</span> <span class="o">*</span><span class="n">list</span> <span class="o">=</span> <span class="o">&amp;</span><span class="n">tw</span><span class="p">[</span><span class="n">itick</span> <span class="o">&amp;</span> <span class="n">TW_MASK</span><span class="p">];</span><span class="c1">// 获取当前时间戳对应的定时器链表，对其进行检查
+</span><span class="c1"></span>    <span class="n">timer_node_t</span> <span class="o">*</span><span class="n">current</span> <span class="o">=</span> <span class="n">list</span><span class="o">-&gt;</span><span class="n">head</span><span class="p">.</span><span class="n">next</span><span class="p">;</span><span class="c1">//定时器链表的头并不是一个实际的定时器节点，所以获取head的next，这是第一个实际的定时器节点
+</span><span class="c1"></span>    <span class="k">while</span> <span class="p">(</span><span class="n">current</span><span class="p">)</span> <span class="p">{</span>
+		<span class="n">timer_node_t</span> <span class="o">*</span> <span class="n">temp</span> <span class="o">=</span> <span class="n">current</span><span class="p">;</span>
+		<span class="n">current</span> <span class="o">=</span> <span class="n">current</span><span class="o">-&gt;</span><span class="n">next</span><span class="p">;</span> <span class="c1">//下一个
+</span><span class="c1"></span>        <span class="n">conn_node_t</span> <span class="o">*</span><span class="n">cn</span> <span class="o">=</span> <span class="n">temp</span><span class="o">-&gt;</span><span class="n">node</span><span class="p">;</span> <span class="c1">//从定时器节点中拿到对应的连接
+</span><span class="c1"></span>        <span class="n">cn</span><span class="o">-&gt;</span><span class="n">used</span><span class="o">--</span><span class="p">;</span> <span class="c1">//连接的引用计数减一
+</span><span class="c1"></span>        <span class="n">temp</span><span class="o">-&gt;</span><span class="n">idx</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span><span class="c1">//该定时器可以回收留待下次使用
+</span><span class="c1"></span>        <span class="k">if</span> <span class="p">(</span><span class="n">cn</span><span class="o">-&gt;</span><span class="n">used</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span> <span class="c1">//引用计数为0，说明连接失活，可以做相应处理
+</span><span class="c1"></span>            <span class="n">printf</span><span class="p">(</span><span class="s">&#34;fd:%d kill down</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span> <span class="n">cn</span><span class="o">-&gt;</span><span class="n">id</span><span class="p">);</span>
+            <span class="n">temp</span><span class="o">-&gt;</span><span class="n">next</span> <span class="o">=</span> <span class="nb">NULL</span><span class="p">;</span>
+            <span class="k">continue</span><span class="p">;</span>
+        <span class="p">}</span>
+        <span class="n">printf</span><span class="p">(</span><span class="s">&#34;fd:%d used:%d</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span> <span class="n">cn</span><span class="o">-&gt;</span><span class="n">id</span><span class="p">,</span> <span class="n">cn</span><span class="o">-&gt;</span><span class="n">used</span><span class="p">);</span>
+	<span class="p">}</span>
+    <span class="n">link_clear</span><span class="p">(</span><span class="n">list</span><span class="p">);</span><span class="c1">//检查完这一时间戳的事件就可以删除了，等待下一次继续添加
+</span><span class="c1"></span><span class="p">}</span>
+
+<span class="k">static</span> <span class="n">time_t</span>
+<span class="nf">current_time</span><span class="p">()</span> <span class="p">{</span>
+	<span class="n">time_t</span> <span class="n">t</span><span class="p">;</span>
+<span class="cp">#if !defined(__APPLE__) || defined(AVAILABLE_MAC_OS_X_VERSION_10_12_AND_LATER)
+</span><span class="cp"></span>	<span class="k">struct</span> <span class="nc">timespec</span> <span class="n">ti</span><span class="p">;</span>
+	<span class="n">clock_gettime</span><span class="p">(</span><span class="n">CLOCK_MONOTONIC</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">ti</span><span class="p">);</span>
+	<span class="n">t</span> <span class="o">=</span> <span class="p">(</span><span class="n">time_t</span><span class="p">)</span><span class="n">ti</span><span class="p">.</span><span class="n">tv_sec</span><span class="p">;</span>
+<span class="cp">#else
+</span><span class="cp"></span>	<span class="k">struct</span> <span class="nc">timeval</span> <span class="n">tv</span><span class="p">;</span>
+	<span class="n">gettimeofday</span><span class="p">(</span><span class="o">&amp;</span><span class="n">tv</span><span class="p">,</span> <span class="nb">NULL</span><span class="p">);</span>
+	<span class="n">t</span> <span class="o">=</span> <span class="p">(</span><span class="n">time_t</span><span class="p">)</span><span class="n">tv</span><span class="p">.</span><span class="n">tv_sec</span><span class="p">;</span>
+<span class="cp">#endif
+</span><span class="cp"></span>	<span class="k">return</span> <span class="n">t</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+    <span class="n">memset</span><span class="p">(</span><span class="n">timer_nodes</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">MAX_TIMER</span> <span class="o">*</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">timer_node_t</span><span class="p">));</span>
+    <span class="n">memset</span><span class="p">(</span><span class="n">conn_nodes</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">MAX_CONN</span> <span class="o">*</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">conn_node_t</span><span class="p">));</span>
+
+    <span class="c1">// init link list
+</span><span class="c1"></span>    <span class="n">link_list_t</span> <span class="n">tw</span><span class="p">[</span><span class="n">TW_SIZE</span><span class="p">];</span>
+    <span class="n">memset</span><span class="p">(</span><span class="n">tw</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">TW_SIZE</span> <span class="o">*</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">link_list_t</span><span class="p">));</span>
+    <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">TW_SIZE</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+        <span class="n">link_clear</span><span class="p">(</span><span class="o">&amp;</span><span class="n">tw</span><span class="p">[</span><span class="n">i</span><span class="p">]);</span>
+    <span class="p">}</span>
+
+    <span class="c1">// 该测试起始时间为0秒，所以 delay 不能添加超过10的数。
+</span><span class="c1"></span>    <span class="p">{</span>
+        <span class="n">conn_node_t</span> <span class="o">*</span><span class="n">node</span> <span class="o">=</span> <span class="n">get_conn_node</span><span class="p">();</span>
+        <span class="n">node</span><span class="o">-&gt;</span><span class="n">id</span> <span class="o">=</span> <span class="mi">10001</span><span class="p">;</span>
+        <span class="n">add_conn</span><span class="p">(</span><span class="n">tw</span><span class="p">,</span> <span class="n">node</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>
+        <span class="n">add_conn</span><span class="p">(</span><span class="n">tw</span><span class="p">,</span> <span class="n">node</span><span class="p">,</span> <span class="mi">5</span><span class="p">);</span>
+    <span class="p">}</span>
+
+    <span class="p">{</span>
+        <span class="n">conn_node_t</span> <span class="o">*</span><span class="n">node</span> <span class="o">=</span> <span class="n">get_conn_node</span><span class="p">();</span>
+        <span class="n">node</span><span class="o">-&gt;</span><span class="n">id</span> <span class="o">=</span> <span class="mi">10002</span><span class="p">;</span>
+        <span class="n">add_conn</span><span class="p">(</span><span class="n">tw</span><span class="p">,</span> <span class="n">node</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>
+    <span class="p">}</span>
+
+    <span class="p">{</span>
+        <span class="n">conn_node_t</span> <span class="o">*</span><span class="n">node</span> <span class="o">=</span> <span class="n">get_conn_node</span><span class="p">();</span>
+        <span class="n">node</span><span class="o">-&gt;</span><span class="n">id</span> <span class="o">=</span> <span class="mi">10003</span><span class="p">;</span>
+        <span class="n">add_conn</span><span class="p">(</span><span class="n">tw</span><span class="p">,</span> <span class="n">node</span><span class="p">,</span> <span class="mi">3</span><span class="p">);</span>
+    <span class="p">}</span>
+
+    <span class="n">time_t</span> <span class="n">start</span> <span class="o">=</span> <span class="n">current_time</span><span class="p">();</span>
+    <span class="k">for</span> <span class="p">(;;)</span> <span class="p">{</span>
+        <span class="n">time_t</span> <span class="n">now</span> <span class="o">=</span> <span class="n">current_time</span><span class="p">();</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">now</span> <span class="o">-</span> <span class="n">start</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+            <span class="k">for</span> <span class="p">(</span><span class="kt">int</span> <span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">i</span><span class="o">&lt;</span><span class="n">now</span><span class="o">-</span><span class="n">start</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span> <span class="c1">//循环保证单位时间移动（1秒走一格）
+</span><span class="c1"></span>                <span class="n">check_conn</span><span class="p">(</span><span class="n">tw</span><span class="p">);</span>
+            <span class="n">start</span> <span class="o">=</span> <span class="n">now</span><span class="p">;</span>
+            <span class="n">printf</span><span class="p">(</span><span class="s">&#34;check conn tick:%d</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span> <span class="n">tick</span><span class="p">);</span>
+        <span class="p">}</span>
+        <span class="n">usleep</span><span class="p">(</span><span class="mi">20000</span><span class="p">);</span>
+    <span class="p">}</span>
+    <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+
+
+</code></pre></div><!-- raw HTML omitted -->
+<p>static timer_node_t timer_nodes[MAX_TIMER] = {0}; //所有定时器节点存储</p>
+<p>static conn_node_t conn_nodes[MAX_CONN] = {0};//所有连接节点存储</p>
+<p><strong>创建节点存储数组可以做到节点的回收利用，减少节点的创建和删除，静态数组连续存储，访问时间快</strong></p>
+<p>#define TW_SIZE 16
+时间轮大小</p>
+<p>#define EXPIRE 10
+定时时间</p>
+<p>#define TW_MASK (TW_SIZE - 1)
+用于轮转的掩码</p>
+<!-- raw HTML omitted -->
+<p>static uint32_t tick = 0;
+<!-- raw HTML omitted -->时间戳,指示当前位置
+<!-- raw HTML omitted --></p>
+<!-- raw HTML omitted -->
+<p>add_conn(link_list_t *tw, conn_node_t *cnode, int delay)</p>
+<p>可以设置delay，根据提供的conn_node_t初始化定时任务，并放入tw中正确位置：(tick+EXPIRE+delay) &amp; TW_MASK</p>
+<p>link_clear(link_list_t *list)清空一个时间戳上的整个定时器链表</p>
+<p>check_conn(link_list_t *tw) 检查当前时间戳对应定时器链表的连接，并对齐引用计数减一，引用计数为0可以做相应处理（回调函数中可以关闭conn，或者给一个信号到管理连接的线程等等）</p>
+<!-- raw HTML omitted -->
+
+</section>
+
+
+    <footer class="article-footer">
+    
+    <section class="article-tags">
+        
+            <a href="/tags/%E6%9C%8D%E5%8A%A1%E5%99%A8/">服务器</a>
+        
+    </section>
+
+
+    
+    <section class="article-copyright">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-copyright" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="12" r="9" />
+  <path d="M14.5 9a3.5 4 0 1 0 0 6" />
+</svg>
+
+
+
+        <span>Licensed under CC BY-NC-SA 4.0</span>
+    </section>
+    </footer>
+
+
+    
+</article>
+
+    <aside class="related-contents--wrapper">
+    
+    
+        <h2 class="section-title">Related contents</h2>
+        <div class="related-contents">
+            <div class="flex article-list--tile">
+                
+                    
+<article class="has-image">
+    <a href="/p/%E7%AE%80%E6%98%93tcp%E6%9C%8D%E5%8A%A1%E5%99%A8/">
+        
+        
+            <div class="article-image">
+                <img src="/p/%E7%AE%80%E6%98%93tcp%E6%9C%8D%E5%8A%A1%E5%99%A8/029.155943df5a1ed5ef7aeb3d74a37bef67_hu5f7dae7e78ac97b0b045f4b1159a4d54_14023957_250x150_fill_q75_box_smart1.jpg" 
+                        width="250" 
+                        height="150" 
+                        loading="lazy" 
+                        data-key="简易Tcp服务器" 
+                        data-hash="md5-FVlD31oe1e966z10o3vvZw==">
+                
+            </div>
+        
+
+        <div class="article-details">
+            <h2 class="article-title">简易Tcp服务器</h2>
+        </div>
+    </a>
+</article>
+                
+                    
+<article class="has-image">
+    <a href="/p/dns%E5%8D%8F%E8%AE%AE%E8%A7%A3%E6%9E%90/">
+        
+        
+            <div class="article-image">
+                <img src="/p/dns%E5%8D%8F%E8%AE%AE%E8%A7%A3%E6%9E%90/081.eec9a01e1f368bff905b9f4613a97d42_hu7f5bc23efa6e31f2e831fa0dcdad6471_5540510_250x150_fill_q75_box_smart1.jpg" 
+                        width="250" 
+                        height="150" 
+                        loading="lazy" 
+                        data-key="DNS协议解析" 
+                        data-hash="md5-7smgHh82i/&#43;QW59GE6l9Qg==">
+                
+            </div>
+        
+
+        <div class="article-details">
+            <h2 class="article-title">DNS协议解析</h2>
+        </div>
+    </a>
+</article>
+                
+                    
+<article class="has-image">
+    <a href="/p/%E5%86%85%E5%AD%98%E6%B1%A0/">
+        
+        
+            <div class="article-image">
+                <img src="/p/%E5%86%85%E5%AD%98%E6%B1%A0/244.71de31cc6652d9902ea8c651f0059650_hud068d333fa339d76c3f1e66a3f8bf604_8126422_250x150_fill_q75_box_smart1.jpg" 
+                        width="250" 
+                        height="150" 
+                        loading="lazy" 
+                        data-key="内存池" 
+                        data-hash="md5-cd4xzGZS2ZAuqMZR8AWWUA==">
+                
+            </div>
+        
+
+        <div class="article-details">
+            <h2 class="article-title">内存池</h2>
+        </div>
+    </a>
+</article>
+                
+                    
+<article class="has-image">
+    <a href="/p/%E7%BA%BF%E7%A8%8B%E6%B1%A0/">
+        
+        
+            <div class="article-image">
+                <img src="/p/%E7%BA%BF%E7%A8%8B%E6%B1%A0/240.1d66d2f2f5cf2eed0d60df1bd2c599c2_huc6553c3d943592fc8492e4a8a4385797_5666304_250x150_fill_q75_box_smart1.jpg" 
+                        width="250" 
+                        height="150" 
+                        loading="lazy" 
+                        data-key="线程池" 
+                        data-hash="md5-HWbS8vXPLu0NYN8b0sWZwg==">
+                
+            </div>
+        
+
+        <div class="article-details">
+            <h2 class="article-title">线程池</h2>
+        </div>
+    </a>
+</article>
+                
+                    
+<article class="has-image">
+    <a href="/p/%E7%BA%BF%E7%A8%8B%E6%B1%A0%E8%BF%9B%E9%98%B6%E7%89%88/">
+        
+        
+            <div class="article-image">
+                <img src="/p/%E7%BA%BF%E7%A8%8B%E6%B1%A0%E8%BF%9B%E9%98%B6%E7%89%88/241.67ff17709516aab444e7c867cfe2b735_hudd714e7c3305b4c239dc02d266d283b9_7211866_250x150_fill_q75_box_smart1.jpg" 
+                        width="250" 
+                        height="150" 
+                        loading="lazy" 
+                        data-key="线程池进阶版" 
+                        data-hash="md5-Z/8XcJUWqrRE58hnz&#43;K3NQ==">
+                
+            </div>
+        
+
+        <div class="article-details">
+            <h2 class="article-title">线程池进阶版</h2>
+        </div>
+    </a>
+</article>
+                
+            </div>
+        </div>
+    
+</aside>
+
+     
+     
+        
+    <div class="disqus-container">
+    <div id="disqus_thread"></div>
+<script type="application/javascript">
+    var disqus_config = function () {
+    
+    
+    
+    };
+    (function() {
+        if (["localhost", "127.0.0.1"].indexOf(window.location.hostname) != -1) {
+            document.getElementById('disqus_thread').innerHTML = 'Disqus comments not available by default when the website is previewed locally.';
+            return;
+        }
+        var d = document, s = d.createElement('script'); s.async = true;
+        s.src = '//' + "hugo-theme-stack" + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="https://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+</div>
+
+<style>
+    .disqus-container {
+        background-color: var(--card-background);
+        border-radius: var(--card-border-radius);
+        box-shadow: var(--shadow-l1);
+        padding: var(--card-padding);
+    }
+</style>
+
+<script>
+    window.addEventListener('onColorSchemeChange', (e) => {
+        if (DISQUS) {
+            DISQUS.reset({
+                reload: true
+            });
+        }
+    })
+</script>
+
+    
+
+    <footer class="site-footer">
+    <section class="copyright">
+        &copy; 
+        
+            2020 - 
+        
+        2021 Gao&#39;s happy day
+    </section>
+    
+    <section class="powerby">
+        Built with <a href="https://gohugo.io/" target="_blank" rel="noopener">Hugo</a> <br />
+        Theme <b><a href="https://github.com/CaiJimmy/hugo-theme-stack" target="_blank" rel="noopener" data-version="3.2.0">Stack</a></b> designed by <a href="https://jimmycai.com" target="_blank" rel="noopener">Jimmy</a>
+    </section>
+</footer>
+
+
+    
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+    
+    <div class="pswp__bg"></div>
+
+    
+    <div class="pswp__scroll-wrap">
+
+        
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+
+        
+        <div class="pswp__ui pswp__ui--hidden">
+
+            <div class="pswp__top-bar">
+
+                
+
+                <div class="pswp__counter"></div>
+
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+
+                <button class="pswp__button pswp__button--share" title="Share"></button>
+
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+
+                
+                
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                        <div class="pswp__preloader__cut">
+                            <div class="pswp__preloader__donut"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div>
+            </div>
+
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div><script 
+                src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js"integrity="sha256-ePwmChbbvXbsO02lbM3HoHbSHTHFAeChekF1xKJdleo="crossorigin="anonymous"
+                defer="true"
+                >
+            </script><script 
+                src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js"integrity="sha256-UKkzOn/w1mBxRmLLGrSeyB4e1xbrp4xylgAWb3M42pU="crossorigin="anonymous"
+                defer="true"
+                >
+            </script><link 
+                rel="stylesheet" 
+                href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.css"integrity="sha256-c0uckgykQ9v5k&#43;IqViZOZKc47Jn7KQil4/MP3ySA3F8="crossorigin="anonymous"
+            ><link 
+                rel="stylesheet" 
+                href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.css"integrity="sha256-SBLU4vv6CA6lHsZ1XyTdhyjJxCjPif/TRkjnsyGAGnE="crossorigin="anonymous"
+            >
+
+            </main>
+    
+        <aside class="sidebar right-sidebar sticky">
+            <section class="widget archives">
+                <div class="widget-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-hash" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <line x1="5" y1="9" x2="19" y2="9" />
+  <line x1="5" y1="15" x2="19" y2="15" />
+  <line x1="11" y1="4" x2="7" y2="20" />
+  <line x1="17" y1="4" x2="13" y2="20" />
+</svg>
+
+
+
+                </div>
+                <h2 class="widget-title section-title">Table of contents</h2>
+                
+                <div class="widget--toc">
+                    <nav id="TableOfContents">
+  <ol>
+    <li><a href="#font-size--6-color--red--基本方案font"><!-- raw HTML omitted --> 基本方案：<!-- raw HTML omitted --></a></li>
+    <li><a href="#font-color--red--size--6代码实现font"><!-- raw HTML omitted -->代码实现：<!-- raw HTML omitted --></a></li>
+  </ol>
+</nav>
+                </div>
+            </section>
+        </aside>
+    
+
+        </div>
+        <script 
+                src="https://cdn.jsdelivr.net/npm/node-vibrant@3.1.5/dist/vibrant.min.js"integrity="sha256-5NovOZc4iwiAWTYIFiIM7DxKUXKWvpVEuMEPLzcm5/g="crossorigin="anonymous"
+                defer="false"
+                >
+            </script><script type="text/javascript" src="/ts/main.js" defer></script>
+<script>
+    (function () {
+        const customFont = document.createElement('link');
+        customFont.href = "https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap";
+
+        customFont.type = "text/css";
+        customFont.rel = "stylesheet";
+
+        document.head.appendChild(customFont);
+    }());
+</script>
+
+    </body>
+</html>

@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>配置 on Gao&#39;s happy day</title>
+    <link>https://gao377020481.github.io/tags/%E9%85%8D%E7%BD%AE/</link>
+    <description>Recent content in 配置 on Gao&#39;s happy day</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Thu, 10 Sep 2020 00:00:00 +0000</lastBuildDate><atom:link href="https://gao377020481.github.io/tags/%E9%85%8D%E7%BD%AE/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>ubuntu-server虚拟机配置</title>
+      <link>https://gao377020481.github.io/p/ubuntu-server%E8%99%9A%E6%8B%9F%E6%9C%BA%E9%85%8D%E7%BD%AE/</link>
+      <pubDate>Thu, 10 Sep 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://gao377020481.github.io/p/ubuntu-server%E8%99%9A%E6%8B%9F%E6%9C%BA%E9%85%8D%E7%BD%AE/</guid>
+      <description>ubuntu-server虚拟机配置 Sh配置 安装完ubuntu后先配置sh这样可以通过xshell连接 只需要：
+sudo apt-get install openssh-server ssh即可 Samba配置 然后安装samba
+sudo apt-get install samba 创建share文件夹
+cd /home sudo mkdir share sudo chmod 777 share 然后在/etc/samba里配置smb.conf 文件 在文件尾部添加：
+[share] comment = My Samba path = /home/gao/share browseable = yes writeable = yes 然后设置密码
+sudo smbpasswd -a gao 然后去主机上映射盘符就可以方便的访问 在文件框内输入\192.168.134.xxx 也就是虚拟机ip就可以 把share映射为盘符
+gcc配置 换apt阿里源：
+cd /etc/apt sudo mv source.list source.list.back sudo vim source.list 改为：
+deb-src http://archive.ubuntu.com/ubuntu xenial main restricted #Added by software-properties deb http://mirrors.</description>
+    </item>
+    
+  </channel>
+</rss>
