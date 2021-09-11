@@ -123,7 +123,7 @@
 
 
                 <time class="article-time--reading">
-                    6 minute read
+                    9 minute read
                 </time>
             </div>
         
@@ -133,19 +133,19 @@
 </header>
 
     <section class="article-content">
-    <h1 id="font-size--10定时器-font"><!-- raw HTML omitted -->定时器 <!-- raw HTML omitted --></h1>
+    <p><!-- raw HTML omitted -->定时器 <!-- raw HTML omitted --></p>
 <p>定时器作用很多，常见于心跳检测，冷却等等
 实现时区别主要在于定时器队列的管控（排序）</p>
 <h2 id="font-size--6-color--red--基本方案font"><!-- raw HTML omitted --> 基本方案：<!-- raw HTML omitted --></h2>
-<p><!-- raw HTML omitted -->1. 红黑树：<!-- raw HTML omitted --> 
+<h3 id="font-size--5红黑树font"><!-- raw HTML omitted -->红黑树：<!-- raw HTML omitted --></h3>
 <!-- raw HTML omitted -->
-使用红黑树对定时器排序，排序依据为定时器过期时间，每隔单位时间检查红黑树中最小时间是否小于等于当前时间，如果小于等于就删除节点并触发节点的callback。时间复杂度增删O(logn)，Nginx使用红黑树。删除添加操作自旋。
-<!-- raw HTML omitted --></p>
-<p><!-- raw HTML omitted -->2. 最小堆：<!-- raw HTML omitted --></p>
+<p>使用红黑树对定时器排序，排序依据为定时器过期时间，每隔单位时间检查红黑树中最小时间是否小于等于当前时间，如果小于等于就删除节点并触发节点的callback。时间复杂度增删O(logn)，Nginx使用红黑树。删除添加操作自旋。</p>
+<!-- raw HTML omitted -->
+<h3 id="font-size--5最小堆font"><!-- raw HTML omitted -->最小堆：<!-- raw HTML omitted --></h3>
 <!-- raw HTML omitted -->
 <p>最小堆根节点最小，直接拿出根节点与当前时间比较即可，删除操作将根节点与末尾节点对换并删除末尾节点然后将新的根节点下沉，添加时加入末尾节点并上升。</p>
 <!-- raw HTML omitted -->
-<p><!-- raw HTML omitted --> 3. 时间轮： <!-- raw HTML omitted --></p>
+<h3 id="font-size--5-时间轮-font"><!-- raw HTML omitted --> 时间轮： <!-- raw HTML omitted --></h3>
 <!-- raw HTML omitted -->
 <p>时间轮可以分为单层级与多层级。简单的单层级时间轮使用初始化好的链表数组来存储对应的事件节点链表，时间数据结构中一般包含引用计数，该数据结构只有在引用计数置零后销毁，一般也代表着事件对应的资源可以释放。单层时间轮的大小至少需要大于最长定时时间/单位时间，举例：每5秒发送一个心跳包，连接收到心跳包时需要开启一个10秒的定时器并将事件引用计数加一（事件数据结构插入链表数组中10秒后的链表中），也就是最长定时10秒，10秒后检查该连接对应的事件并将引用计数减一，如果减一后为0就说明连接超时，释放所有资源，关闭事件。在该例子中，初始化的链表数组大小至少为11，因为假如在第0秒来一个心跳包，我们就需要在第10号位置将该连接对应的事件节点加入事件链表中，如果小于11，比如为8，那从0开始往后10个的位置就是在2号位置，那2秒后就得触发了，这与我们设置的10秒定时时间不一致。</p>
 <p><figure 
@@ -162,7 +162,7 @@
 </figure></p>
 <!-- raw HTML omitted -->
 <h2 id="font-color--red--size--6代码实现font"><!-- raw HTML omitted -->代码实现：<!-- raw HTML omitted --></h2>
-<p><!-- raw HTML omitted --> 1. 红黑树：<!-- raw HTML omitted --></p>
+<h3 id="font-size--5-红黑树font"><!-- raw HTML omitted --> 红黑树：<!-- raw HTML omitted --></h3>
 <p>红黑树数据结构直接使用nginx自带的rbtree头文件，就不自己写了</p>
 <p><!-- raw HTML omitted --> 红黑树定时器头文件： <!-- raw HTML omitted --></p>
 <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-c++" data-lang="c++"><span class="cp">#ifndef _MARK_RBT_
@@ -283,7 +283,7 @@
 </code></pre></div><!-- raw HTML omitted -->
 <p>主函数中主事件循环使用单位10秒usleep(10000),usleep中参数单位为ms</p>
 <!-- raw HTML omitted -->
-<p><!-- raw HTML omitted --> 2. 最小堆：<!-- raw HTML omitted --></p>
+<h3 id="font-size--5-最小堆font"><!-- raw HTML omitted --> 最小堆：<!-- raw HTML omitted --></h3>
 <!-- raw HTML omitted -->
 <p><!-- raw HTML omitted --> 最小堆定时器头文件： <!-- raw HTML omitted --></p>
 <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-c++" data-lang="c++"><span class="cp">#pragma once
@@ -487,7 +487,7 @@
 </code></pre></div><!-- raw HTML omitted -->
 <p>思路与红黑树的大致相同，不做赘述</p>
 <!-- raw HTML omitted -->
-<p><!-- raw HTML omitted --> 3. 单层时间轮：<!-- raw HTML omitted --></p>
+<h3 id="font-size--5-单层时间轮font"><!-- raw HTML omitted --> 单层时间轮：<!-- raw HTML omitted --></h3>
 <!-- raw HTML omitted -->
 <p>与最小堆不同，我们这里需要使用静态数组，宏定义数组大小即可，最长定时时间10秒，单位时间1秒，所以使用大于10的数组大小。</p>
 <!-- raw HTML omitted -->
@@ -672,7 +672,305 @@
 <p>link_clear(link_list_t *list)清空一个时间戳上的整个定时器链表</p>
 <p>check_conn(link_list_t *tw) 检查当前时间戳对应定时器链表的连接，并对齐引用计数减一，引用计数为0可以做相应处理（回调函数中可以关闭conn，或者给一个信号到管理连接的线程等等）</p>
 <!-- raw HTML omitted -->
+<h3 id="font-size--5-多层时间轮font"><!-- raw HTML omitted --> 多层时间轮：<!-- raw HTML omitted --></h3>
+<!-- raw HTML omitted -->
+<p>多层时间轮就是在单层的基础上添加几个粒度更大的层，我们只在粒度最小的层上运行定时器（粒度最小的层运行与单层时间轮一样）即可，用钟表举例：最小层运行一周代表秒针转一圈也就是需要转分针了，这时就从第二层上映射下一分钟的所有定时任务到最小层上，第二层每一分钟的任务同时也需要前移（只要移动指针就可以，不用移动所有任务链表），前移操作很容易理解，但映射需要说一下。举例：</p>
+<p>我们有一个定时任务是在1分27秒后触发，模拟时钟，第一层的数组大小为60，代表60秒，第二层也是60代表60分钟，第三层24。假设此时tick（时间戳）为0，我们需要将这个定时任务放置于第二层的第0号位置（这里先不区分粒度），并在任务内保存准确的expire时间（1分27），当第一层60秒转完后，我们就需要开始映射，将第二层0号位置上的一串定时任务遍历，一个一个根据其保存的expire时间对60秒取余获得其应该在第一层的位置（27秒对应26号位置），映射到第一层上的26号位置（串到26号下面的链表中）。在下一轮的第一层运转中就会触发定时任务啦。同理，第三层（时针）到第二层（分针）的映射也是相同，使用mask取出定时任务的分位（比如1小时32分15秒就是取出32分，对应第二层的31号位置），找到对应位置放到对应链表中去。</p>
+<p>写的代码的时间轮结构如图：</p>
+<p><figure 
+	>
+	<a href="/post/timer/tw2.jpg" >
+		<img src="/post/timer/tw2.jpg"
+			
+			
+			
+			loading="lazy"
+			>
+	</a>
+	
+</figure></p>
+<p>这里所有层级的位数加起来刚好是32位，最低层级使用2的8次方，后续四层都为2的四次方，这样的设计正好用完一个unsigned INT数，在使用mask的时候十分方便。最低层级粒度为10ms。</p>
+<p>这里直接附上代码，自行阅读即可：</p>
+<!-- raw HTML omitted -->
+<p><strong>头文件</strong></p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-c++" data-lang="c++">
+<span class="cp">#ifndef _MARK_TIMEWHEEL_
+</span><span class="cp">#define _MARK_TIMEWHEEL_
+</span><span class="cp"></span>
+<span class="cp">#include</span> <span class="cpf">&lt;stdint.h&gt;</span><span class="cp">
+</span><span class="cp"></span>
+<span class="cp">#define TIME_NEAR_SHIFT 8
+</span><span class="cp">#define TIME_NEAR (1 &lt;&lt; TIME_NEAR_SHIFT)
+</span><span class="cp">#define TIME_LEVEL_SHIFT 6
+</span><span class="cp">#define TIME_LEVEL (1 &lt;&lt; TIME_LEVEL_SHIFT)
+</span><span class="cp">#define TIME_NEAR_MASK (TIME_NEAR-1)
+</span><span class="cp">#define TIME_LEVEL_MASK (TIME_LEVEL-1)
+</span><span class="cp"></span>
+<span class="k">typedef</span> <span class="k">struct</span> <span class="nc">timer_node</span> <span class="n">timer_node_t</span><span class="p">;</span>
+<span class="k">typedef</span> <span class="nf">void</span> <span class="p">(</span><span class="o">*</span><span class="n">handler_pt</span><span class="p">)</span> <span class="p">(</span><span class="k">struct</span> <span class="nc">timer_node</span> <span class="o">*</span><span class="n">node</span><span class="p">);</span>
 
+<span class="k">struct</span> <span class="nc">timer_node</span> <span class="p">{</span>
+	<span class="k">struct</span> <span class="nc">timer_node</span> <span class="o">*</span><span class="n">next</span><span class="p">;</span>
+	<span class="kt">uint32_t</span> <span class="n">expire</span><span class="p">;</span><span class="c1">//过期时间（非定时时间）
+</span><span class="c1"></span>    <span class="n">handler_pt</span> <span class="n">callback</span><span class="p">;</span>
+    <span class="kt">uint8_t</span> <span class="n">cancel</span><span class="p">;</span> <span class="c1">//由于idx很多且不断变化很难找到特定节点，通过设计cancel成员来在触发时取消触发操作
+</span><span class="c1"></span>	<span class="kt">int</span> <span class="n">id</span><span class="p">;</span> <span class="c1">// 此时携带参数
+</span><span class="c1"></span><span class="p">};</span>
+
+<span class="n">timer_node_t</span><span class="o">*</span> <span class="nf">add_timer</span><span class="p">(</span><span class="kt">int</span> <span class="n">time</span><span class="p">,</span> <span class="n">handler_pt</span> <span class="n">func</span><span class="p">,</span> <span class="kt">int</span> <span class="n">threadid</span><span class="p">);</span>
+
+<span class="kt">void</span> <span class="nf">expire_timer</span><span class="p">(</span><span class="kt">void</span><span class="p">);</span>
+
+<span class="kt">void</span> <span class="nf">del_timer</span><span class="p">(</span><span class="n">timer_node_t</span><span class="o">*</span> <span class="n">node</span><span class="p">);</span>
+
+<span class="kt">void</span> <span class="nf">init_timer</span><span class="p">(</span><span class="kt">void</span><span class="p">);</span>
+
+<span class="kt">void</span> <span class="nf">clear_timer</span><span class="p">();</span>
+
+<span class="cp">#endif
+</span><span class="cp"></span>
+
+
+</code></pre></div><p><strong>主文件</strong></p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-c++" data-lang="c++">
+<span class="cp">#include</span> <span class="cpf">&#34;spinlock.h&#34;</span><span class="cp">
+</span><span class="cp">#include</span> <span class="cpf">&#34;timewheel.h&#34;</span><span class="cp">
+</span><span class="cp">#include</span> <span class="cpf">&lt;string.h&gt;</span><span class="cp">
+</span><span class="cp">#include</span> <span class="cpf">&lt;stddef.h&gt;</span><span class="cp">
+</span><span class="cp">#include</span> <span class="cpf">&lt;stdlib.h&gt;</span><span class="cp">
+</span><span class="cp"></span>
+<span class="cp">#if defined(__APPLE__)
+</span><span class="cp">#include</span> <span class="cpf">&lt;AvailabilityMacros.h&gt;</span><span class="cp">
+</span><span class="cp">#include</span> <span class="cpf">&lt;sys/time.h&gt;</span><span class="cp">
+</span><span class="cp">#include</span> <span class="cpf">&lt;mach/task.h&gt;</span><span class="cp">
+</span><span class="cp">#include</span> <span class="cpf">&lt;mach/mach.h&gt;</span><span class="cp">
+</span><span class="cp">#else
+</span><span class="cp">#include</span> <span class="cpf">&lt;time.h&gt;</span><span class="cp">
+</span><span class="cp">#endif
+</span><span class="cp"></span>
+<span class="k">typedef</span> <span class="k">struct</span> <span class="nc">link_list</span> <span class="p">{</span>
+	<span class="n">timer_node_t</span> <span class="n">head</span><span class="p">;</span>
+	<span class="n">timer_node_t</span> <span class="o">*</span><span class="n">tail</span><span class="p">;</span>
+<span class="p">}</span><span class="n">link_list_t</span><span class="p">;</span>
+
+<span class="k">typedef</span> <span class="k">struct</span> <span class="nc">timer</span> <span class="p">{</span>
+	<span class="n">link_list_t</span> <span class="n">near</span><span class="p">[</span><span class="n">TIME_NEAR</span><span class="p">];</span>
+	<span class="n">link_list_t</span> <span class="n">t</span><span class="p">[</span><span class="mi">4</span><span class="p">][</span><span class="n">TIME_LEVEL</span><span class="p">];</span>
+	<span class="k">struct</span> <span class="nc">spinlock</span> <span class="n">lock</span><span class="p">;</span>
+	<span class="kt">uint32_t</span> <span class="n">time</span><span class="p">;</span>
+	<span class="kt">uint64_t</span> <span class="n">current</span><span class="p">;</span>
+	<span class="kt">uint64_t</span> <span class="n">current_point</span><span class="p">;</span>
+<span class="p">}</span><span class="n">s_timer_t</span><span class="p">;</span>
+
+<span class="k">static</span> <span class="n">s_timer_t</span> <span class="o">*</span> <span class="n">TI</span> <span class="o">=</span> <span class="nb">NULL</span><span class="p">;</span>
+
+<span class="n">timer_node_t</span> <span class="o">*</span>
+<span class="nf">link_clear</span><span class="p">(</span><span class="n">link_list_t</span> <span class="o">*</span><span class="n">list</span><span class="p">)</span> <span class="p">{</span>
+	<span class="n">timer_node_t</span> <span class="o">*</span> <span class="n">ret</span> <span class="o">=</span> <span class="n">list</span><span class="o">-&gt;</span><span class="n">head</span><span class="p">.</span><span class="n">next</span><span class="p">;</span>
+	<span class="n">list</span><span class="o">-&gt;</span><span class="n">head</span><span class="p">.</span><span class="n">next</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+	<span class="n">list</span><span class="o">-&gt;</span><span class="n">tail</span> <span class="o">=</span> <span class="o">&amp;</span><span class="p">(</span><span class="n">list</span><span class="o">-&gt;</span><span class="n">head</span><span class="p">);</span>
+
+	<span class="k">return</span> <span class="n">ret</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kt">void</span>
+<span class="nf">link</span><span class="p">(</span><span class="n">link_list_t</span> <span class="o">*</span><span class="n">list</span><span class="p">,</span> <span class="n">timer_node_t</span> <span class="o">*</span><span class="n">node</span><span class="p">)</span> <span class="p">{</span>
+	<span class="n">list</span><span class="o">-&gt;</span><span class="n">tail</span><span class="o">-&gt;</span><span class="n">next</span> <span class="o">=</span> <span class="n">node</span><span class="p">;</span>
+	<span class="n">list</span><span class="o">-&gt;</span><span class="n">tail</span> <span class="o">=</span> <span class="n">node</span><span class="p">;</span>
+	<span class="n">node</span><span class="o">-&gt;</span><span class="n">next</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kt">void</span>
+<span class="nf">add_node</span><span class="p">(</span><span class="n">s_timer_t</span> <span class="o">*</span><span class="n">T</span><span class="p">,</span> <span class="n">timer_node_t</span> <span class="o">*</span><span class="n">node</span><span class="p">)</span> <span class="p">{</span>
+	<span class="kt">uint32_t</span> <span class="n">time</span><span class="o">=</span><span class="n">node</span><span class="o">-&gt;</span><span class="n">expire</span><span class="p">;</span>
+	<span class="kt">uint32_t</span> <span class="n">current_time</span><span class="o">=</span><span class="n">T</span><span class="o">-&gt;</span><span class="n">time</span><span class="p">;</span>
+	<span class="kt">uint32_t</span> <span class="n">msec</span> <span class="o">=</span> <span class="n">time</span> <span class="o">-</span> <span class="n">current_time</span><span class="p">;</span>
+	<span class="k">if</span> <span class="p">(</span><span class="n">msec</span> <span class="o">&lt;</span> <span class="n">TIME_NEAR</span><span class="p">)</span> <span class="p">{</span> <span class="c1">//[0, 0x100)
+</span><span class="c1"></span>		<span class="n">link</span><span class="p">(</span><span class="o">&amp;</span><span class="n">T</span><span class="o">-&gt;</span><span class="n">near</span><span class="p">[</span><span class="n">time</span><span class="o">&amp;</span><span class="n">TIME_NEAR_MASK</span><span class="p">],</span><span class="n">node</span><span class="p">);</span>
+	<span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="n">msec</span> <span class="o">&lt;</span> <span class="p">(</span><span class="mi">1</span> <span class="o">&lt;&lt;</span> <span class="p">(</span><span class="n">TIME_NEAR_SHIFT</span><span class="o">+</span><span class="n">TIME_LEVEL_SHIFT</span><span class="p">)))</span> <span class="p">{</span><span class="c1">//[0x100, 0x4000)
+</span><span class="c1"></span>		<span class="n">link</span><span class="p">(</span><span class="o">&amp;</span><span class="n">T</span><span class="o">-&gt;</span><span class="n">t</span><span class="p">[</span><span class="mi">0</span><span class="p">][((</span><span class="n">time</span><span class="o">&gt;&gt;</span><span class="n">TIME_NEAR_SHIFT</span><span class="p">)</span> <span class="o">&amp;</span> <span class="n">TIME_LEVEL_MASK</span><span class="p">)],</span><span class="n">node</span><span class="p">);</span>	
+	<span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="n">msec</span> <span class="o">&lt;</span> <span class="p">(</span><span class="mi">1</span> <span class="o">&lt;&lt;</span> <span class="p">(</span><span class="n">TIME_NEAR_SHIFT</span><span class="o">+</span><span class="mi">2</span><span class="o">*</span><span class="n">TIME_LEVEL_SHIFT</span><span class="p">)))</span> <span class="p">{</span><span class="c1">//[0x4000, 0x100000)
+</span><span class="c1"></span>		<span class="n">link</span><span class="p">(</span><span class="o">&amp;</span><span class="n">T</span><span class="o">-&gt;</span><span class="n">t</span><span class="p">[</span><span class="mi">1</span><span class="p">][((</span><span class="n">time</span><span class="o">&gt;&gt;</span><span class="p">(</span><span class="n">TIME_NEAR_SHIFT</span> <span class="o">+</span> <span class="n">TIME_LEVEL_SHIFT</span><span class="p">))</span> <span class="o">&amp;</span> <span class="n">TIME_LEVEL_MASK</span><span class="p">)],</span><span class="n">node</span><span class="p">);</span>	
+	<span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="n">msec</span> <span class="o">&lt;</span> <span class="p">(</span><span class="mi">1</span> <span class="o">&lt;&lt;</span> <span class="p">(</span><span class="n">TIME_NEAR_SHIFT</span><span class="o">+</span><span class="mi">3</span><span class="o">*</span><span class="n">TIME_LEVEL_SHIFT</span><span class="p">)))</span> <span class="p">{</span><span class="c1">//[0x100000, 0x4000000)
+</span><span class="c1"></span>		<span class="n">link</span><span class="p">(</span><span class="o">&amp;</span><span class="n">T</span><span class="o">-&gt;</span><span class="n">t</span><span class="p">[</span><span class="mi">2</span><span class="p">][((</span><span class="n">time</span><span class="o">&gt;&gt;</span><span class="p">(</span><span class="n">TIME_NEAR_SHIFT</span> <span class="o">+</span> <span class="mi">2</span><span class="o">*</span><span class="n">TIME_LEVEL_SHIFT</span><span class="p">))</span> <span class="o">&amp;</span> <span class="n">TIME_LEVEL_MASK</span><span class="p">)],</span><span class="n">node</span><span class="p">);</span>	
+	<span class="p">}</span> <span class="k">else</span> <span class="p">{</span><span class="c1">//[0x4000000, 0xffffffff]
+</span><span class="c1"></span>		<span class="n">link</span><span class="p">(</span><span class="o">&amp;</span><span class="n">T</span><span class="o">-&gt;</span><span class="n">t</span><span class="p">[</span><span class="mi">3</span><span class="p">][((</span><span class="n">time</span><span class="o">&gt;&gt;</span><span class="p">(</span><span class="n">TIME_NEAR_SHIFT</span> <span class="o">+</span> <span class="mi">3</span><span class="o">*</span><span class="n">TIME_LEVEL_SHIFT</span><span class="p">))</span> <span class="o">&amp;</span> <span class="n">TIME_LEVEL_MASK</span><span class="p">)],</span><span class="n">node</span><span class="p">);</span>	
+	<span class="p">}</span>
+<span class="p">}</span>
+
+<span class="n">timer_node_t</span><span class="o">*</span>
+<span class="nf">add_timer</span><span class="p">(</span><span class="kt">int</span> <span class="n">time</span><span class="p">,</span> <span class="n">handler_pt</span> <span class="n">func</span><span class="p">,</span> <span class="kt">int</span> <span class="n">threadid</span><span class="p">)</span> <span class="p">{</span>
+	<span class="n">timer_node_t</span> <span class="o">*</span><span class="n">node</span> <span class="o">=</span> <span class="p">(</span><span class="n">timer_node_t</span> <span class="o">*</span><span class="p">)</span><span class="n">malloc</span><span class="p">(</span><span class="k">sizeof</span><span class="p">(</span><span class="o">*</span><span class="n">node</span><span class="p">));</span>
+	<span class="n">spinlock_lock</span><span class="p">(</span><span class="o">&amp;</span><span class="n">TI</span><span class="o">-&gt;</span><span class="n">lock</span><span class="p">);</span>
+	<span class="n">node</span><span class="o">-&gt;</span><span class="n">expire</span> <span class="o">=</span> <span class="n">time</span><span class="o">+</span><span class="n">TI</span><span class="o">-&gt;</span><span class="n">time</span><span class="p">;</span><span class="c1">// 每10ms加1 0
+</span><span class="c1"></span>	<span class="n">node</span><span class="o">-&gt;</span><span class="n">callback</span> <span class="o">=</span> <span class="n">func</span><span class="p">;</span>
+	<span class="n">node</span><span class="o">-&gt;</span><span class="n">id</span> <span class="o">=</span> <span class="n">threadid</span><span class="p">;</span>
+	<span class="k">if</span> <span class="p">(</span><span class="n">time</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+		<span class="n">node</span><span class="o">-&gt;</span><span class="n">callback</span><span class="p">(</span><span class="n">node</span><span class="p">);</span>
+		<span class="n">free</span><span class="p">(</span><span class="n">node</span><span class="p">);</span>
+		<span class="n">spinlock_unlock</span><span class="p">(</span><span class="o">&amp;</span><span class="n">TI</span><span class="o">-&gt;</span><span class="n">lock</span><span class="p">);</span>
+		<span class="k">return</span> <span class="nb">NULL</span><span class="p">;</span>
+	<span class="p">}</span>
+	<span class="n">add_node</span><span class="p">(</span><span class="n">TI</span><span class="p">,</span> <span class="n">node</span><span class="p">);</span>
+	<span class="n">spinlock_unlock</span><span class="p">(</span><span class="o">&amp;</span><span class="n">TI</span><span class="o">-&gt;</span><span class="n">lock</span><span class="p">);</span>
+	<span class="k">return</span> <span class="n">node</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kt">void</span>
+<span class="nf">move_list</span><span class="p">(</span><span class="n">s_timer_t</span> <span class="o">*</span><span class="n">T</span><span class="p">,</span> <span class="kt">int</span> <span class="n">level</span><span class="p">,</span> <span class="kt">int</span> <span class="n">idx</span><span class="p">)</span> <span class="p">{</span>
+	<span class="n">timer_node_t</span> <span class="o">*</span><span class="n">current</span> <span class="o">=</span> <span class="n">link_clear</span><span class="p">(</span><span class="o">&amp;</span><span class="n">T</span><span class="o">-&gt;</span><span class="n">t</span><span class="p">[</span><span class="n">level</span><span class="p">][</span><span class="n">idx</span><span class="p">]);</span>
+	<span class="k">while</span> <span class="p">(</span><span class="n">current</span><span class="p">)</span> <span class="p">{</span>
+		<span class="n">timer_node_t</span> <span class="o">*</span><span class="n">temp</span><span class="o">=</span><span class="n">current</span><span class="o">-&gt;</span><span class="n">next</span><span class="p">;</span>
+		<span class="n">add_node</span><span class="p">(</span><span class="n">T</span><span class="p">,</span><span class="n">current</span><span class="p">);</span>
+		<span class="n">current</span><span class="o">=</span><span class="n">temp</span><span class="p">;</span>
+	<span class="p">}</span>
+<span class="p">}</span>
+
+<span class="kt">void</span>
+<span class="nf">timer_shift</span><span class="p">(</span><span class="n">s_timer_t</span> <span class="o">*</span><span class="n">T</span><span class="p">)</span> <span class="p">{</span>
+	<span class="kt">int</span> <span class="n">mask</span> <span class="o">=</span> <span class="n">TIME_NEAR</span><span class="p">;</span>
+	<span class="kt">uint32_t</span> <span class="n">ct</span> <span class="o">=</span> <span class="o">++</span><span class="n">T</span><span class="o">-&gt;</span><span class="n">time</span><span class="p">;</span>
+	<span class="k">if</span> <span class="p">(</span><span class="n">ct</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+		<span class="n">move_list</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>
+	<span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+		<span class="c1">// ct / 256
+</span><span class="c1"></span>		<span class="kt">uint32_t</span> <span class="n">time</span> <span class="o">=</span> <span class="n">ct</span> <span class="o">&gt;&gt;</span> <span class="n">TIME_NEAR_SHIFT</span><span class="p">;</span>
+		<span class="kt">int</span> <span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span>
+		<span class="c1">// ct % 256 == 0
+</span><span class="c1"></span>		<span class="k">while</span> <span class="p">((</span><span class="n">ct</span> <span class="o">&amp;</span> <span class="p">(</span><span class="n">mask</span><span class="o">-</span><span class="mi">1</span><span class="p">))</span><span class="o">==</span><span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+			<span class="kt">int</span> <span class="n">idx</span><span class="o">=</span><span class="n">time</span> <span class="o">&amp;</span> <span class="n">TIME_LEVEL_MASK</span><span class="p">;</span>
+			<span class="k">if</span> <span class="p">(</span><span class="n">idx</span><span class="o">!=</span><span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+				<span class="n">move_list</span><span class="p">(</span><span class="n">T</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">idx</span><span class="p">);</span>
+				<span class="k">break</span><span class="p">;</span>				
+			<span class="p">}</span>
+			<span class="n">mask</span> <span class="o">&lt;&lt;=</span> <span class="n">TIME_LEVEL_SHIFT</span><span class="p">;</span>
+			<span class="n">time</span> <span class="o">&gt;&gt;=</span> <span class="n">TIME_LEVEL_SHIFT</span><span class="p">;</span>
+			<span class="o">++</span><span class="n">i</span><span class="p">;</span>
+		<span class="p">}</span>
+	<span class="p">}</span>
+<span class="p">}</span>
+
+<span class="kt">void</span>
+<span class="nf">dispatch_list</span><span class="p">(</span><span class="n">timer_node_t</span> <span class="o">*</span><span class="n">current</span><span class="p">)</span> <span class="p">{</span>
+	<span class="k">do</span> <span class="p">{</span>
+		<span class="n">timer_node_t</span> <span class="o">*</span> <span class="n">temp</span> <span class="o">=</span> <span class="n">current</span><span class="p">;</span>
+		<span class="n">current</span><span class="o">=</span><span class="n">current</span><span class="o">-&gt;</span><span class="n">next</span><span class="p">;</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">temp</span><span class="o">-&gt;</span><span class="n">cancel</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span>
+            <span class="n">temp</span><span class="o">-&gt;</span><span class="n">callback</span><span class="p">(</span><span class="n">temp</span><span class="p">);</span>
+		<span class="n">free</span><span class="p">(</span><span class="n">temp</span><span class="p">);</span>
+	<span class="p">}</span> <span class="k">while</span> <span class="p">(</span><span class="n">current</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="kt">void</span>
+<span class="nf">timer_execute</span><span class="p">(</span><span class="n">s_timer_t</span> <span class="o">*</span><span class="n">T</span><span class="p">)</span> <span class="p">{</span>
+	<span class="kt">int</span> <span class="n">idx</span> <span class="o">=</span> <span class="n">T</span><span class="o">-&gt;</span><span class="n">time</span> <span class="o">&amp;</span> <span class="n">TIME_NEAR_MASK</span><span class="p">;</span>
+	
+	<span class="k">while</span> <span class="p">(</span><span class="n">T</span><span class="o">-&gt;</span><span class="n">near</span><span class="p">[</span><span class="n">idx</span><span class="p">].</span><span class="n">head</span><span class="p">.</span><span class="n">next</span><span class="p">)</span> <span class="p">{</span>
+		<span class="n">timer_node_t</span> <span class="o">*</span><span class="n">current</span> <span class="o">=</span> <span class="n">link_clear</span><span class="p">(</span><span class="o">&amp;</span><span class="n">T</span><span class="o">-&gt;</span><span class="n">near</span><span class="p">[</span><span class="n">idx</span><span class="p">]);</span>
+		<span class="n">spinlock_unlock</span><span class="p">(</span><span class="o">&amp;</span><span class="n">T</span><span class="o">-&gt;</span><span class="n">lock</span><span class="p">);</span>
+		<span class="n">dispatch_list</span><span class="p">(</span><span class="n">current</span><span class="p">);</span>
+		<span class="n">spinlock_lock</span><span class="p">(</span><span class="o">&amp;</span><span class="n">T</span><span class="o">-&gt;</span><span class="n">lock</span><span class="p">);</span>
+	<span class="p">}</span>
+<span class="p">}</span>
+
+<span class="kt">void</span> 
+<span class="nf">timer_update</span><span class="p">(</span><span class="n">s_timer_t</span> <span class="o">*</span><span class="n">T</span><span class="p">)</span> <span class="p">{</span>
+	<span class="n">spinlock_lock</span><span class="p">(</span><span class="o">&amp;</span><span class="n">T</span><span class="o">-&gt;</span><span class="n">lock</span><span class="p">);</span>
+	<span class="n">timer_execute</span><span class="p">(</span><span class="n">T</span><span class="p">);</span>
+	<span class="n">timer_shift</span><span class="p">(</span><span class="n">T</span><span class="p">);</span>
+	<span class="n">timer_execute</span><span class="p">(</span><span class="n">T</span><span class="p">);</span>
+	<span class="n">spinlock_unlock</span><span class="p">(</span><span class="o">&amp;</span><span class="n">T</span><span class="o">-&gt;</span><span class="n">lock</span><span class="p">);</span>
+<span class="p">}</span>
+
+<span class="kt">void</span>
+<span class="nf">del_timer</span><span class="p">(</span><span class="n">timer_node_t</span> <span class="o">*</span><span class="n">node</span><span class="p">)</span> <span class="p">{</span>
+    <span class="n">node</span><span class="o">-&gt;</span><span class="n">cancel</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="n">s_timer_t</span> <span class="o">*</span>
+<span class="nf">timer_create_timer</span><span class="p">()</span> <span class="p">{</span>
+	<span class="n">s_timer_t</span> <span class="o">*</span><span class="n">r</span><span class="o">=</span><span class="p">(</span><span class="n">s_timer_t</span> <span class="o">*</span><span class="p">)</span><span class="n">malloc</span><span class="p">(</span><span class="k">sizeof</span><span class="p">(</span><span class="n">s_timer_t</span><span class="p">));</span>
+	<span class="n">memset</span><span class="p">(</span><span class="n">r</span><span class="p">,</span><span class="mi">0</span><span class="p">,</span><span class="k">sizeof</span><span class="p">(</span><span class="o">*</span><span class="n">r</span><span class="p">));</span>
+	<span class="kt">int</span> <span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">;</span>
+	<span class="k">for</span> <span class="p">(</span><span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span><span class="n">i</span><span class="o">&lt;</span><span class="n">TIME_NEAR</span><span class="p">;</span><span class="n">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+		<span class="n">link_clear</span><span class="p">(</span><span class="o">&amp;</span><span class="n">r</span><span class="o">-&gt;</span><span class="n">near</span><span class="p">[</span><span class="n">i</span><span class="p">]);</span>
+	<span class="p">}</span>
+	<span class="k">for</span> <span class="p">(</span><span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span><span class="n">i</span><span class="o">&lt;</span><span class="mi">4</span><span class="p">;</span><span class="n">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+		<span class="k">for</span> <span class="p">(</span><span class="n">j</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span><span class="n">j</span><span class="o">&lt;</span><span class="n">TIME_LEVEL</span><span class="p">;</span><span class="n">j</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+			<span class="n">link_clear</span><span class="p">(</span><span class="o">&amp;</span><span class="n">r</span><span class="o">-&gt;</span><span class="n">t</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">]);</span>
+		<span class="p">}</span>
+	<span class="p">}</span>
+	<span class="n">spinlock_init</span><span class="p">(</span><span class="o">&amp;</span><span class="n">r</span><span class="o">-&gt;</span><span class="n">lock</span><span class="p">);</span>
+	<span class="n">r</span><span class="o">-&gt;</span><span class="n">current</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+	<span class="k">return</span> <span class="n">r</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kt">uint64_t</span>
+<span class="nf">gettime</span><span class="p">()</span> <span class="p">{</span>
+	<span class="kt">uint64_t</span> <span class="n">t</span><span class="p">;</span>
+<span class="cp">#if !defined(__APPLE__) || defined(AVAILABLE_MAC_OS_X_VERSION_10_12_AND_LATER)
+</span><span class="cp"></span>	<span class="k">struct</span> <span class="nc">timespec</span> <span class="n">ti</span><span class="p">;</span>
+	<span class="n">clock_gettime</span><span class="p">(</span><span class="n">CLOCK_MONOTONIC</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">ti</span><span class="p">);</span>
+	<span class="n">t</span> <span class="o">=</span> <span class="p">(</span><span class="kt">uint64_t</span><span class="p">)</span><span class="n">ti</span><span class="p">.</span><span class="n">tv_sec</span> <span class="o">*</span> <span class="mi">100</span><span class="p">;</span>
+	<span class="n">t</span> <span class="o">+=</span> <span class="n">ti</span><span class="p">.</span><span class="n">tv_nsec</span> <span class="o">/</span> <span class="mi">10000000</span><span class="p">;</span>
+<span class="cp">#else
+</span><span class="cp"></span>	<span class="k">struct</span> <span class="nc">timeval</span> <span class="n">tv</span><span class="p">;</span>
+	<span class="n">gettimeofday</span><span class="p">(</span><span class="o">&amp;</span><span class="n">tv</span><span class="p">,</span> <span class="nb">NULL</span><span class="p">);</span>
+	<span class="n">t</span> <span class="o">=</span> <span class="p">(</span><span class="kt">uint64_t</span><span class="p">)</span><span class="n">tv</span><span class="p">.</span><span class="n">tv_sec</span> <span class="o">*</span> <span class="mi">100</span><span class="p">;</span>
+	<span class="n">t</span> <span class="o">+=</span> <span class="n">tv</span><span class="p">.</span><span class="n">tv_usec</span> <span class="o">/</span> <span class="mi">10000</span><span class="p">;</span>
+<span class="cp">#endif
+</span><span class="cp"></span>	<span class="k">return</span> <span class="n">t</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kt">void</span>
+<span class="nf">expire_timer</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span> <span class="p">{</span>
+	<span class="kt">uint64_t</span> <span class="n">cp</span> <span class="o">=</span> <span class="n">gettime</span><span class="p">();</span>
+	<span class="k">if</span> <span class="p">(</span><span class="n">cp</span> <span class="o">!=</span> <span class="n">TI</span><span class="o">-&gt;</span><span class="n">current_point</span><span class="p">)</span> <span class="p">{</span>
+		<span class="kt">uint32_t</span> <span class="n">diff</span> <span class="o">=</span> <span class="p">(</span><span class="kt">uint32_t</span><span class="p">)(</span><span class="n">cp</span> <span class="o">-</span> <span class="n">TI</span><span class="o">-&gt;</span><span class="n">current_point</span><span class="p">);</span>
+		<span class="n">TI</span><span class="o">-&gt;</span><span class="n">current_point</span> <span class="o">=</span> <span class="n">cp</span><span class="p">;</span>
+		<span class="kt">int</span> <span class="n">i</span><span class="p">;</span>
+		<span class="k">for</span> <span class="p">(</span><span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">i</span><span class="o">&lt;</span><span class="n">diff</span><span class="p">;</span> <span class="n">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+			<span class="n">timer_update</span><span class="p">(</span><span class="n">TI</span><span class="p">);</span>
+		<span class="p">}</span>
+	<span class="p">}</span>
+<span class="p">}</span>
+
+<span class="kt">void</span> 
+<span class="nf">init_timer</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span> <span class="p">{</span>
+	<span class="n">TI</span> <span class="o">=</span> <span class="n">timer_create_timer</span><span class="p">();</span>
+	<span class="n">TI</span><span class="o">-&gt;</span><span class="n">current_point</span> <span class="o">=</span> <span class="n">gettime</span><span class="p">();</span>
+<span class="p">}</span>
+
+<span class="kt">void</span>
+<span class="nf">clear_timer</span><span class="p">()</span> <span class="p">{</span>
+	<span class="kt">int</span> <span class="n">i</span><span class="p">,</span><span class="n">j</span><span class="p">;</span>
+	<span class="k">for</span> <span class="p">(</span><span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span><span class="n">i</span><span class="o">&lt;</span><span class="n">TIME_NEAR</span><span class="p">;</span><span class="n">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+		<span class="n">link_list_t</span> <span class="o">*</span> <span class="n">list</span> <span class="o">=</span> <span class="o">&amp;</span><span class="n">TI</span><span class="o">-&gt;</span><span class="n">near</span><span class="p">[</span><span class="n">i</span><span class="p">];</span>
+		<span class="n">timer_node_t</span><span class="o">*</span> <span class="n">current</span> <span class="o">=</span> <span class="n">list</span><span class="o">-&gt;</span><span class="n">head</span><span class="p">.</span><span class="n">next</span><span class="p">;</span>
+		<span class="k">while</span><span class="p">(</span><span class="n">current</span><span class="p">)</span> <span class="p">{</span>
+			<span class="n">timer_node_t</span> <span class="o">*</span> <span class="n">temp</span> <span class="o">=</span> <span class="n">current</span><span class="p">;</span>
+			<span class="n">current</span> <span class="o">=</span> <span class="n">current</span><span class="o">-&gt;</span><span class="n">next</span><span class="p">;</span>
+			<span class="n">free</span><span class="p">(</span><span class="n">temp</span><span class="p">);</span>
+		<span class="p">}</span>
+		<span class="n">link_clear</span><span class="p">(</span><span class="o">&amp;</span><span class="n">TI</span><span class="o">-&gt;</span><span class="n">near</span><span class="p">[</span><span class="n">i</span><span class="p">]);</span>
+	<span class="p">}</span>
+	<span class="k">for</span> <span class="p">(</span><span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span><span class="n">i</span><span class="o">&lt;</span><span class="mi">4</span><span class="p">;</span><span class="n">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+		<span class="k">for</span> <span class="p">(</span><span class="n">j</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span><span class="n">j</span><span class="o">&lt;</span><span class="n">TIME_LEVEL</span><span class="p">;</span><span class="n">j</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+			<span class="n">link_list_t</span> <span class="o">*</span> <span class="n">list</span> <span class="o">=</span> <span class="o">&amp;</span><span class="n">TI</span><span class="o">-&gt;</span><span class="n">t</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">];</span>
+			<span class="n">timer_node_t</span><span class="o">*</span> <span class="n">current</span> <span class="o">=</span> <span class="n">list</span><span class="o">-&gt;</span><span class="n">head</span><span class="p">.</span><span class="n">next</span><span class="p">;</span>
+			<span class="k">while</span> <span class="p">(</span><span class="n">current</span><span class="p">)</span> <span class="p">{</span>
+				<span class="n">timer_node_t</span> <span class="o">*</span> <span class="n">temp</span> <span class="o">=</span> <span class="n">current</span><span class="p">;</span>
+				<span class="n">current</span> <span class="o">=</span> <span class="n">current</span><span class="o">-&gt;</span><span class="n">next</span><span class="p">;</span>
+				<span class="n">free</span><span class="p">(</span><span class="n">temp</span><span class="p">);</span>
+			<span class="p">}</span>
+			<span class="n">link_clear</span><span class="p">(</span><span class="o">&amp;</span><span class="n">TI</span><span class="o">-&gt;</span><span class="n">t</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">j</span><span class="p">]);</span>
+		<span class="p">}</span>
+	<span class="p">}</span>
+<span class="p">}</span>
+
+
+
+</code></pre></div>
 </section>
 
 
@@ -987,8 +1285,21 @@
                 <div class="widget--toc">
                     <nav id="TableOfContents">
   <ol>
-    <li><a href="#font-size--6-color--red--基本方案font"><!-- raw HTML omitted --> 基本方案：<!-- raw HTML omitted --></a></li>
-    <li><a href="#font-color--red--size--6代码实现font"><!-- raw HTML omitted -->代码实现：<!-- raw HTML omitted --></a></li>
+    <li><a href="#font-size--6-color--red--基本方案font"><!-- raw HTML omitted --> 基本方案：<!-- raw HTML omitted --></a>
+      <ol>
+        <li><a href="#font-size--5红黑树font"><!-- raw HTML omitted -->红黑树：<!-- raw HTML omitted --></a></li>
+        <li><a href="#font-size--5最小堆font"><!-- raw HTML omitted -->最小堆：<!-- raw HTML omitted --></a></li>
+        <li><a href="#font-size--5-时间轮-font"><!-- raw HTML omitted --> 时间轮： <!-- raw HTML omitted --></a></li>
+      </ol>
+    </li>
+    <li><a href="#font-color--red--size--6代码实现font"><!-- raw HTML omitted -->代码实现：<!-- raw HTML omitted --></a>
+      <ol>
+        <li><a href="#font-size--5-红黑树font"><!-- raw HTML omitted --> 红黑树：<!-- raw HTML omitted --></a></li>
+        <li><a href="#font-size--5-最小堆font"><!-- raw HTML omitted --> 最小堆：<!-- raw HTML omitted --></a></li>
+        <li><a href="#font-size--5-单层时间轮font"><!-- raw HTML omitted --> 单层时间轮：<!-- raw HTML omitted --></a></li>
+        <li><a href="#font-size--5-多层时间轮font"><!-- raw HTML omitted --> 多层时间轮：<!-- raw HTML omitted --></a></li>
+      </ol>
+    </li>
   </ol>
 </nav>
                 </div>

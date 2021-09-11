@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>基础 on Gao&#39;s happy day</title>
+    <link>https://gao377020481.github.io/tags/%E5%9F%BA%E7%A1%80/</link>
+    <description>Recent content in 基础 on Gao&#39;s happy day</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Thu, 10 Sep 2020 00:00:00 +0000</lastBuildDate><atom:link href="https://gao377020481.github.io/tags/%E5%9F%BA%E7%A1%80/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>锁</title>
+      <link>https://gao377020481.github.io/p/%E9%94%81/</link>
+      <pubDate>Thu, 10 Sep 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://gao377020481.github.io/p/%E9%94%81/</guid>
+      <description>锁 posix API 自旋锁 互斥锁 读写锁 原子操作 共享内存 try-catch</description>
+    </item>
+    
+  </channel>
+</rss>

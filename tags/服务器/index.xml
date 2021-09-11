@@ -13,11 +13,12 @@
       <pubDate>Thu, 10 Sep 2020 00:00:00 +0000</pubDate>
       
       <guid>https://gao377020481.github.io/p/%E5%AE%9A%E6%97%B6%E5%99%A8/</guid>
-      <description>定时器  定时器作用很多，常见于心跳检测，冷却等等 实现时区别主要在于定时器队列的管控（排序）
-基本方案： 1. 红黑树：使用红黑树对定时器排序，排序依据为定时器过期时间，每隔单位时间检查红黑树中最小时间是否小于等于当前时间，如果小于等于就删除节点并触发节点的callback。时间复杂度增删O(logn)，Nginx使用红黑树。删除添加操作自旋。 2. 最小堆：最小堆根节点最小，直接拿出根节点与当前时间比较即可，删除操作将根节点与末尾节点对换并删除末尾节点然后将新的根节点下沉，添加时加入末尾节点并上升。
-3. 时间轮： 时间轮可以分为单层级与多层级。简单的单层级时间轮使用初始化好的链表数组来存储对应的事件节点链表，时间数据结构中一般包含引用计数，该数据结构只有在引用计数置零后销毁，一般也代表着事件对应的资源可以释放。单层时间轮的大小至少需要大于最长定时时间/单位时间，举例：每5秒发送一个心跳包，连接收到心跳包时需要开启一个10秒的定时器并将事件引用计数加一（事件数据结构插入链表数组中10秒后的链表中），也就是最长定时10秒，10秒后检查该连接对应的事件并将引用计数减一，如果减一后为0就说明连接超时，释放所有资源，关闭事件。在该例子中，初始化的链表数组大小至少为11，因为假如在第0秒来一个心跳包，我们就需要在第10号位置将该连接对应的事件节点加入事件链表中，如果小于11，比如为8，那从0开始往后10个的位置就是在2号位置，那2秒后就得触发了，这与我们设置的10秒定时时间不一致。
+      <description>定时器 定时器作用很多，常见于心跳检测，冷却等等 实现时区别主要在于定时器队列的管控（排序）
+基本方案： 红黑树： 使用红黑树对定时器排序，排序依据为定时器过期时间，每隔单位时间检查红黑树中最小时间是否小于等于当前时间，如果小于等于就删除节点并触发节点的callback。时间复杂度增删O(logn)，Nginx使用红黑树。删除添加操作自旋。
+最小堆： 最小堆根节点最小，直接拿出根节点与当前时间比较即可，删除操作将根节点与末尾节点对换并删除末尾节点然后将新的根节点下沉，添加时加入末尾节点并上升。
+时间轮：  时间轮可以分为单层级与多层级。简单的单层级时间轮使用初始化好的链表数组来存储对应的事件节点链表，时间数据结构中一般包含引用计数，该数据结构只有在引用计数置零后销毁，一般也代表着事件对应的资源可以释放。单层时间轮的大小至少需要大于最长定时时间/单位时间，举例：每5秒发送一个心跳包，连接收到心跳包时需要开启一个10秒的定时器并将事件引用计数加一（事件数据结构插入链表数组中10秒后的链表中），也就是最长定时10秒，10秒后检查该连接对应的事件并将引用计数减一，如果减一后为0就说明连接超时，释放所有资源，关闭事件。在该例子中，初始化的链表数组大小至少为11，因为假如在第0秒来一个心跳包，我们就需要在第10号位置将该连接对应的事件节点加入事件链表中，如果小于11，比如为8，那从0开始往后10个的位置就是在2号位置，那2秒后就得触发了，这与我们设置的10秒定时时间不一致。
 
-代码实现： 1. 红黑树：红黑树数据结构直接使用nginx自带的rbtree头文件，就不自己写了
+代码实现： 红黑树： 红黑树数据结构直接使用nginx自带的rbtree头文件，就不自己写了
 红黑树定时器头文件： #ifndef _MARK_RBT_ #define _MARK_RBT_  #include &amp;lt;stdio.h&amp;gt;#include &amp;lt;stdint.h&amp;gt;#include &amp;lt;unistd.h&amp;gt;#include &amp;lt;stdlib.h&amp;gt;#include &amp;lt;stddef.h&amp;gt; #if defined(__APPLE__) #include &amp;lt;AvailabilityMacros.h&amp;gt;#include &amp;lt;sys/time.h&amp;gt;#include &amp;lt;mach/task.h&amp;gt;#include &amp;lt;mach/mach.h&amp;gt;#else #include &amp;lt;time.h&amp;gt;#endif  #include &amp;#34;rbtree.h&amp;#34; ngx_rbtree_t timer; static ngx_rbtree_node_t sentinel; typedef struct timer_entry_s timer_entry_t; typedef void (*timer_handler_pt)(timer_entry_t *ev); struct timer_entry_s { ngx_rbtree_node_t timer; timer_handler_pt handler; }; static uint32_t current_time() { uint32_t t; #if !defined(__APPLE__) || defined(AVAILABLE_MAC_OS_X_VERSION_10_12_AND_LATER) 	struct timespec ti; clock_gettime(CLOCK_MONOTONIC, &amp;amp;ti); t = (uint32_t)ti.</description>
     </item>
     
