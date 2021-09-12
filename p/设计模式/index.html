@@ -1,0 +1,1799 @@
+<!DOCTYPE html>
+<html lang="en-us">
+    <head><meta charset='utf-8'>
+<meta name='viewport' content='width=device-width, initial-scale=1'><meta name='description' content='基础知识'><title>设计模式</title>
+
+<link rel='canonical' href='https://gao377020481.github.io/p/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/'>
+
+<link rel="stylesheet" href="/scss/style.min.css"><meta property='og:title' content='设计模式'>
+<meta property='og:description' content='基础知识'>
+<meta property='og:url' content='https://gao377020481.github.io/p/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/'>
+<meta property='og:site_name' content='Gao&#39;s happy day'>
+<meta property='og:type' content='article'><meta property='article:section' content='Post' /><meta property='article:tag' content='设计模式' /><meta property='article:published_time' content='2020-09-10T00:00:00&#43;00:00'/><meta property='article:modified_time' content='2020-09-10T00:00:00&#43;00:00'/><meta property='og:image' content='https://gao377020481.github.io/p/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/462.jpg' />
+<meta name="twitter:title" content="设计模式">
+<meta name="twitter:description" content="基础知识"><meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:image" content='https://gao377020481.github.io/p/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/462.jpg' />
+    </head>
+    <body class="
+    article-page has-toc
+">
+    <script>
+        (function() {
+            const colorSchemeKey = 'StackColorScheme';
+            if(!localStorage.getItem(colorSchemeKey)){
+                localStorage.setItem(colorSchemeKey, "auto");
+            }
+        })();
+    </script><script>
+    (function() {
+        const colorSchemeKey = 'StackColorScheme';
+        const colorSchemeItem = localStorage.getItem(colorSchemeKey);
+        const supportDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches === true;
+
+        if (colorSchemeItem == 'dark' || colorSchemeItem === 'auto' && supportDarkMode) {
+            
+
+            document.documentElement.dataset.scheme = 'dark';
+        } else {
+            document.documentElement.dataset.scheme = 'light';
+        }
+    })();
+</script>
+<div class="container main-container flex 
+    
+        extended
+    
+">
+    
+        <div id="article-toolbar">
+            <a href="https://gao377020481.github.io" class="back-home">
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-chevron-left" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <polyline points="15 6 9 12 15 18" />
+</svg>
+
+
+
+                <span>Back</span>
+            </a>
+        </div>
+    
+<main class="main full-width">
+    <article class="has-image main-article">
+    <header class="article-header">
+        <div class="article-image">
+            <a href="/p/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/">
+                <img src="/p/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/462_hu609bcc78771f538873d0b8560ebecb73_10199040_800x0_resize_q75_box.jpg"
+                        srcset="/p/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/462_hu609bcc78771f538873d0b8560ebecb73_10199040_800x0_resize_q75_box.jpg 800w, /p/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/462_hu609bcc78771f538873d0b8560ebecb73_10199040_1600x0_resize_q75_box.jpg 1600w"
+                        width="800" 
+                        height="569" 
+                        loading="lazy"
+                        alt="Featured image of post 设计模式" />
+                
+            </a>
+        </div>
+    
+
+    <div class="article-details">
+    
+    <header class="article-category">
+        
+            <a href="/categories/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/" >
+                设计模式
+            </a>
+        
+    </header>
+    
+
+    <h2 class="article-title">
+        <a href="/p/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/">设计模式</a>
+    </h2>
+
+    
+    <h3 class="article-subtitle">
+        基础知识
+    </h3>
+    
+
+    
+    <footer class="article-time">
+        
+            <div>
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-calendar-time" width="56" height="56" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <path d="M11.795 21h-6.795a2 2 0 0 1 -2 -2v-12a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v4" />
+  <circle cx="18" cy="18" r="4" />
+  <path d="M15 3v4" />
+  <path d="M7 3v4" />
+  <path d="M3 11h16" />
+  <path d="M18 16.496v1.504l1 1" />
+</svg>
+                <time class="article-time--published">Sep 10, 2020</time>
+            </div>
+        
+
+        
+            <div>
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="12" r="9" />
+  <polyline points="12 7 12 12 15 15" />
+</svg>
+
+
+
+                <time class="article-time--reading">
+                    14 minute read
+                </time>
+            </div>
+        
+    </footer>
+    
+</div>
+</header>
+
+    <section class="article-content">
+    <h1 id="设计模式"><strong>设计模式</strong></h1>
+<p><strong>首先先上所有设计模式的原则，这些原则贯彻于每一种设计模式中，是各种设计模式的根</strong></p>
+<h2 id="原则"><strong>原则</strong></h2>
+<ul>
+<li>
+<p><strong>依赖倒置原则</strong></p>
+<ul>
+<li>高层模块不应该依赖低层模块，⼆者都应该依赖抽象。</li>
+<li>抽象不应该依赖具体实现，具体实现应该依赖于抽象。</li>
+</ul>
+</li>
+<li>
+<p><strong>开放封闭原则</strong></p>
+<ul>
+<li>⼀个类应该对扩展开放，对修改关闭。</li>
+</ul>
+</li>
+<li>
+<p><strong>面向接口编程</strong></p>
+<ul>
+<li>不将变量类型声明为某个特定的具体类，而是声明为某个接⼝。</li>
+<li>客户程序无需获知对象的具体类型，只需要知道对象所具有的接口。</li>
+<li>减少系统中各部分的依赖关系，从而实现“高内聚、松耦合”的类型设计⽅案。</li>
+</ul>
+</li>
+<li>
+<p><strong>封装变化点</strong></p>
+<ul>
+<li>将稳定点和变化点分离，扩展修改变化点；让稳定点与变化点的实现层次分离。</li>
+</ul>
+</li>
+<li>
+<p><strong>单一职责原则</strong></p>
+<ul>
+<li>⼀个类应该仅有⼀个引起它变化的原因。</li>
+</ul>
+</li>
+<li>
+<p><strong>里氏替换原则</strong></p>
+<ul>
+<li>子类型必须能够替换掉它的父类型；主要出现在⼦类覆盖父类实现，原来使用父亲类型的程序可能出现错误；覆盖了父类方法却没实现父类方法的职责；</li>
+</ul>
+</li>
+<li>
+<p><strong>接口隔离原则</strong></p>
+<ul>
+<li>不应该强迫客户依赖于他们不用的方法。</li>
+<li>⼀般用于处理⼀个类拥有比较多的接口，而这些接口涉及到很多职责</li>
+</ul>
+</li>
+<li>
+<p><strong>对象组合优于类继承</strong></p>
+<ul>
+<li>继承耦合度⾼，组合耦合度低</li>
+</ul>
+</li>
+</ul>
+<h2 id="模板模式"><strong>模板模式</strong></h2>
+<p><figure 
+	>
+	<a href="/post/design_pattern/template.jpg" >
+		<img src="/post/design_pattern/template.jpg"
+			
+			
+			
+			loading="lazy"
+			>
+	</a>
+	
+</figure></p>
+<p>首先，先提下使用到的原则：</p>
+<ol>
+<li>依赖倒置原则</li>
+<li>单一职责原则</li>
+<li>接口隔离原则</li>
+</ol>
+<p><strong>定义：</strong> 定义⼀个操作中的算法的骨架 ，⽽将⼀些步骤延迟到子类中。 Template Method使得子类可以不
+改变⼀个算法的结构即可重定义该算法的某些特定步骤。</p>
+<p>直接上代码，代码分两部分，第一部分为未使用模板模式时的代码，第二部分为使用模板模式的代码：</p>
+<h3 id="未使用模板模式"><strong>未使用模板模式：</strong></h3>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-c++" data-lang="c++">
+<span class="cp">#include</span> <span class="cpf">&lt;iostream&gt;</span><span class="cp">
+</span><span class="cp"></span><span class="k">using</span> <span class="k">namespace</span> <span class="n">std</span><span class="p">;</span>
+
+<span class="k">class</span> <span class="nc">ZooShow</span> <span class="p">{</span>
+<span class="k">public</span><span class="o">:</span>
+    <span class="kt">void</span> <span class="n">Show0</span><span class="p">(){</span>
+        <span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="s">&#34;show0&#34;</span> <span class="o">&lt;&lt;</span> <span class="n">endl</span><span class="p">;</span>
+    <span class="p">}</span>
+    <span class="kt">void</span> <span class="nf">Show2</span><span class="p">(){</span>
+        <span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="s">&#34;show2&#34;</span> <span class="o">&lt;&lt;</span> <span class="n">endl</span><span class="p">;</span>
+    <span class="p">}</span>
+<span class="p">};</span>
+
+<span class="k">class</span> <span class="nc">ZooShowEx</span> <span class="p">{</span>
+<span class="k">public</span><span class="o">:</span>
+    <span class="kt">void</span> <span class="n">Show1</span><span class="p">(){</span>
+        <span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="s">&#34;show1&#34;</span> <span class="o">&lt;&lt;</span> <span class="n">endl</span><span class="p">;</span>
+    <span class="p">}</span>
+    <span class="kt">void</span> <span class="nf">Show3</span><span class="p">(){</span>
+        <span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="s">&#34;show3&#34;</span> <span class="o">&lt;&lt;</span> <span class="n">endl</span><span class="p">;</span>
+    <span class="p">}</span>
+<span class="p">};</span>
+
+<span class="kt">int</span> <span class="nf">main</span> <span class="p">()</span> <span class="p">{</span>
+    <span class="n">ZooShow</span> <span class="o">*</span><span class="n">zs</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ZooShow</span><span class="p">;</span>
+    <span class="n">ZooShowEx</span> <span class="o">*</span><span class="n">zs1</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ZooShowEx</span><span class="p">;</span>
+    <span class="c1">// 流程是固定的（稳定点），应该抽象出来；另外子流程是不应该暴露给客户，违反了接口隔离原则；
+</span><span class="c1"></span>    <span class="n">zs</span><span class="o">-&gt;</span><span class="n">Show0</span><span class="p">();</span>
+    <span class="n">zs1</span><span class="o">-&gt;</span><span class="n">Show1</span><span class="p">();</span>
+    <span class="n">zs</span><span class="o">-&gt;</span><span class="n">Show2</span><span class="p">();</span>
+    <span class="n">zs1</span><span class="o">-&gt;</span><span class="n">Show3</span><span class="p">();</span>
+    <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+
+</code></pre></div><p>可以看到主函数中流程一览无余，应该由框架提供接口给客户调用一下走完整个流程</p>
+<h3 id="使用模板模式"><strong>使用模板模式：</strong></h3>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-c++" data-lang="c++">
+<span class="cp">#include</span> <span class="cpf">&lt;iostream&gt;</span><span class="cp">
+</span><span class="cp"></span><span class="k">using</span> <span class="k">namespace</span> <span class="n">std</span><span class="p">;</span>
+
+<span class="k">class</span> <span class="nc">ZooShow</span> <span class="p">{</span>
+<span class="k">public</span><span class="o">:</span>
+    <span class="c1">// 固定流程封装到这里
+</span><span class="c1"></span>    <span class="kt">void</span> <span class="n">Show</span><span class="p">()</span> <span class="p">{</span>
+        <span class="n">Show0</span><span class="p">();</span>
+        <span class="n">Show1</span><span class="p">();</span>
+        <span class="n">Show2</span><span class="p">();</span>
+        <span class="n">Show3</span><span class="p">();</span>
+    <span class="p">}</span>
+<span class="k">protected</span><span class="o">:</span>
+    <span class="c1">// 子流程 使用protected保护起来 不被客户调用 但允许子类扩展
+</span><span class="c1"></span>    <span class="k">virtual</span> <span class="kt">void</span> <span class="n">Show0</span><span class="p">(){</span>
+        <span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="s">&#34;show0&#34;</span> <span class="o">&lt;&lt;</span> <span class="n">endl</span><span class="p">;</span>
+    <span class="p">}</span>
+    <span class="k">virtual</span> <span class="kt">void</span> <span class="nf">Show2</span><span class="p">(){</span>
+        <span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="s">&#34;show2&#34;</span> <span class="o">&lt;&lt;</span> <span class="n">endl</span><span class="p">;</span>
+    <span class="p">}</span>
+    <span class="k">virtual</span> <span class="kt">void</span> <span class="nf">Show1</span><span class="p">()</span> <span class="p">{</span>
+
+    <span class="p">}</span>
+    <span class="k">virtual</span> <span class="kt">void</span> <span class="nf">Show3</span><span class="p">()</span> <span class="p">{</span>
+
+    <span class="p">}</span>
+<span class="p">};</span>
+<span class="k">class</span> <span class="nc">ZooShowEx</span> <span class="o">:</span> <span class="k">public</span> <span class="n">ZooShow</span> <span class="p">{</span>
+<span class="k">protected</span><span class="o">:</span>
+    <span class="k">virtual</span> <span class="kt">void</span> <span class="n">Show1</span><span class="p">(){</span>
+        <span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="s">&#34;show1&#34;</span> <span class="o">&lt;&lt;</span> <span class="n">endl</span><span class="p">;</span>
+    <span class="p">}</span>
+    <span class="k">virtual</span> <span class="kt">void</span> <span class="nf">Show3</span><span class="p">(){</span>
+        <span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="s">&#34;show3&#34;</span> <span class="o">&lt;&lt;</span> <span class="n">endl</span><span class="p">;</span>
+    <span class="p">}</span>
+    <span class="k">virtual</span> <span class="kt">void</span> <span class="nf">Show4</span><span class="p">()</span> <span class="p">{</span>
+        <span class="c1">//
+</span><span class="c1"></span>    <span class="p">}</span>
+<span class="p">};</span>
+
+<span class="k">class</span> <span class="nc">ZooShowEx1</span> <span class="o">:</span> <span class="k">public</span> <span class="n">ZooShow</span> <span class="p">{</span>
+<span class="k">protected</span><span class="o">:</span>
+    <span class="k">virtual</span> <span class="kt">void</span> <span class="n">Show0</span><span class="p">(){</span>
+        <span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="s">&#34;show1&#34;</span> <span class="o">&lt;&lt;</span> <span class="n">endl</span><span class="p">;</span>
+    <span class="p">}</span>
+    <span class="k">virtual</span> <span class="kt">void</span> <span class="nf">Show2</span><span class="p">(){</span>
+        <span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="s">&#34;show3&#34;</span> <span class="o">&lt;&lt;</span> <span class="n">endl</span><span class="p">;</span>
+    <span class="p">}</span>
+<span class="p">};</span>
+
+<span class="k">class</span> <span class="nc">ZooShowEx2</span> <span class="o">:</span> <span class="k">public</span> <span class="n">ZooShow</span> <span class="p">{</span>
+<span class="k">protected</span><span class="o">:</span>
+    <span class="k">virtual</span> <span class="kt">void</span> <span class="n">Show1</span><span class="p">(){</span>
+        <span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="s">&#34;show1&#34;</span> <span class="o">&lt;&lt;</span> <span class="n">endl</span><span class="p">;</span>
+    <span class="p">}</span>
+    <span class="k">virtual</span> <span class="kt">void</span> <span class="nf">Show2</span><span class="p">(){</span>
+        <span class="n">cout</span> <span class="o">&lt;&lt;</span> <span class="s">&#34;show3&#34;</span> <span class="o">&lt;&lt;</span> <span class="n">endl</span><span class="p">;</span>
+    <span class="p">}</span>
+<span class="p">};</span>
+<span class="cm">/*
+</span><span class="cm">依赖倒置原则
+</span><span class="cm">单一职责原则
+</span><span class="cm">接口隔离原则
+</span><span class="cm">
+</span><span class="cm">反向控制：应用程序 框架 应用程序（变化的）应该依赖框架（稳定的），应该是框架去调应用程序，而不是应用程序去调框架
+</span><span class="cm">*/</span>
+<span class="kt">int</span> <span class="nf">main</span> <span class="p">()</span> <span class="p">{</span>
+    <span class="n">ZooShow</span> <span class="o">*</span><span class="n">zs</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ZooShowEx</span><span class="p">;</span>
+    <span class="n">ZooShow</span> <span class="o">*</span><span class="n">zs1</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ZooShowEx1</span><span class="p">;</span>
+    <span class="n">ZooShow</span> <span class="o">*</span><span class="n">zs2</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ZooShowEx2</span><span class="p">;</span>
+    <span class="n">zs</span><span class="o">-&gt;</span><span class="n">Show</span><span class="p">();</span>
+    <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+
+
+</code></pre></div><p>使用虚函数，根据不同子类做不同扩展，且流程封装在show内部，满足了接口隔离和依赖倒置原则，主类只负责展示流程，流程的具体细节由子类自己实现，职责单一</p>
+<h2 id="观察者模式"><strong>观察者模式</strong></h2>
+<p><figure 
+	>
+	<a href="/post/design_pattern/observer.jpg" >
+		<img src="/post/design_pattern/observer.jpg"
+			
+			
+			
+			loading="lazy"
+			>
+	</a>
+	
+</figure></p>
+<p><strong>定义：</strong> 定义对象间的⼀种⼀对多（变化）的依赖关系，以便当⼀个对象(Subject)的状态发生改变时，所有
+依赖于它的对象都得到通知并自动更新。</p>
+<h3 id="未使用观察者模式"><strong>未使用观察者模式：</strong></h3>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-c++" data-lang="c++">
+
+<span class="k">class</span> <span class="nc">DisplayA</span> <span class="p">{</span>
+<span class="k">public</span><span class="o">:</span>
+    <span class="kt">void</span> <span class="n">Show</span><span class="p">(</span><span class="kt">float</span> <span class="n">temperature</span><span class="p">);</span>
+<span class="p">};</span>
+
+<span class="k">class</span> <span class="nc">DisplayB</span> <span class="p">{</span>
+<span class="k">public</span><span class="o">:</span>
+    <span class="kt">void</span> <span class="n">Show</span><span class="p">(</span><span class="kt">float</span> <span class="n">temperature</span><span class="p">);</span>
+<span class="p">};</span>
+
+<span class="k">class</span> <span class="nc">WeatherData</span> <span class="p">{</span>
+<span class="p">};</span>
+
+<span class="k">class</span> <span class="nc">DataCenter</span> <span class="p">{</span>
+<span class="k">public</span><span class="o">:</span>
+    <span class="kt">float</span> <span class="n">CalcTemperature</span><span class="p">()</span> <span class="p">{</span>
+        <span class="n">WeatherData</span> <span class="o">*</span> <span class="n">data</span> <span class="o">=</span> <span class="n">GetWeatherData</span><span class="p">();</span>
+        <span class="c1">// ...
+</span><span class="c1"></span>        <span class="kt">float</span> <span class="n">temper</span><span class="cm">/* = */</span><span class="p">;</span>
+        <span class="k">return</span> <span class="n">temper</span><span class="p">;</span>
+    <span class="p">}</span>
+<span class="k">private</span><span class="o">:</span>
+    <span class="n">WeatherData</span> <span class="o">*</span> <span class="n">GetWeatherData</span><span class="p">();</span> <span class="c1">// 不同的方式
+</span><span class="c1"></span><span class="p">};</span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+    <span class="n">DataCenter</span> <span class="o">*</span><span class="n">center</span> <span class="o">=</span> <span class="k">new</span> <span class="n">DataCenter</span><span class="p">;</span>
+    <span class="n">DisplayA</span> <span class="o">*</span><span class="n">da</span> <span class="o">=</span> <span class="k">new</span> <span class="n">DisplayA</span><span class="p">;</span>
+    <span class="n">DisplayB</span> <span class="o">*</span><span class="n">db</span> <span class="o">=</span> <span class="k">new</span> <span class="n">DisplayB</span><span class="p">;</span>
+    <span class="kt">float</span> <span class="n">temper</span> <span class="o">=</span> <span class="n">center</span><span class="o">-&gt;</span><span class="n">CalcTemperature</span><span class="p">();</span>
+    <span class="n">da</span><span class="o">-&gt;</span><span class="n">Show</span><span class="p">(</span><span class="n">temper</span><span class="p">);</span>
+    <span class="n">db</span><span class="o">-&gt;</span><span class="n">Show</span><span class="p">(</span><span class="n">temper</span><span class="p">);</span>
+    <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+<span class="c1">// 终端变化（增加和删除）   数据中心 不应该受终端变化的影响
+</span><span class="c1"></span>
+
+</code></pre></div><h3 id="使用观察者模式"><strong>使用观察者模式：</strong></h3>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-c++" data-lang="c++">
+<span class="cp">#include</span> <span class="cpf">&lt;vector&gt;</span><span class="cp">
+</span><span class="cp"></span>
+<span class="k">class</span> <span class="nc">IDisplay</span> <span class="p">{</span>
+<span class="k">public</span><span class="o">:</span>
+    <span class="k">virtual</span> <span class="kt">void</span> <span class="n">Show</span><span class="p">(</span><span class="kt">float</span> <span class="n">temperature</span><span class="p">)</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+    <span class="k">virtual</span> <span class="o">~</span><span class="n">IDisplay</span><span class="p">()</span> <span class="p">{}</span>
+<span class="p">};</span>
+
+<span class="k">class</span> <span class="nc">DisplayA</span> <span class="o">:</span> <span class="k">public</span> <span class="n">IDisplay</span> <span class="p">{</span>
+<span class="k">public</span><span class="o">:</span>
+    <span class="k">virtual</span> <span class="kt">void</span> <span class="n">Show</span><span class="p">(</span><span class="kt">float</span> <span class="n">temperature</span><span class="p">);</span>
+<span class="p">};</span>
+
+<span class="k">class</span> <span class="nc">DisplayB</span> <span class="o">:</span> <span class="k">public</span> <span class="n">IDisplay</span><span class="p">{</span>
+<span class="k">public</span><span class="o">:</span>
+    <span class="k">virtual</span> <span class="kt">void</span> <span class="n">Show</span><span class="p">(</span><span class="kt">float</span> <span class="n">temperature</span><span class="p">);</span>
+<span class="p">};</span>
+
+<span class="k">class</span> <span class="nc">WeatherData</span> <span class="p">{</span>
+<span class="p">};</span>
+
+<span class="k">class</span> <span class="nc">DataCenter</span> <span class="p">{</span>
+<span class="k">public</span><span class="o">:</span>
+    <span class="kt">void</span> <span class="n">Attach</span><span class="p">(</span><span class="n">IDisplay</span> <span class="o">*</span> <span class="n">ob</span><span class="p">);</span>
+    <span class="kt">void</span> <span class="nf">Detach</span><span class="p">(</span><span class="n">IDisplay</span> <span class="o">*</span> <span class="n">ob</span><span class="p">);</span>
+    <span class="kt">void</span> <span class="nf">Notify</span><span class="p">()</span> <span class="p">{</span>
+        <span class="kt">float</span> <span class="n">temper</span> <span class="o">=</span> <span class="n">CalcTemperature</span><span class="p">();</span>
+        <span class="k">for</span> <span class="p">(</span><span class="k">auto</span> <span class="n">iter</span> <span class="o">=</span> <span class="n">obs</span><span class="p">.</span><span class="n">begin</span><span class="p">();</span> <span class="n">iter</span> <span class="o">!=</span> <span class="n">obs</span><span class="p">.</span><span class="n">end</span><span class="p">();</span> <span class="n">iter</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+            <span class="p">(</span><span class="o">*</span><span class="n">iter</span><span class="p">)</span><span class="o">-&gt;</span><span class="n">Show</span><span class="p">(</span><span class="n">temper</span><span class="p">);</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+
+<span class="k">private</span><span class="o">:</span>
+    <span class="k">virtual</span> <span class="n">WeatherData</span> <span class="o">*</span> <span class="n">GetWeatherData</span><span class="p">();</span>
+
+    <span class="k">virtual</span> <span class="kt">float</span> <span class="nf">CalcTemperature</span><span class="p">()</span> <span class="p">{</span>
+        <span class="n">WeatherData</span> <span class="o">*</span> <span class="n">data</span> <span class="o">=</span> <span class="n">GetWeatherData</span><span class="p">();</span>
+        <span class="c1">// ...
+</span><span class="c1"></span>        <span class="kt">float</span> <span class="n">temper</span><span class="cm">/* = */</span><span class="p">;</span>
+        <span class="k">return</span> <span class="n">temper</span><span class="p">;</span>
+    <span class="p">}</span>
+    <span class="n">std</span><span class="o">::</span><span class="n">vector</span><span class="o">&lt;</span><span class="n">IDisplay</span><span class="o">*&gt;</span> <span class="n">obs</span><span class="p">;</span>
+<span class="p">};</span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+    <span class="n">DataCenter</span> <span class="o">*</span><span class="n">center</span> <span class="o">=</span> <span class="k">new</span> <span class="n">DataCenter</span><span class="p">;</span>
+    <span class="n">IDisplay</span> <span class="o">*</span><span class="n">da</span> <span class="o">=</span> <span class="k">new</span> <span class="n">DisplayA</span><span class="p">();</span>
+    <span class="n">IDisplay</span> <span class="o">*</span><span class="n">db</span> <span class="o">=</span> <span class="k">new</span> <span class="n">DisplayB</span><span class="p">();</span>
+    <span class="n">center</span><span class="o">-&gt;</span><span class="n">Attach</span><span class="p">(</span><span class="n">da</span><span class="p">);</span>
+    <span class="n">center</span><span class="o">-&gt;</span><span class="n">Attach</span><span class="p">(</span><span class="n">db</span><span class="p">);</span>
+    <span class="n">center</span><span class="o">-&gt;</span><span class="n">Notify</span><span class="p">();</span>
+    
+    <span class="c1">//-----
+</span><span class="c1"></span>    <span class="n">center</span><span class="o">-&gt;</span><span class="n">Detach</span><span class="p">(</span><span class="n">db</span><span class="p">);</span>
+    <span class="n">center</span><span class="o">-&gt;</span><span class="n">Notify</span><span class="p">();</span>
+    <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+
+</code></pre></div><p>可以看到我们将接口统一到datacenter（气象中心）里，由气象中心来对外开放功能，同样的原材料（地点）也要交给我们设置的中心来处理，相当于我们买房需要经过房产中介，卖方也需要经过房产中介，我们都基于房产中介的原则来做事，这就是依赖倒置原则。同时，也符合面向接口编程原则。</p>
+<h2 id="责任链模式"><strong>责任链模式</strong></h2>
+<p><figure 
+	>
+	<a href="/post/design_pattern/cg-res.jpg" >
+		<img src="/post/design_pattern/cg-res.jpg"
+			
+			
+			
+			loading="lazy"
+			>
+	</a>
+	
+</figure></p>
+<p><strong>定义：</strong> 使多个对象都有机会处理请求，从⽽避免请求的发送者和接收者之间的耦合关系。将这些对象连成⼀条链，并沿着这条链传递请求，直到有⼀个对象处理它为⽌。</p>
+<h3 id="未使用责任链模式"><strong>未使用责任链模式：</strong></h3>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-c++" data-lang="c++">
+<span class="cp">#include</span> <span class="cpf">&lt;string&gt;</span><span class="cp">
+</span><span class="cp"></span>
+<span class="k">class</span> <span class="nc">Context</span> <span class="p">{</span>
+<span class="k">public</span><span class="o">:</span>
+    <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="n">name</span><span class="p">;</span>
+    <span class="kt">int</span> <span class="n">day</span><span class="p">;</span>
+<span class="p">};</span>
+
+<span class="k">class</span> <span class="nc">LeaveRequest</span> <span class="p">{</span>
+<span class="k">public</span><span class="o">:</span>
+    <span class="c1">// 随着判断的增加，LeaveRequest类变得不稳定
+</span><span class="c1"></span>    <span class="kt">bool</span> <span class="n">HandleRequest</span><span class="p">(</span><span class="k">const</span> <span class="n">Context</span> <span class="o">&amp;</span><span class="n">ctx</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">ctx</span><span class="p">.</span><span class="n">day</span> <span class="o">&lt;=</span> <span class="mi">3</span><span class="p">)</span>
+            <span class="n">HandleByMainProgram</span><span class="p">(</span><span class="n">ctx</span><span class="p">);</span>
+        <span class="k">else</span> <span class="nf">if</span> <span class="p">(</span><span class="n">ctx</span><span class="p">.</span><span class="n">day</span> <span class="o">&lt;=</span> <span class="mi">10</span><span class="p">)</span>
+            <span class="n">HandleByProjMgr</span><span class="p">(</span><span class="n">ctx</span><span class="p">);</span>
+        <span class="k">else</span>
+            <span class="nf">HandleByBoss</span><span class="p">(</span><span class="n">ctx</span><span class="p">);</span>
+    <span class="p">}</span>
+
+<span class="k">private</span><span class="o">:</span>
+    <span class="kt">bool</span> <span class="n">HandleByMainProgram</span><span class="p">(</span><span class="k">const</span> <span class="n">Context</span> <span class="o">&amp;</span><span class="n">ctx</span><span class="p">)</span> <span class="p">{</span>
+        
+    <span class="p">}</span>
+    <span class="kt">bool</span> <span class="nf">HandleByProjMgr</span><span class="p">(</span><span class="k">const</span> <span class="n">Context</span> <span class="o">&amp;</span><span class="n">ctx</span><span class="p">)</span> <span class="p">{</span>
+        
+    <span class="p">}</span>
+    <span class="kt">bool</span> <span class="nf">HandleByBoss</span><span class="p">(</span><span class="k">const</span> <span class="n">Context</span> <span class="o">&amp;</span><span class="n">ctx</span><span class="p">)</span> <span class="p">{</span>
+
+    <span class="p">}</span>
+<span class="p">};</span>
+
+</code></pre></div><p>可以看到我们每次都需要在handlerequest里加一个判断，作为中间的稳定框架不应被用户修改，我们需要找出稳定的部分独立出来。不稳定的部分可以看到是判断条件和对应的处理方式，我们需要将这一部分通过子类重载，使用虚函数即可。</p>
+<h3 id="使用责任链模式"><strong>使用责任链模式：</strong></h3>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-c++" data-lang="c++">
+<span class="cp">#include</span> <span class="cpf">&lt;string&gt;</span><span class="cp">
+</span><span class="cp"></span>
+<span class="k">class</span> <span class="nc">Context</span> <span class="p">{</span>
+<span class="k">public</span><span class="o">:</span>
+    <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="n">name</span><span class="p">;</span>
+    <span class="kt">int</span> <span class="n">day</span><span class="p">;</span>
+<span class="p">};</span>
+
+
+<span class="k">class</span> <span class="nc">IHandler</span> <span class="p">{</span>
+<span class="k">public</span><span class="o">:</span>
+    <span class="k">virtual</span> <span class="o">~</span><span class="n">IHandler</span><span class="p">()</span> <span class="p">{}</span>
+    <span class="kt">void</span> <span class="nf">SetNextHandler</span><span class="p">(</span><span class="n">IHandler</span> <span class="o">*</span><span class="n">next</span><span class="p">)</span> <span class="p">{</span>
+        <span class="n">next</span> <span class="o">=</span> <span class="n">next</span><span class="p">;</span>
+    <span class="p">}</span>
+    <span class="kt">bool</span> <span class="nf">Handle</span><span class="p">(</span><span class="n">ctx</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">CanHandle</span><span class="p">(</span><span class="n">ctx</span><span class="p">))</span> <span class="p">{</span>
+            <span class="k">return</span> <span class="n">HandleRequest</span><span class="p">();</span>
+        <span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="n">GetNextHandler</span><span class="p">())</span> <span class="p">{</span>
+            <span class="k">return</span> <span class="n">GetNextHandler</span><span class="p">()</span><span class="o">-&gt;</span><span class="n">HandleRequest</span><span class="p">(</span><span class="n">ctx</span><span class="p">);</span>
+        <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+            <span class="c1">// err
+</span><span class="c1"></span>        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="k">protected</span><span class="o">:</span>
+    <span class="k">virtual</span> <span class="kt">bool</span> <span class="n">HandleRequest</span><span class="p">(</span><span class="k">const</span> <span class="n">Context</span> <span class="o">&amp;</span><span class="n">ctx</span><span class="p">)</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+    <span class="k">virtual</span> <span class="kt">bool</span> <span class="nf">CanHandle</span><span class="p">(</span><span class="k">const</span> <span class="n">Context</span> <span class="o">&amp;</span><span class="n">ctx</span><span class="p">)</span> <span class="o">=</span><span class="mi">0</span><span class="p">;</span>
+    <span class="n">IHandler</span> <span class="o">*</span> <span class="nf">GetNextHandler</span><span class="p">()</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="n">next</span><span class="p">;</span> 
+    <span class="p">}</span>
+<span class="k">private</span><span class="o">:</span>
+    <span class="n">IHandler</span> <span class="o">*</span><span class="n">next</span><span class="p">;</span>
+<span class="p">};</span>
+
+<span class="k">class</span> <span class="nc">HandleByMainProgram</span> <span class="o">:</span> <span class="k">public</span> <span class="n">IHandler</span> <span class="p">{</span>
+<span class="k">protected</span><span class="o">:</span>
+    <span class="k">virtual</span> <span class="kt">bool</span> <span class="n">HandleRequest</span><span class="p">(</span><span class="k">const</span> <span class="n">Context</span> <span class="o">&amp;</span><span class="n">ctx</span><span class="p">){</span>
+        <span class="c1">//
+</span><span class="c1"></span>    <span class="p">}</span>
+    <span class="k">virtual</span> <span class="kt">bool</span> <span class="nf">CanHandle</span><span class="p">()</span> <span class="p">{</span>
+        <span class="c1">//
+</span><span class="c1"></span>    <span class="p">}</span>
+<span class="p">};</span>
+
+<span class="k">class</span> <span class="nc">HandleByProjMgr</span> <span class="o">:</span> <span class="k">public</span> <span class="n">IHandler</span> <span class="p">{</span>
+<span class="k">protected</span><span class="o">:</span>
+    <span class="k">virtual</span> <span class="kt">bool</span> <span class="n">HandleRequest</span><span class="p">(</span><span class="k">const</span> <span class="n">Context</span> <span class="o">&amp;</span><span class="n">ctx</span><span class="p">){</span>
+        <span class="c1">//
+</span><span class="c1"></span>    <span class="p">}</span>
+    <span class="k">virtual</span> <span class="kt">bool</span> <span class="nf">CanHandle</span><span class="p">()</span> <span class="p">{</span>
+        <span class="c1">//
+</span><span class="c1"></span>    <span class="p">}</span>
+<span class="p">};</span>
+<span class="k">class</span> <span class="nc">HandleByBoss</span> <span class="o">:</span> <span class="k">public</span> <span class="n">IHandler</span> <span class="p">{</span>
+<span class="k">public</span><span class="o">:</span>
+    <span class="k">virtual</span> <span class="kt">bool</span> <span class="n">HandleRequest</span><span class="p">(</span><span class="k">const</span> <span class="n">Context</span> <span class="o">&amp;</span><span class="n">ctx</span><span class="p">){</span>
+        <span class="c1">//
+</span><span class="c1"></span>    <span class="p">}</span>
+<span class="k">protected</span><span class="o">:</span>
+    <span class="k">virtual</span> <span class="kt">bool</span> <span class="n">CanHandle</span><span class="p">()</span> <span class="p">{</span>
+        <span class="c1">//
+</span><span class="c1"></span>    <span class="p">}</span>
+<span class="p">};</span>
+
+<span class="kt">int</span> <span class="nf">main</span> <span class="p">()</span> <span class="p">{</span>
+    <span class="n">IHandler</span> <span class="o">*</span> <span class="n">h1</span> <span class="o">=</span> <span class="k">new</span> <span class="n">MainProgram</span><span class="p">();</span>
+    <span class="n">IHandler</span> <span class="o">*</span> <span class="n">h2</span> <span class="o">=</span> <span class="k">new</span> <span class="n">HandleByProjMgr</span><span class="p">();</span>
+    <span class="n">IHandler</span> <span class="o">*</span> <span class="n">h3</span> <span class="o">=</span> <span class="k">new</span> <span class="n">HandleByBoss</span><span class="p">();</span>
+    <span class="n">h1</span><span class="o">-&gt;</span><span class="n">SetNextHandler</span><span class="p">(</span><span class="n">h2</span><span class="p">);</span>
+
+    <span class="n">Context</span> <span class="n">ctx</span><span class="p">;</span>
+    <span class="n">h1</span><span class="o">-&gt;</span><span class="n">handle</span><span class="p">(</span><span class="n">ctx</span><span class="p">);</span>
+    <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+
+</code></pre></div><p>CanHandle 是判断条件  HandleRequest  就是对应的处理方式了</p>
+<p>我们只需要重载这两个函数就可以</p>
+<p>责任链顾名思义就是一条链，所以需要在对象中保存链中下一个对象的指针，IHandler *next;</p>
+<p>可以看到：依赖倒置原则、开放封闭原则比较明显</p>
+<h2 id="装饰器模式"><strong>装饰器模式</strong></h2>
+<p><figure 
+	>
+	<a href="/post/design_pattern/decorator.jpg" >
+		<img src="/post/design_pattern/decorator.jpg"
+			
+			
+			
+			loading="lazy"
+			>
+	</a>
+	
+</figure></p>
+<p><strong>定义：</strong> 使多个对象都有机会处理请求，从而避免请求的发送者和接收者之间的耦合关系。将这些对象连成⼀条链，并沿着这条链传递请求，直到有一个对象处理它为止。</p>
+<h3 id="未使用装饰器模式"><strong>未使用装饰器模式：</strong></h3>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-c++" data-lang="c++">
+<span class="c1">// 普通员工有销售奖金，累计奖金，部门经理除此之外还有团队奖金；后面可能会添加环比增长奖金，同时可能产生不同的奖金组合；
+</span><span class="c1">// 销售奖金 = 当月销售额 * 4%
+</span><span class="c1">// 累计奖金 = 总的回款额 * 0.2%
+</span><span class="c1">// 部门奖金 = 团队销售额 * 1%
+</span><span class="c1">// 环比奖金 = (当月销售额-上月销售额) * 1%
+</span><span class="c1">// 销售后面的参数可能会调整
+</span><span class="c1"></span><span class="k">class</span> <span class="nc">Context</span> <span class="p">{</span>
+<span class="k">public</span><span class="o">:</span>
+    <span class="kt">bool</span> <span class="n">isMgr</span><span class="p">;</span>
+    <span class="c1">// User user;
+</span><span class="c1"></span>    <span class="c1">// double groupsale;
+</span><span class="c1"></span><span class="p">};</span>
+
+<span class="k">class</span> <span class="nc">Bonus</span> <span class="p">{</span>
+<span class="k">public</span><span class="o">:</span>
+    <span class="kt">double</span> <span class="n">CalcBonus</span><span class="p">(</span><span class="n">Context</span> <span class="o">&amp;</span><span class="n">ctx</span><span class="p">)</span> <span class="p">{</span>
+        <span class="kt">double</span> <span class="n">bonus</span> <span class="o">=</span> <span class="mf">0.0</span><span class="p">;</span>
+        <span class="n">bonus</span> <span class="o">+=</span> <span class="n">CalcMonthBonus</span><span class="p">(</span><span class="n">ctx</span><span class="p">);</span>
+        <span class="n">bonus</span> <span class="o">+=</span> <span class="n">CalcSumBonus</span><span class="p">(</span><span class="n">ctx</span><span class="p">);</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">ctx</span><span class="p">.</span><span class="n">isMgr</span><span class="p">)</span> <span class="p">{</span>
+            <span class="n">bonus</span> <span class="o">+=</span> <span class="n">CalcGroupBonus</span><span class="p">(</span><span class="n">ctx</span><span class="p">);</span>
+        <span class="p">}</span>
+        <span class="k">return</span> <span class="n">bonus</span><span class="p">;</span>
+    <span class="p">}</span>
+<span class="k">private</span><span class="o">:</span>
+    <span class="kt">double</span> <span class="n">CalcMonthBonus</span><span class="p">(</span><span class="n">Context</span> <span class="o">&amp;</span><span class="n">ctx</span><span class="p">)</span> <span class="p">{</span>
+        <span class="kt">double</span> <span class="n">bonus</span><span class="cm">/* = */</span><span class="p">;</span>
+        <span class="k">return</span> <span class="n">bonus</span><span class="p">;</span>
+    <span class="p">}</span>
+    <span class="kt">double</span> <span class="nf">CalcSumBonus</span><span class="p">(</span><span class="n">Context</span> <span class="o">&amp;</span><span class="n">ctx</span><span class="p">)</span> <span class="p">{</span>
+        <span class="kt">double</span> <span class="n">bonus</span><span class="cm">/* = */</span><span class="p">;</span>
+        <span class="k">return</span> <span class="n">bonus</span><span class="p">;</span>
+    <span class="p">}</span>
+    <span class="kt">double</span> <span class="nf">CalcGroupBonus</span><span class="p">(</span><span class="n">Context</span> <span class="o">&amp;</span><span class="n">ctx</span><span class="p">)</span> <span class="p">{</span>
+        <span class="kt">double</span> <span class="n">bonus</span><span class="cm">/* = */</span><span class="p">;</span>
+        <span class="k">return</span> <span class="n">bonus</span><span class="p">;</span>
+    <span class="p">}</span>
+<span class="p">};</span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+    <span class="n">Context</span> <span class="n">ctx</span><span class="p">;</span>
+    <span class="c1">// 设置 ctx
+</span><span class="c1"></span>    <span class="n">Bonus</span> <span class="o">*</span><span class="n">bonus</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Bonus</span><span class="p">;</span>
+    <span class="n">bonus</span><span class="o">-&gt;</span><span class="n">CalcBonus</span><span class="p">(</span><span class="n">ctx</span><span class="p">);</span>
+<span class="p">}</span>
+
+
+</code></pre></div><h3 id="使用装饰器模式"><strong>使用装饰器模式：</strong></h3>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-c++" data-lang="c++">
+<span class="c1">// 普通员工有销售奖金，累计奖金，部门经理除此之外还有团队奖金；后面可能会添加环比增长奖金，同时可能产生不同的奖金组合；
+</span><span class="c1">// 销售奖金 = 当月销售额 * 4%
+</span><span class="c1">// 累计奖金 = 总的回款额 * 0.2%
+</span><span class="c1">// 部门奖金 = 团队销售额 * 1%
+</span><span class="c1">// 环比奖金 = (当月销售额-上月销售额) * 1%
+</span><span class="c1">// 销售后面的参数可能会调整
+</span><span class="c1"></span><span class="k">class</span> <span class="nc">Context</span> <span class="p">{</span>
+<span class="k">public</span><span class="o">:</span>
+    <span class="kt">bool</span> <span class="n">isMgr</span><span class="p">;</span>
+    <span class="c1">// User user;
+</span><span class="c1"></span>    <span class="c1">// double groupsale;
+</span><span class="c1"></span><span class="p">};</span>
+
+<span class="c1">// 试着从职责出发，将职责抽象出来
+</span><span class="c1"></span><span class="k">class</span> <span class="nc">CalcBonus</span> <span class="p">{</span>    
+<span class="k">public</span><span class="o">:</span>
+    <span class="n">CalcBonus</span><span class="p">(</span><span class="n">CalcBonus</span> <span class="o">*</span> <span class="n">c</span> <span class="o">=</span> <span class="k">nullptr</span><span class="p">)</span> <span class="p">{}</span>
+    <span class="k">virtual</span> <span class="kt">double</span> <span class="nf">Calc</span><span class="p">(</span><span class="n">Context</span> <span class="o">&amp;</span><span class="n">ctx</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="mf">0.0</span><span class="p">;</span> <span class="c1">// 基本工资
+</span><span class="c1"></span>    <span class="p">}</span>
+    <span class="k">virtual</span> <span class="o">~</span><span class="n">CalcBonus</span><span class="p">()</span> <span class="p">{}</span>
+
+<span class="k">protected</span><span class="o">:</span>
+    <span class="n">CalcBonus</span><span class="o">*</span> <span class="n">cc</span><span class="p">;</span>
+<span class="p">};</span>
+
+<span class="k">class</span> <span class="nc">CalcMonthBonus</span> <span class="o">:</span> <span class="k">public</span> <span class="n">CalcBonus</span> <span class="p">{</span>
+<span class="k">public</span><span class="o">:</span>
+    <span class="n">CalcMonthBonus</span><span class="p">(</span><span class="n">CalcBonus</span> <span class="o">*</span> <span class="n">c</span><span class="p">)</span> <span class="o">:</span> <span class="n">cc</span><span class="p">(</span><span class="n">c</span><span class="p">)</span> <span class="p">{}</span>
+    <span class="k">virtual</span> <span class="kt">double</span> <span class="nf">Calc</span><span class="p">(</span><span class="n">Context</span> <span class="o">&amp;</span><span class="n">ctx</span><span class="p">)</span> <span class="p">{</span>
+        <span class="kt">double</span> <span class="n">mbonus</span> <span class="cm">/*= 计算流程忽略*/</span><span class="p">;</span> 
+        <span class="k">return</span> <span class="n">mbonus</span> <span class="o">+</span> <span class="n">cc</span><span class="o">-&gt;</span><span class="n">Calc</span><span class="p">(</span><span class="n">ctx</span><span class="p">);</span>
+    <span class="p">}</span>
+<span class="p">};</span>
+
+<span class="k">class</span> <span class="nc">CalcSumBonus</span> <span class="o">:</span> <span class="k">public</span> <span class="n">CalcBonus</span> <span class="p">{</span>
+<span class="k">public</span><span class="o">:</span>
+    <span class="n">CalcSumBonus</span><span class="p">(</span><span class="n">CalcBonus</span> <span class="o">*</span> <span class="n">c</span><span class="p">)</span> <span class="o">:</span> <span class="n">cc</span><span class="p">(</span><span class="n">c</span><span class="p">)</span> <span class="p">{}</span>
+    <span class="k">virtual</span> <span class="kt">double</span> <span class="nf">Calc</span><span class="p">(</span><span class="n">Context</span> <span class="o">&amp;</span><span class="n">ctx</span><span class="p">)</span> <span class="p">{</span>
+        <span class="kt">double</span> <span class="n">sbonus</span> <span class="cm">/*= 计算流程忽略*/</span><span class="p">;</span> 
+        <span class="k">return</span> <span class="n">sbonus</span> <span class="o">+</span> <span class="n">cc</span><span class="o">-&gt;</span><span class="n">Calc</span><span class="p">(</span><span class="n">ctx</span><span class="p">);</span>
+    <span class="p">}</span>
+<span class="p">};</span>
+
+<span class="k">class</span> <span class="nc">CalcGroupBonus</span> <span class="o">:</span> <span class="k">public</span> <span class="n">CalcBonus</span> <span class="p">{</span>
+<span class="k">public</span><span class="o">:</span>
+    <span class="n">CalcGroupBonus</span><span class="p">(</span><span class="n">CalcBonus</span> <span class="o">*</span> <span class="n">c</span><span class="p">)</span> <span class="o">:</span> <span class="n">cc</span><span class="p">(</span><span class="n">c</span><span class="p">)</span> <span class="p">{}</span>
+    <span class="k">virtual</span> <span class="kt">double</span> <span class="nf">Calc</span><span class="p">(</span><span class="n">Context</span> <span class="o">&amp;</span><span class="n">ctx</span><span class="p">)</span> <span class="p">{</span>
+        <span class="kt">double</span> <span class="n">gbnonus</span> <span class="cm">/*= 计算流程忽略*/</span><span class="p">;</span> 
+        <span class="k">return</span> <span class="n">gbnonus</span> <span class="o">+</span> <span class="n">cc</span><span class="o">-&gt;</span><span class="n">Calc</span><span class="p">(</span><span class="n">ctx</span><span class="p">);</span>
+    <span class="p">}</span>
+<span class="p">};</span>
+
+<span class="k">class</span> <span class="nc">CalcCycleBonus</span> <span class="o">:</span> <span class="k">public</span> <span class="n">CalcBonus</span> <span class="p">{</span>
+<span class="k">public</span><span class="o">:</span>
+    <span class="n">CalcGroupBonus</span><span class="p">(</span><span class="n">CalcBonus</span> <span class="o">*</span> <span class="n">c</span><span class="p">)</span> <span class="o">:</span> <span class="n">cc</span><span class="p">(</span><span class="n">c</span><span class="p">)</span> <span class="p">{}</span>
+    <span class="k">virtual</span> <span class="kt">double</span> <span class="nf">Calc</span><span class="p">(</span><span class="n">Context</span> <span class="o">&amp;</span><span class="n">ctx</span><span class="p">)</span> <span class="p">{</span>
+        <span class="kt">double</span> <span class="n">gbnonus</span> <span class="cm">/*= 计算流程忽略*/</span><span class="p">;</span> 
+        <span class="k">return</span> <span class="n">gbnonus</span> <span class="o">+</span> <span class="n">cc</span><span class="o">-&gt;</span><span class="n">Calc</span><span class="p">(</span><span class="n">ctx</span><span class="p">);</span>
+    <span class="p">}</span>
+<span class="p">};</span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+    <span class="c1">// 1. 普通员工
+</span><span class="c1"></span>    <span class="n">Context</span> <span class="n">ctx1</span><span class="p">;</span>
+    <span class="n">CalcBonus</span> <span class="o">*</span><span class="n">base</span> <span class="o">=</span> <span class="k">new</span> <span class="n">CalcBonus</span><span class="p">();</span>
+    <span class="n">CalcBonus</span> <span class="o">*</span><span class="n">cb1</span> <span class="o">=</span> <span class="k">new</span> <span class="n">CalcMonthBonus</span><span class="p">(</span><span class="n">base</span><span class="p">);</span>
+    <span class="n">CalcBonus</span> <span class="o">*</span><span class="n">cb2</span> <span class="o">=</span> <span class="k">new</span> <span class="n">CalcSumBonus</span><span class="p">(</span><span class="n">cb1</span><span class="p">);</span>
+    <span class="n">cb2</span><span class="o">-&gt;</span><span class="n">Calc</span><span class="p">(</span><span class="n">ctx1</span><span class="p">);</span>
+    <span class="c1">// 2. 部门经理
+</span><span class="c1"></span>    <span class="n">Context</span> <span class="n">ctx2</span><span class="p">;</span>
+    <span class="n">CalcBonus</span> <span class="o">*</span><span class="n">cb3</span> <span class="o">=</span> <span class="k">new</span> <span class="n">CalcGroupBonus</span><span class="p">(</span><span class="n">cb2</span><span class="p">);</span>
+    <span class="n">cb3</span><span class="o">-&gt;</span><span class="n">Calc</span><span class="p">(</span><span class="n">ctx2</span><span class="p">);</span>
+<span class="p">}</span>
+
+</code></pre></div><p>与责任链模式不同的是，装饰器模式是累加而非替换，所以我们不需要一个完全新的类（重载掉整个处理函数）只需要在新的类中调用旧的类中的方法（那就需要传入旧类的对象）并在此基础上加入自己的新的处理部分，这就是装饰。</p>
+<p>我们把稳定的部分（计算）抽象了出来，在此基础上装饰，当我们需要新的接口的时候只需要在稳定的基础上扩展子类就可以，满足了面向接口、封装变化点等</p>
+<h2 id="单例模式"><strong>单例模式</strong></h2>
+<p><figure 
+	>
+	<a href="/post/design_pattern/singleton.jpg" >
+		<img src="/post/design_pattern/singleton.jpg"
+			
+			
+			
+			loading="lazy"
+			>
+	</a>
+	
+</figure></p>
+<p><strong>定义：</strong> 保证⼀个类仅有⼀个实例，并提供⼀个该实例的全局访问点。</p>
+<p><strong>通过多个版本来说明单例模式</strong></p>
+<h3 id="单例模式版本1"><strong>单例模式版本1</strong>：</h3>
+<p>简单的单例模式</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-c++" data-lang="c++">
+<span class="c1">// 内存栈区
+</span><span class="c1">// 内存堆区
+</span><span class="c1">// 常数区
+</span><span class="c1">// 静态区 系统释放
+</span><span class="c1">// ⼆进制代码区
+</span><span class="c1"></span><span class="k">class</span> <span class="nc">Singleton</span> <span class="p">{</span>
+
+<span class="k">public</span><span class="o">:</span>
+ <span class="k">static</span> <span class="n">Singleton</span> <span class="o">*</span> <span class="n">GetInstance</span><span class="p">()</span> <span class="p">{</span>
+ <span class="k">if</span> <span class="p">(</span><span class="n">_instance</span> <span class="o">==</span> <span class="k">nullptr</span><span class="p">)</span> <span class="p">{</span>
+ <span class="n">_instance</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Singleton</span><span class="p">();</span>
+ <span class="p">}</span>
+ <span class="k">return</span> <span class="n">_instance</span><span class="p">;</span>
+ <span class="p">}</span>
+<span class="k">private</span><span class="o">:</span>
+ <span class="n">Singleton</span><span class="p">(){}</span><span class="c1">//构造
+</span><span class="c1"></span> <span class="n">Singleton</span><span class="p">(</span><span class="k">const</span> <span class="n">Singleton</span> <span class="o">&amp;</span><span class="n">clone</span><span class="p">){}</span> <span class="c1">//拷⻉构造
+</span><span class="c1"></span> <span class="n">Singleton</span><span class="o">&amp;</span> <span class="k">operator</span><span class="o">=</span><span class="p">(</span><span class="k">const</span> <span class="n">Singleton</span><span class="o">&amp;</span><span class="p">)</span> <span class="p">{}</span>
+ <span class="k">static</span> <span class="n">Singleton</span> <span class="o">*</span> <span class="n">_instance</span><span class="p">;</span>
+<span class="p">}</span>
+<span class="n">Singleton</span><span class="o">*</span> <span class="n">Singleton</span><span class="o">::</span><span class="n">_instance</span> <span class="o">=</span> <span class="k">nullptr</span><span class="p">;</span><span class="c1">//静态成员需要初始化
+</span><span class="c1"></span>
+</code></pre></div><p>问题在于我们要销毁的时候没有对应的处理函数</p>
+<h3 id="单例模式版本2"><strong>单例模式版本2</strong>：</h3>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-c++" data-lang="c++">
+<span class="k">class</span> <span class="nc">Singleton</span> <span class="p">{</span>
+<span class="k">public</span><span class="o">:</span>
+ <span class="k">static</span> <span class="n">Singleton</span> <span class="o">*</span> <span class="n">GetInstance</span><span class="p">()</span> <span class="p">{</span>
+ <span class="k">if</span> <span class="p">(</span><span class="n">_instance</span> <span class="o">==</span> <span class="k">nullptr</span><span class="p">)</span> <span class="p">{</span>
+ <span class="n">_instance</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Singleton</span><span class="p">();</span>
+ <span class="n">atexit</span><span class="p">(</span><span class="n">Destructor</span><span class="p">);</span>
+ <span class="p">}</span>
+ <span class="k">return</span> <span class="n">_instance</span><span class="p">;</span>
+ <span class="p">}</span>
+ <span class="o">~</span><span class="n">Singleton</span><span class="p">()</span> <span class="p">{}</span>
+<span class="k">private</span><span class="o">:</span>
+ <span class="k">static</span> <span class="kt">void</span> <span class="n">Destructor</span><span class="p">()</span> <span class="p">{</span>
+ <span class="k">if</span> <span class="p">(</span><span class="k">nullptr</span> <span class="o">!=</span> <span class="n">_instance</span><span class="p">)</span> <span class="p">{</span>
+ <span class="k">delete</span> <span class="n">_instance</span><span class="p">;</span>
+ <span class="n">_instance</span> <span class="o">=</span> <span class="k">nullptr</span><span class="p">;</span>
+ <span class="p">}</span>
+ <span class="p">}</span>
+ <span class="n">Singleton</span><span class="p">();</span><span class="c1">//构造
+</span><span class="c1"></span> <span class="n">Singleton</span><span class="p">(</span><span class="k">const</span> <span class="n">Singleton</span> <span class="o">&amp;</span><span class="n">cpy</span><span class="p">);</span> <span class="c1">//拷⻉构造
+</span><span class="c1"></span> <span class="n">Singleton</span><span class="o">&amp;</span> <span class="k">operator</span><span class="o">=</span><span class="p">(</span><span class="k">const</span> <span class="n">Singleton</span><span class="o">&amp;</span><span class="p">)</span> <span class="p">{}</span>
+ <span class="k">static</span> <span class="n">Singleton</span> <span class="o">*</span> <span class="n">_instance</span><span class="p">;</span>
+<span class="p">}</span>
+<span class="n">Singleton</span><span class="o">*</span> <span class="n">Singleton</span><span class="o">::</span><span class="n">_instance</span> <span class="o">=</span> <span class="k">nullptr</span><span class="p">;</span><span class="c1">//静态成员需要初始化
+</span><span class="c1"></span>
+</code></pre></div><p>加入销毁（atexit在函数退出时调用）但是存在线程安全问题，单例模式创建的对象需要全局唯一，多线程下如果同时进入创建函数内可能创建多个对象。</p>
+<h3 id="单例模式版本3"><strong>单例模式版本3</strong>：</h3>
+<p>使用互斥锁保证线程安全</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-c++" data-lang="c++">
+<span class="cp">#include</span> <span class="cpf">&lt;mutex&gt;</span><span class="cp">
+</span><span class="cp"></span><span class="k">class</span> <span class="nc">Singleton</span> <span class="p">{</span> <span class="c1">// 懒汉模式  lazy load  get的时候才创建
+</span><span class="c1"></span><span class="k">public</span><span class="o">:</span>
+ <span class="k">static</span> <span class="n">Singleton</span> <span class="o">*</span> <span class="n">GetInstance</span><span class="p">()</span> <span class="p">{</span>
+
+ <span class="c1">//std::lock_guard&lt;std::mutex&gt; lock(_mutex); // 3.1 切换线程
+</span><span class="c1"></span> <span class="k">if</span> <span class="p">(</span><span class="n">_instance</span> <span class="o">==</span> <span class="k">nullptr</span><span class="p">)</span> <span class="p">{</span>
+ <span class="n">std</span><span class="o">::</span><span class="n">lock_guard</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">mutex</span><span class="o">&gt;</span> <span class="n">lock</span><span class="p">(</span><span class="n">_mutex</span><span class="p">);</span> <span class="c1">// 3.2
+</span><span class="c1"></span> <span class="k">if</span> <span class="p">(</span><span class="n">_instance</span> <span class="o">==</span> <span class="k">nullptr</span><span class="p">)</span> <span class="p">{</span>
+ <span class="n">_instance</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Singleton</span><span class="p">();</span>
+ <span class="n">atexit</span><span class="p">(</span><span class="n">Destructor</span><span class="p">);</span>
+ <span class="p">}</span>
+ <span class="p">}</span>
+ <span class="k">return</span> <span class="n">_instance</span><span class="p">;</span>
+ <span class="p">}</span>
+<span class="k">private</span><span class="o">:</span>
+ <span class="k">static</span> <span class="kt">void</span> <span class="n">Destructor</span><span class="p">()</span> <span class="p">{</span>
+ <span class="k">if</span> <span class="p">(</span><span class="k">nullptr</span> <span class="o">!=</span> <span class="n">_instance</span><span class="p">)</span> <span class="p">{</span>
+ <span class="k">delete</span> <span class="n">_instance</span><span class="p">;</span>
+ <span class="n">_instance</span> <span class="o">=</span> <span class="k">nullptr</span><span class="p">;</span>
+ <span class="p">}</span>
+ <span class="p">}</span>
+ <span class="n">Singleton</span><span class="p">(){}</span> <span class="c1">//构造
+</span><span class="c1"></span> <span class="n">Singleton</span><span class="p">(</span><span class="k">const</span> <span class="n">Singleton</span> <span class="o">&amp;</span><span class="n">cpy</span><span class="p">){}</span> <span class="c1">//拷⻉构造
+</span><span class="c1"></span> <span class="n">Singleton</span><span class="o">&amp;</span> <span class="k">operator</span><span class="o">=</span><span class="p">(</span><span class="k">const</span> <span class="n">Singleton</span><span class="o">&amp;</span><span class="p">)</span> <span class="p">{}</span>
+ <span class="k">static</span> <span class="n">Singleton</span> <span class="o">*</span> <span class="n">_instance</span><span class="p">;</span>
+ <span class="k">static</span> <span class="n">std</span><span class="o">::</span><span class="n">mutex</span> <span class="n">_mutex</span><span class="p">;</span>
+<span class="p">}</span>
+<span class="n">Singleton</span><span class="o">*</span> <span class="n">Singleton</span><span class="o">::</span><span class="n">_instance</span> <span class="o">=</span> <span class="k">nullptr</span><span class="p">;</span><span class="c1">//静态成员需要初始化
+</span><span class="c1"></span><span class="n">std</span><span class="o">::</span><span class="n">mutex</span> <span class="n">Singleton</span><span class="o">::</span><span class="n">_mutex</span><span class="p">;</span> <span class="c1">//互斥锁初始化
+</span><span class="c1"></span>
+</code></pre></div><p>这一版本还存在问题，首先在3.1处加锁的话锁的粒度太大，线程切换调用的开销巨大，试想即使另一个线程拿到锁已经初始化完成，此时有线程要来取得单例对象，可是锁已经被拿走，即使对象已经创建还是需要将这个线程挂起，开销巨大。</p>
+<p>第二个问题，如果我们将锁加到3.2位置，多线程环境下可能有线程取到空值的单例对象，这是因为有线程已经拿到锁开始创建对象，但是从底层汇编的角度来看，对象的构建分三步：1、取得内存2、构造3、赋值给指针。但是汇编器可能进行优化（reorder，指令重排，为什么会重排呢，因为指令操作重排后可能具有更好的性能，对于指令来说可能提高分支预测的成功率等等），使得对象构建的顺序由123变成132，如果13进行完毕，代表其他线程会认为对象已经构建完成，因为指针指向了一块地址，但其实这一块内存还未进行构造就是未知的，其他线程就会取到未知的数据，产生错误。</p>
+<p>综上，在3.1处加锁粒度太大浪费计算资源，在3.2处加锁还是无法保证线程安全。</p>
+<p>那我们该怎么办呢？ 就有了版本4：</p>
+<h3 id="单例模式版本4"><strong>单例模式版本4</strong>：</h3>
+<p><strong>使用编译屏障</strong></p>
+<p>一般来讲屏障是汇编器带有的功能，我们也可以内联汇编来实现但是比较复杂且可读性不高。</p>
+<p>汇编：（定义一个显式屏障）</p>
+<pre><code class="language-x86asm" data-lang="x86asm">#define barrier() __asm__ __volatile__(&quot;&quot;: : :&quot;memory&quot;)
+</code></pre><p>当然显式屏障的作用远不止关闭reorder，还有：</p>
+<p>告诉compiler内存中的值已经改变，之前对内存的缓存（缓存到寄存器）都需要抛弃，barrier()之后的内存操作需要重新从内存load，而不能使用之前寄存器缓存的值。<strong>并且可以防止compiler优化barrier()前后的内存访问顺序</strong>。</p>
+<p>可以看到，memory还具备刷新缓存的功能，所以不仅可以防止reorder优化，还可以防止其他指令优化，比如真值替换等。至于多核心的L1,L2缓存，MESI协议下的多核缓存一致性已经保持的很好了</p>
+<p><strong>c++11 中的编译屏障：</strong></p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-c++" data-lang="c++">
+<span class="cp">#include</span> <span class="cpf">&lt;mutex&gt;</span><span class="cp">
+</span><span class="cp">#include</span> <span class="cpf">&lt;atomic&gt;</span><span class="cp">
+</span><span class="cp"></span><span class="k">class</span> <span class="nc">Singleton</span> <span class="p">{</span>
+<span class="k">public</span><span class="o">:</span>
+ <span class="k">static</span> <span class="n">Singleton</span> <span class="o">*</span> <span class="n">GetInstance</span><span class="p">()</span> <span class="p">{</span>
+ <span class="n">Singleton</span><span class="o">*</span> <span class="n">tmp</span> <span class="o">=</span> <span class="n">_instance</span><span class="p">.</span><span class="n">load</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">memory_order_relaxed</span><span class="p">);</span>
+ <span class="n">std</span><span class="o">::</span><span class="n">atomic_thread_fence</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">memory_order_acquire</span><span class="p">);</span><span class="c1">//获取内存屏障
+</span><span class="c1"></span> <span class="k">if</span> <span class="p">(</span><span class="n">tmp</span> <span class="o">==</span> <span class="k">nullptr</span><span class="p">)</span> <span class="p">{</span>
+ <span class="n">std</span><span class="o">::</span><span class="n">lock_guard</span><span class="o">&lt;</span><span class="n">std</span><span class="o">::</span><span class="n">mutex</span><span class="o">&gt;</span> <span class="n">lock</span><span class="p">(</span><span class="n">_mutex</span><span class="p">);</span>
+ <span class="n">tmp</span> <span class="o">=</span> <span class="n">_instance</span><span class="p">.</span><span class="n">load</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">memory_order_relaxed</span><span class="p">);</span>
+ <span class="k">if</span> <span class="p">(</span><span class="n">tmp</span> <span class="o">==</span> <span class="k">nullptr</span><span class="p">)</span> <span class="p">{</span>
+ <span class="n">tmp</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Singleton</span><span class="p">;</span>
+ <span class="n">std</span><span class="o">::</span><span class="n">atomic_thread_fence</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">memory_order_release</span><span class="p">);</span><span class="c1">//释放内存屏障
+</span><span class="c1"></span> <span class="n">_instance</span><span class="p">.</span><span class="n">store</span><span class="p">(</span><span class="n">tmp</span><span class="p">,</span> <span class="n">std</span><span class="o">::</span><span class="n">memory_order_relaxed</span><span class="p">);</span>
+ <span class="n">atexit</span><span class="p">(</span><span class="n">Destructor</span><span class="p">);</span>
+ <span class="p">}</span>
+ <span class="p">}</span>
+ <span class="k">return</span> <span class="n">tmp</span><span class="p">;</span>
+ <span class="p">}</span>
+
+<span class="k">private</span><span class="o">:</span>
+ <span class="k">static</span> <span class="kt">void</span> <span class="n">Destructor</span><span class="p">()</span> <span class="p">{</span>
+ <span class="n">Singleton</span><span class="o">*</span> <span class="n">tmp</span> <span class="o">=</span> <span class="n">_instance</span><span class="p">.</span><span class="n">load</span><span class="p">(</span><span class="n">std</span><span class="o">::</span><span class="n">memory_order_relaxed</span><span class="p">);</span>
+ <span class="k">if</span> <span class="p">(</span><span class="k">nullptr</span> <span class="o">!=</span> <span class="n">tmp</span><span class="p">)</span> <span class="p">{</span>
+ <span class="k">delete</span> <span class="n">tmp</span><span class="p">;</span>
+ <span class="p">}</span>
+ <span class="p">}</span>
+ <span class="n">Singleton</span><span class="p">(){}</span>
+ <span class="n">Singleton</span><span class="p">(</span><span class="k">const</span> <span class="n">Singleton</span><span class="o">&amp;</span><span class="p">)</span> <span class="p">{}</span>
+ <span class="n">Singleton</span><span class="o">&amp;</span> <span class="k">operator</span><span class="o">=</span><span class="p">(</span><span class="k">const</span> <span class="n">Singleton</span><span class="o">&amp;</span><span class="p">)</span> <span class="p">{}</span>
+ <span class="k">static</span> <span class="n">std</span><span class="o">::</span><span class="n">atomic</span><span class="o">&lt;</span><span class="n">Singleton</span><span class="o">*&gt;</span> <span class="n">_instance</span><span class="p">;</span>
+ <span class="k">static</span> <span class="n">std</span><span class="o">::</span><span class="n">mutex</span> <span class="n">_mutex</span><span class="p">;</span>
+<span class="p">};</span>
+<span class="n">std</span><span class="o">::</span><span class="n">atomic</span><span class="o">&lt;</span><span class="n">Singleton</span><span class="o">*&gt;</span> <span class="n">Singleton</span><span class="o">::</span><span class="n">_instance</span><span class="p">;</span><span class="c1">//静态成员需要初始化
+</span><span class="c1"></span><span class="n">std</span><span class="o">::</span><span class="n">mutex</span> <span class="n">Singleton</span><span class="o">::</span><span class="n">_mutex</span><span class="p">;</span> <span class="c1">//互斥锁初始化
+</span><span class="c1">// g++ Singleton.cpp -o singleton -std=c++11
+</span><span class="c1"></span>
+</code></pre></div><p>添加内存屏障后，cpu不会reorder，因为这块内存只能在这里操作，优化器并不会进行优化，只有一个线程可以操作这一块内存，也就不存在其他线程来取用的时候取到未知值的情况了，因为其他线程都无法取用，只能等待。同时这种操作下粒度也是很小的，并不影响大部分情况下的其他线程获得未创建成功的信息。</p>
+<h3 id="单例模式版本5"><strong>单例模式版本5</strong>：</h3>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-c++" data-lang="c++">
+<span class="c1">// c++11 magic static 特性：如果当变量在初始化的时候，并发同时进⼊声明语句，并发
+</span><span class="c1"></span><span class="err">线程将会阻塞等待初始化结束。</span>
+<span class="k">class</span> <span class="nc">Singleton</span>
+<span class="p">{</span>
+<span class="k">public</span><span class="o">:</span>
+ <span class="o">~</span><span class="n">Singleton</span><span class="p">(){}</span>
+ <span class="k">static</span> <span class="n">Singleton</span><span class="o">&amp;</span> <span class="n">GetInstance</span><span class="p">()</span> <span class="p">{</span>
+ <span class="k">static</span> <span class="n">Singleton</span> <span class="n">instance</span><span class="p">;</span>
+ <span class="k">return</span> <span class="n">instance</span><span class="p">;</span>
+ <span class="p">}</span>
+<span class="k">private</span><span class="o">:</span>
+ <span class="n">Singleton</span><span class="p">(){}</span>
+ <span class="n">Singleton</span><span class="p">(</span><span class="k">const</span> <span class="n">Singleton</span><span class="o">&amp;</span><span class="p">)</span> <span class="p">{}</span>
+ <span class="n">Singleton</span><span class="o">&amp;</span> <span class="k">operator</span><span class="o">=</span><span class="p">(</span><span class="k">const</span> <span class="n">Singleton</span><span class="o">&amp;</span><span class="p">)</span> <span class="p">{}</span>
+<span class="p">};</span>
+<span class="c1">// 继承 Singleton
+</span><span class="c1">// g++ Singleton.cpp -o singleton -std=c++11
+</span><span class="c1"></span><span class="cm">/*该版本具备 版本5 所有优点：
+</span><span class="cm">1. 利⽤静态局部变量特性，延迟加载；
+</span><span class="cm">2. 利⽤静态局部变量特性，系统⾃动回收内存，⾃动调⽤析构函数；
+</span><span class="cm">3. 静态局部变量初始化时，没有 new 操作带来的cpu指令reorder操作；
+</span><span class="cm">4. c++11 静态局部变量初始化时，具备线程安全；
+</span><span class="cm">*/</span>
+
+</code></pre></div><p>这一版本优点很多，但是当其他类需要用到这个单例的时候，我们想到继承，可是构造函数为private，显然无法继承，因为继承后不能使用构造函数。</p>
+<p><strong>这里我们只需要在单例中添加友元类就可以。</strong> 可是扩展性极差，因为可能需要写特别多的friend，所以用版本6：</p>
+<h3 id="单例模式版本6"><strong>单例模式版本6</strong>：</h3>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-c++" data-lang="c++"><span class="k">template</span><span class="o">&lt;</span><span class="k">typename</span> <span class="n">T</span><span class="o">&gt;</span>
+<span class="k">class</span> <span class="nc">Singleton</span> <span class="p">{</span>
+<span class="k">public</span><span class="o">:</span>
+
+ <span class="k">static</span> <span class="n">T</span><span class="o">&amp;</span> <span class="n">GetInstance</span><span class="p">()</span> <span class="p">{</span>
+ <span class="k">static</span> <span class="n">T</span> <span class="n">instance</span><span class="p">;</span> <span class="c1">// 这⾥要初始化DesignPattern，需要调⽤DesignPattern 构造函数，同时会调⽤⽗类的构造函数。
+</span><span class="c1"></span> <span class="k">return</span> <span class="n">instance</span><span class="p">;</span>
+ <span class="p">}</span>
+<span class="k">protected</span><span class="o">:</span>
+ <span class="k">virtual</span> <span class="o">~</span><span class="n">Singleton</span><span class="p">()</span> <span class="p">{}</span>
+ <span class="n">Singleton</span><span class="p">()</span> <span class="p">{}</span> <span class="c1">// protected修饰构造函数，才能让别⼈继承
+</span><span class="c1"></span> <span class="n">Singleton</span><span class="p">(</span><span class="k">const</span> <span class="n">Singleton</span><span class="o">&amp;</span><span class="p">)</span> <span class="p">{}</span>
+ <span class="n">Singleton</span><span class="o">&amp;</span> <span class="k">operator</span> <span class="o">=</span><span class="p">(</span><span class="k">const</span> <span class="n">Singleton</span><span class="o">&amp;</span><span class="p">)</span> <span class="p">{}</span>
+<span class="p">};</span>
+<span class="k">class</span> <span class="nc">DesignPattern</span> <span class="o">:</span> <span class="k">public</span> <span class="n">Singleton</span><span class="o">&lt;</span><span class="n">DesignPattern</span><span class="o">&gt;</span> <span class="p">{</span>
+ <span class="k">friend</span> <span class="k">class</span> <span class="nc">Singleton</span><span class="o">&lt;</span><span class="n">DesignPattern</span><span class="o">&gt;</span><span class="p">;</span> <span class="c1">// friend 能让 Singleton&lt;T&gt; 访问到 DesignPattern构造函数
+</span><span class="c1"></span><span class="k">private</span><span class="o">:</span>
+ <span class="n">DesignPattern</span><span class="p">(){}</span>
+ <span class="n">DesignPattern</span><span class="p">(</span><span class="k">const</span> <span class="n">DesignPattern</span><span class="o">&amp;</span><span class="p">)</span> <span class="p">{}</span>
+ <span class="n">DesignPattern</span><span class="o">&amp;</span> <span class="k">operator</span><span class="o">=</span><span class="p">(</span><span class="k">const</span> <span class="n">DesignPattern</span><span class="o">&amp;</span><span class="p">)</span> <span class="p">{}</span>
+<span class="p">};</span>
+
+</code></pre></div><p>显然，使用protected来标记构造函数就可以避免继承问题了。</p>
+<h2 id="工厂方法模式"><strong>工厂方法模式</strong></h2>
+<p><figure 
+	>
+	<a href="/post/design_pattern/factory.jpg" >
+		<img src="/post/design_pattern/factory.jpg"
+			
+			
+			
+			loading="lazy"
+			>
+	</a>
+	
+</figure></p>
+<p><strong>定义：</strong> 定义⼀个用于创建对象的接口，让子类决定实例化哪⼀个类。Factory Method使得⼀个类的实例化延迟到子类。</p>
+<h3 id="未使用工厂方法模式"><strong>未使用工厂方法模式</strong>：</h3>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-c" data-lang="c">
+<span class="cp">#include</span> <span class="cpf">&lt;string&gt;</span><span class="cp">
+</span><span class="cp"></span><span class="c1">// 实现导出数据的接口, 导出数据的格式包含 xml，json，文本格式txt 后面可能扩展excel格式csv
+</span><span class="c1"></span><span class="n">class</span> <span class="n">IExport</span> <span class="p">{</span>
+<span class="nl">public</span><span class="p">:</span>
+    <span class="n">virtual</span> <span class="kt">bool</span> <span class="n">Export</span><span class="p">(</span><span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="o">&amp;</span><span class="n">data</span><span class="p">)</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+    <span class="n">virtual</span> <span class="o">~</span><span class="n">IExport</span><span class="p">(){}</span>
+<span class="p">};</span>
+
+<span class="n">class</span> <span class="nl">ExportXml</span> <span class="p">:</span> <span class="n">public</span> <span class="n">IExport</span> <span class="p">{</span>
+<span class="nl">public</span><span class="p">:</span>
+    <span class="n">virtual</span> <span class="kt">bool</span> <span class="n">Export</span><span class="p">(</span><span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="o">&amp;</span><span class="n">data</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="nb">true</span><span class="p">;</span>
+    <span class="p">}</span>
+<span class="p">};</span>
+
+<span class="n">class</span> <span class="nl">ExportJson</span> <span class="p">:</span> <span class="n">public</span> <span class="n">IExport</span> <span class="p">{</span>
+<span class="nl">public</span><span class="p">:</span>
+    <span class="n">virtual</span> <span class="kt">bool</span> <span class="n">Export</span><span class="p">(</span><span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="o">&amp;</span><span class="n">data</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="nb">true</span><span class="p">;</span>
+    <span class="p">}</span>
+<span class="p">};</span>
+
+<span class="n">class</span> <span class="nl">ExportTxt</span> <span class="p">:</span> <span class="n">public</span> <span class="n">IExport</span> <span class="p">{</span>
+<span class="nl">public</span><span class="p">:</span>
+    <span class="n">virtual</span> <span class="kt">bool</span> <span class="n">Export</span><span class="p">(</span><span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="o">&amp;</span><span class="n">data</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="nb">true</span><span class="p">;</span>
+    <span class="p">}</span>
+<span class="p">};</span>
+
+<span class="c1">// =====1
+</span><span class="c1"></span><span class="kt">int</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+    <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="n">choose</span><span class="cm">/* = */</span><span class="p">;</span>
+    <span class="k">if</span> <span class="p">(</span><span class="n">choose</span> <span class="o">==</span> <span class="s">&#34;txt&#34;</span><span class="p">)</span> <span class="p">{</span>
+        <span class="n">IExport</span> <span class="o">*</span><span class="n">e</span> <span class="o">=</span> <span class="n">new</span> <span class="n">ExportTxt</span><span class="p">();</span>
+        <span class="n">e</span><span class="o">-&gt;</span><span class="n">Export</span><span class="p">(</span><span class="s">&#34;hello world&#34;</span><span class="p">);</span>
+    <span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="n">choose</span> <span class="o">==</span> <span class="s">&#34;json&#34;</span><span class="p">)</span> <span class="p">{</span>
+        <span class="n">IExport</span> <span class="o">*</span><span class="n">e</span> <span class="o">=</span> <span class="n">new</span> <span class="n">ExportJson</span><span class="p">();</span>
+        <span class="n">e</span><span class="o">-&gt;</span><span class="n">Export</span><span class="p">(</span><span class="s">&#34;hello world&#34;</span><span class="p">);</span>
+    <span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="n">choose</span> <span class="o">==</span> <span class="s">&#34;xml&#34;</span><span class="p">)</span> <span class="p">{</span>
+        <span class="n">IExport</span> <span class="o">*</span><span class="n">e</span> <span class="o">=</span> <span class="n">new</span> <span class="n">ExportXml</span><span class="p">();</span>
+        <span class="n">e</span><span class="o">-&gt;</span><span class="n">Export</span><span class="p">(</span><span class="s">&#34;hello world&#34;</span><span class="p">);</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+
+</code></pre></div><h3 id="使用工厂方法模式"><strong>使用工厂方法模式</strong>：</h3>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-c++" data-lang="c++">
+<span class="cp">#include</span> <span class="cpf">&lt;string&gt;</span><span class="cp">
+</span><span class="cp"></span><span class="c1">// 实现导出数据的接口, 导出数据的格式包含 xml，json，文本格式txt 后面可能扩展excel格式csv
+</span><span class="c1"></span>
+<span class="k">class</span> <span class="nc">IExport</span> <span class="p">{</span>
+<span class="k">public</span><span class="o">:</span>
+    <span class="k">virtual</span> <span class="kt">bool</span> <span class="n">Export</span><span class="p">(</span><span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="o">&amp;</span><span class="n">data</span><span class="p">)</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+    <span class="k">virtual</span> <span class="o">~</span><span class="n">IExport</span><span class="p">(){}</span>
+<span class="p">};</span>
+
+<span class="k">class</span> <span class="nc">ExportXml</span> <span class="o">:</span> <span class="k">public</span> <span class="n">IExport</span> <span class="p">{</span>
+<span class="k">public</span><span class="o">:</span>
+    <span class="k">virtual</span> <span class="kt">bool</span> <span class="n">Export</span><span class="p">(</span><span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="o">&amp;</span><span class="n">data</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="nb">true</span><span class="p">;</span>
+    <span class="p">}</span>
+<span class="p">};</span>
+
+<span class="k">class</span> <span class="nc">ExportJson</span> <span class="o">:</span> <span class="k">public</span> <span class="n">IExport</span> <span class="p">{</span>
+<span class="k">public</span><span class="o">:</span>
+    <span class="k">virtual</span> <span class="kt">bool</span> <span class="n">Export</span><span class="p">(</span><span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="o">&amp;</span><span class="n">data</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="nb">true</span><span class="p">;</span>
+    <span class="p">}</span>
+<span class="p">};</span>
+
+<span class="k">class</span> <span class="nc">ExportTxt</span> <span class="o">:</span> <span class="k">public</span> <span class="n">IExport</span> <span class="p">{</span>
+<span class="k">public</span><span class="o">:</span>
+    <span class="k">virtual</span> <span class="kt">bool</span> <span class="n">Export</span><span class="p">(</span><span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="o">&amp;</span><span class="n">data</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="nb">true</span><span class="p">;</span>
+    <span class="p">}</span>
+<span class="p">};</span>
+
+<span class="k">class</span> <span class="nc">IExportFactory</span> <span class="p">{</span>
+<span class="k">public</span><span class="o">:</span>
+    <span class="k">virtual</span> <span class="n">IExport</span> <span class="o">*</span> <span class="n">NewExport</span><span class="p">(</span><span class="cm">/* ... */</span><span class="p">)</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">};</span>
+
+<span class="k">class</span> <span class="nc">ExportXmlFactory</span> <span class="o">:</span> <span class="k">public</span> <span class="n">IExportFactory</span> <span class="p">{</span>
+<span class="k">public</span><span class="o">:</span>
+    <span class="n">IExport</span> <span class="o">*</span> <span class="n">NewExport</span><span class="p">(</span><span class="cm">/* ... */</span><span class="p">)</span> <span class="p">{</span>
+        <span class="c1">// 可能有其它操作，或者许多参数
+</span><span class="c1"></span>        <span class="n">IExport</span> <span class="o">*</span> <span class="n">temp</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ExportXml</span><span class="p">;</span>
+        <span class="c1">// 可能之后有什么操作
+</span><span class="c1"></span>        <span class="k">return</span> <span class="n">temp</span><span class="p">;</span>
+    <span class="p">}</span>
+<span class="p">};</span>
+
+<span class="k">class</span> <span class="nc">ExportJsonFactory</span> <span class="o">:</span> <span class="k">public</span> <span class="n">IExportFactory</span> <span class="p">{</span>
+<span class="k">public</span><span class="o">:</span>
+    <span class="n">IExport</span> <span class="o">*</span> <span class="n">NewExport</span><span class="p">(</span><span class="cm">/* ... */</span><span class="p">)</span> <span class="p">{</span>
+        <span class="c1">// 可能有其它操作，或者许多参数
+</span><span class="c1"></span>        <span class="n">IExport</span> <span class="o">*</span> <span class="n">temp</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ExportJson</span><span class="p">;</span>
+        <span class="c1">// 可能之后有什么操作
+</span><span class="c1"></span>        <span class="k">return</span> <span class="n">temp</span><span class="p">;</span>
+    <span class="p">}</span>
+<span class="p">};</span>
+
+<span class="k">class</span> <span class="nc">ExportTxtFactory</span> <span class="o">:</span> <span class="k">public</span> <span class="n">IExportFactory</span> <span class="p">{</span>
+<span class="k">public</span><span class="o">:</span>
+    <span class="n">IExport</span> <span class="o">*</span> <span class="n">NewExport</span><span class="p">(</span><span class="cm">/* ... */</span><span class="p">)</span> <span class="p">{</span>
+        <span class="c1">// 可能有其它操作，或者许多参数
+</span><span class="c1"></span>        <span class="n">IExport</span> <span class="o">*</span> <span class="n">temp</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ExportTxt</span><span class="p">;</span>
+        <span class="c1">// 可能之后有什么操作
+</span><span class="c1"></span>        <span class="k">return</span> <span class="n">temp</span><span class="p">;</span>
+    <span class="p">}</span>
+<span class="p">};</span>
+
+<span class="k">class</span> <span class="nc">ExportData</span> <span class="p">{</span>
+<span class="k">public</span><span class="o">:</span>
+    <span class="n">ExportData</span><span class="p">(</span><span class="n">IExportFactory</span> <span class="o">*</span><span class="n">factory</span><span class="p">)</span> <span class="o">:</span> <span class="n">_factory</span><span class="p">(</span><span class="n">factory</span><span class="p">)</span> <span class="p">{}</span>
+    <span class="o">~</span><span class="n">ExportData</span><span class="p">()</span> <span class="p">{</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">_factory</span><span class="p">)</span> <span class="p">{</span>
+            <span class="k">delete</span> <span class="n">_factory</span><span class="p">;</span>
+            <span class="n">_factory</span> <span class="o">=</span> <span class="k">nullptr</span><span class="p">;</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+    <span class="kt">bool</span> <span class="nf">Export</span><span class="p">(</span><span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="o">&amp;</span><span class="n">data</span><span class="p">)</span> <span class="p">{</span>
+        <span class="n">IExport</span> <span class="o">*</span> <span class="n">e</span> <span class="o">=</span> <span class="n">_factory</span><span class="o">-&gt;</span><span class="n">NewExport</span><span class="p">();</span>
+        <span class="n">e</span><span class="o">-&gt;</span><span class="n">Export</span><span class="p">(</span><span class="n">data</span><span class="p">);</span>
+    <span class="p">}</span>
+<span class="k">private</span><span class="o">:</span>
+    <span class="n">IExportFactory</span> <span class="o">*</span><span class="n">_factory</span><span class="p">;</span>
+<span class="p">};</span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">()</span> <span class="p">{</span>
+    <span class="n">ExportData</span> <span class="n">ed</span><span class="p">(</span><span class="k">new</span> <span class="n">ExportTxtFactory</span><span class="p">);</span>
+    <span class="n">ed</span><span class="p">.</span><span class="n">Export</span><span class="p">(</span><span class="s">&#34;hello world&#34;</span><span class="p">);</span>
+    <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span> 
+
+</code></pre></div><h2 id="抽象工厂"><strong>抽象工厂</strong></h2>
+<p><figure 
+	>
+	<a href="/post/design_pattern/abstractfactory.jpg" >
+		<img src="/post/design_pattern/abstractfactory.jpg"
+			
+			
+			
+			loading="lazy"
+			>
+	</a>
+	
+</figure></p>
+<p><strong>定义：</strong> 提供一个接口，让该接口负责创建一系列“相关或者相互依赖的对象”，无需指定它们具体的类。</p>
+<h3 id="使用抽象工厂方法模式"><strong>使用抽象工厂方法模式</strong>：</h3>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-c++" data-lang="c++">
+<span class="cp">#include</span> <span class="cpf">&lt;string&gt;</span><span class="cp">
+</span><span class="cp"></span><span class="c1">// 实现导出数据的接口, 导出数据的格式包含 xml，json，文本格式txt 后面可能扩展excel格式csv
+</span><span class="c1"></span><span class="k">class</span> <span class="nc">IExport</span> <span class="p">{</span>
+<span class="k">public</span><span class="o">:</span>
+    <span class="k">virtual</span> <span class="kt">bool</span> <span class="n">Export</span><span class="p">(</span><span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="o">&amp;</span><span class="n">data</span><span class="p">)</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+    <span class="k">virtual</span> <span class="o">~</span><span class="n">IExport</span><span class="p">(){}</span>
+<span class="p">};</span>
+
+<span class="k">class</span> <span class="nc">ExportXml</span> <span class="o">:</span> <span class="k">public</span> <span class="n">IExport</span> <span class="p">{</span>
+<span class="k">public</span><span class="o">:</span>
+    <span class="k">virtual</span> <span class="kt">bool</span> <span class="n">Export</span><span class="p">(</span><span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="o">&amp;</span><span class="n">data</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="nb">true</span><span class="p">;</span>
+    <span class="p">}</span>
+<span class="p">};</span>
+
+<span class="k">class</span> <span class="nc">ExportJson</span> <span class="o">:</span> <span class="k">public</span> <span class="n">IExport</span> <span class="p">{</span>
+<span class="k">public</span><span class="o">:</span>
+    <span class="k">virtual</span> <span class="kt">bool</span> <span class="n">Export</span><span class="p">(</span><span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="o">&amp;</span><span class="n">data</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="nb">true</span><span class="p">;</span>
+    <span class="p">}</span>
+<span class="p">};</span>
+
+<span class="k">class</span> <span class="nc">ExportTxt</span> <span class="o">:</span> <span class="k">public</span> <span class="n">IExport</span> <span class="p">{</span>
+<span class="k">public</span><span class="o">:</span>
+    <span class="k">virtual</span> <span class="kt">bool</span> <span class="n">Export</span><span class="p">(</span><span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="o">&amp;</span><span class="n">data</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="nb">true</span><span class="p">;</span>
+    <span class="p">}</span>
+<span class="p">};</span>
+
+<span class="k">class</span> <span class="nc">ExportCSV</span> <span class="o">:</span> <span class="k">public</span> <span class="n">IExport</span> <span class="p">{</span>
+<span class="k">public</span><span class="o">:</span>
+    <span class="k">virtual</span> <span class="kt">bool</span> <span class="n">Export</span><span class="p">(</span><span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="o">&amp;</span><span class="n">data</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="nb">true</span><span class="p">;</span>
+    <span class="p">}</span>
+<span class="p">};</span>
+
+<span class="k">class</span> <span class="nc">IImport</span> <span class="p">{</span>
+<span class="k">public</span><span class="o">:</span>
+    <span class="k">virtual</span> <span class="kt">bool</span> <span class="n">Import</span><span class="p">(</span><span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="o">&amp;</span><span class="n">data</span><span class="p">)</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+    <span class="k">virtual</span> <span class="o">~</span><span class="n">IImport</span><span class="p">(){}</span>
+<span class="p">};</span>
+
+<span class="k">class</span> <span class="nc">ImportXml</span> <span class="o">:</span> <span class="k">public</span> <span class="n">IImport</span> <span class="p">{</span>
+<span class="k">public</span><span class="o">:</span>
+    <span class="k">virtual</span> <span class="kt">bool</span> <span class="n">Import</span><span class="p">(</span><span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="o">&amp;</span><span class="n">data</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="nb">true</span><span class="p">;</span>
+    <span class="p">}</span>
+<span class="p">};</span>
+
+<span class="k">class</span> <span class="nc">ImportJson</span> <span class="o">:</span> <span class="k">public</span> <span class="n">IImport</span> <span class="p">{</span>
+<span class="k">public</span><span class="o">:</span>
+    <span class="k">virtual</span> <span class="kt">bool</span> <span class="n">Import</span><span class="p">(</span><span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="o">&amp;</span><span class="n">data</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="nb">true</span><span class="p">;</span>
+    <span class="p">}</span>
+<span class="p">};</span>
+
+<span class="k">class</span> <span class="nc">ImportTxt</span> <span class="o">:</span> <span class="k">public</span> <span class="n">IImport</span> <span class="p">{</span>
+<span class="k">public</span><span class="o">:</span>
+    <span class="k">virtual</span> <span class="kt">bool</span> <span class="n">Import</span><span class="p">(</span><span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="o">&amp;</span><span class="n">data</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="nb">true</span><span class="p">;</span>
+    <span class="p">}</span>
+<span class="p">};</span>
+
+<span class="k">class</span> <span class="nc">ImportCSV</span> <span class="o">:</span> <span class="k">public</span> <span class="n">IImport</span> <span class="p">{</span>
+<span class="k">public</span><span class="o">:</span>
+    <span class="k">virtual</span> <span class="kt">bool</span> <span class="n">Import</span><span class="p">(</span><span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="o">&amp;</span><span class="n">data</span><span class="p">)</span> <span class="p">{</span>
+        <span class="c1">// ....
+</span><span class="c1"></span>        <span class="k">return</span> <span class="nb">true</span><span class="p">;</span>
+    <span class="p">}</span>
+<span class="p">};</span>
+
+<span class="k">class</span> <span class="nc">IDataApiFactory</span> <span class="p">{</span>
+<span class="k">public</span><span class="o">:</span>
+    <span class="n">IDataApiFactory</span><span class="p">()</span> <span class="p">{</span>
+        <span class="n">_export</span> <span class="o">=</span> <span class="k">nullptr</span><span class="p">;</span>
+        <span class="n">_import</span> <span class="o">=</span> <span class="k">nullptr</span><span class="p">;</span>
+    <span class="p">}</span>
+    <span class="k">virtual</span> <span class="o">~</span><span class="n">IDataApiFactory</span><span class="p">()</span> <span class="p">{</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">_export</span><span class="p">)</span> <span class="p">{</span>
+            <span class="k">delete</span> <span class="n">_export</span><span class="p">;</span>
+            <span class="n">_export</span> <span class="o">=</span> <span class="k">nullptr</span><span class="p">;</span>
+        <span class="p">}</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">_import</span><span class="p">)</span> <span class="p">{</span>
+            <span class="k">delete</span> <span class="n">_import</span><span class="p">;</span>
+            <span class="n">_import</span> <span class="o">=</span> <span class="k">nullptr</span><span class="p">;</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+    <span class="kt">bool</span> <span class="nf">Export</span><span class="p">(</span><span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="o">&amp;</span><span class="n">data</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">_export</span> <span class="o">==</span> <span class="k">nullptr</span><span class="p">)</span> <span class="p">{</span>
+            <span class="n">_export</span> <span class="o">=</span> <span class="n">NewExport</span><span class="p">();</span>
+        <span class="p">}</span>
+        <span class="k">return</span> <span class="n">_export</span><span class="o">-&gt;</span><span class="n">Export</span><span class="p">(</span><span class="n">data</span><span class="p">);</span>
+    <span class="p">}</span>
+    <span class="kt">bool</span> <span class="nf">Import</span><span class="p">(</span><span class="k">const</span> <span class="n">std</span><span class="o">::</span><span class="n">string</span> <span class="o">&amp;</span><span class="n">data</span><span class="p">)</span> <span class="p">{</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">_import</span> <span class="o">==</span> <span class="k">nullptr</span><span class="p">)</span> <span class="p">{</span>
+            <span class="n">_import</span> <span class="o">=</span> <span class="n">NewImport</span><span class="p">();</span>
+        <span class="p">}</span>
+        <span class="k">return</span> <span class="n">_import</span><span class="o">-&gt;</span><span class="n">Import</span><span class="p">(</span><span class="n">data</span><span class="p">);</span>
+    <span class="p">}</span>
+<span class="k">protected</span><span class="o">:</span>
+    <span class="k">virtual</span> <span class="n">IExport</span> <span class="o">*</span> <span class="n">NewExport</span><span class="p">(</span><span class="cm">/* ... */</span><span class="p">)</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+    <span class="k">virtual</span> <span class="n">IImport</span> <span class="o">*</span> <span class="nf">NewImport</span><span class="p">(</span><span class="cm">/* ... */</span><span class="p">)</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+<span class="k">private</span><span class="o">:</span>
+    <span class="n">IExport</span> <span class="o">*</span><span class="n">_export</span><span class="p">;</span>
+    <span class="n">IImport</span> <span class="o">*</span><span class="n">_import</span><span class="p">;</span>
+<span class="p">};</span>
+
+<span class="k">class</span> <span class="nc">XmlApiFactory</span> <span class="o">:</span> <span class="k">public</span> <span class="n">IDataApiFactory</span> <span class="p">{</span>
+<span class="k">protected</span><span class="o">:</span>
+    <span class="k">virtual</span> <span class="n">IExport</span> <span class="o">*</span> <span class="n">NewExport</span><span class="p">(</span><span class="cm">/* ... */</span><span class="p">)</span> <span class="p">{</span>
+        <span class="c1">// 可能有其它操作，或者许多参数
+</span><span class="c1"></span>        <span class="n">IExport</span> <span class="o">*</span> <span class="n">temp</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ExportXml</span><span class="p">;</span>
+        <span class="c1">// 可能之后有什么操作
+</span><span class="c1"></span>        <span class="k">return</span> <span class="n">temp</span><span class="p">;</span>
+    <span class="p">}</span>
+    <span class="k">virtual</span> <span class="n">IImport</span> <span class="o">*</span> <span class="nf">NewImport</span><span class="p">(</span><span class="cm">/* ... */</span><span class="p">)</span> <span class="p">{</span>
+        <span class="c1">// 可能有其它操作，或者许多参数
+</span><span class="c1"></span>        <span class="n">IImport</span> <span class="o">*</span> <span class="n">temp</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ImportXml</span><span class="p">;</span>
+        <span class="c1">// 可能之后有什么操作
+</span><span class="c1"></span>        <span class="k">return</span> <span class="n">temp</span><span class="p">;</span>
+    <span class="p">}</span>
+<span class="p">};</span>
+
+<span class="k">class</span> <span class="nc">JsonApiFactory</span> <span class="o">:</span> <span class="k">public</span> <span class="n">IDataApiFactory</span> <span class="p">{</span>
+<span class="k">protected</span><span class="o">:</span>
+    <span class="k">virtual</span> <span class="n">IExport</span> <span class="o">*</span> <span class="n">NewExport</span><span class="p">(</span><span class="cm">/* ... */</span><span class="p">)</span> <span class="p">{</span>
+        <span class="c1">// 可能有其它操作，或者许多参数
+</span><span class="c1"></span>        <span class="n">IExport</span> <span class="o">*</span> <span class="n">temp</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ExportJson</span><span class="p">;</span>
+        <span class="c1">// 可能之后有什么操作
+</span><span class="c1"></span>        <span class="k">return</span> <span class="n">temp</span><span class="p">;</span>
+    <span class="p">}</span>
+    <span class="k">virtual</span> <span class="n">IImport</span> <span class="o">*</span> <span class="nf">NewImport</span><span class="p">(</span><span class="cm">/* ... */</span><span class="p">)</span> <span class="p">{</span>
+        <span class="c1">// 可能有其它操作，或者许多参数
+</span><span class="c1"></span>        <span class="n">IImport</span> <span class="o">*</span> <span class="n">temp</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ImportJson</span><span class="p">;</span>
+        <span class="c1">// 可能之后有什么操作
+</span><span class="c1"></span>        <span class="k">return</span> <span class="n">temp</span><span class="p">;</span>
+    <span class="p">}</span>
+<span class="p">};</span>
+<span class="k">class</span> <span class="nc">TxtApiFactory</span> <span class="o">:</span> <span class="k">public</span> <span class="n">IDataApiFactory</span> <span class="p">{</span>
+<span class="k">protected</span><span class="o">:</span>
+    <span class="k">virtual</span> <span class="n">IExport</span> <span class="o">*</span> <span class="n">NewExport</span><span class="p">(</span><span class="cm">/* ... */</span><span class="p">)</span> <span class="p">{</span>
+        <span class="c1">// 可能有其它操作，或者许多参数
+</span><span class="c1"></span>        <span class="n">IExport</span> <span class="o">*</span> <span class="n">temp</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ExportTxt</span><span class="p">;</span>
+        <span class="c1">// 可能之后有什么操作
+</span><span class="c1"></span>        <span class="k">return</span> <span class="n">temp</span><span class="p">;</span>
+    <span class="p">}</span>
+    <span class="k">virtual</span> <span class="n">IImport</span> <span class="o">*</span> <span class="nf">NewImport</span><span class="p">(</span><span class="cm">/* ... */</span><span class="p">)</span> <span class="p">{</span>
+        <span class="c1">// 可能有其它操作，或者许多参数
+</span><span class="c1"></span>        <span class="n">IImport</span> <span class="o">*</span> <span class="n">temp</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ImportTxt</span><span class="p">;</span>
+        <span class="c1">// 可能之后有什么操作
+</span><span class="c1"></span>        <span class="k">return</span> <span class="n">temp</span><span class="p">;</span>
+    <span class="p">}</span>
+<span class="p">};</span>
+
+<span class="k">class</span> <span class="nc">CSVApiFactory</span> <span class="o">:</span> <span class="k">public</span> <span class="n">IDataApiFactory</span> <span class="p">{</span>
+<span class="k">protected</span><span class="o">:</span>
+    <span class="k">virtual</span> <span class="n">IExport</span> <span class="o">*</span> <span class="n">NewExport</span><span class="p">(</span><span class="cm">/* ... */</span><span class="p">)</span> <span class="p">{</span>
+        <span class="c1">// 可能有其它操作，或者许多参数
+</span><span class="c1"></span>        <span class="n">IExport</span> <span class="o">*</span> <span class="n">temp</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ExportCSV</span><span class="p">;</span>
+        <span class="c1">// 可能之后有什么操作
+</span><span class="c1"></span>        <span class="k">return</span> <span class="n">temp</span><span class="p">;</span>
+    <span class="p">}</span>
+    <span class="k">virtual</span> <span class="n">IImport</span> <span class="o">*</span> <span class="nf">NewImport</span><span class="p">(</span><span class="cm">/* ... */</span><span class="p">)</span> <span class="p">{</span>
+        <span class="c1">// 可能有其它操作，或者许多参数
+</span><span class="c1"></span>        <span class="n">IImport</span> <span class="o">*</span> <span class="n">temp</span> <span class="o">=</span> <span class="k">new</span> <span class="n">ImportCSV</span><span class="p">;</span>
+        <span class="c1">// 可能之后有什么操作
+</span><span class="c1"></span>        <span class="k">return</span> <span class="n">temp</span><span class="p">;</span>
+    <span class="p">}</span>
+<span class="p">};</span>
+
+<span class="kt">int</span> <span class="nf">main</span> <span class="p">()</span> <span class="p">{</span>
+    <span class="n">IDataApiFactory</span> <span class="o">*</span><span class="n">factory</span> <span class="o">=</span> <span class="k">new</span> <span class="n">CSVApiFactory</span><span class="p">();</span>
+    <span class="n">factory</span><span class="o">-&gt;</span><span class="n">Import</span><span class="p">(</span><span class="s">&#34;hello world&#34;</span><span class="p">);</span>
+    <span class="n">factory</span><span class="o">-&gt;</span><span class="n">Export</span><span class="p">(</span><span class="s">&#34;hello world&#34;</span><span class="p">);</span>
+    <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+
+</code></pre></div><h2 id="适配器模式"><strong>适配器模式</strong></h2>
+<p><figure 
+	>
+	<a href="/post/design_pattern/adapter.jpg" >
+		<img src="/post/design_pattern/adapter.jpg"
+			
+			
+			
+			loading="lazy"
+			>
+	</a>
+	
+</figure></p>
+<p><strong>定义：</strong> 将⼀个类的接口转换成客户希望的另一个接口。Adapter模式使得原本由于接口不兼容而不能一起工作的那些类可以⼀起工作。</p>
+<h3 id="使用适配器模式"><strong>使用适配器模式</strong>：</h3>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-c++" data-lang="c++"><span class="cp">#include</span> <span class="cpf">&lt;string&gt;</span><span class="cp">
+</span><span class="cp">#include</span> <span class="cpf">&lt;vector&gt;</span><span class="cp">
+</span><span class="cp"></span><span class="k">using</span> <span class="k">namespace</span> <span class="n">std</span><span class="p">;</span>
+
+<span class="k">class</span> <span class="nc">LogSys</span> <span class="p">{</span>
+<span class="k">public</span><span class="o">:</span>
+    <span class="n">LogSys</span><span class="p">()</span> <span class="p">{}</span>
+    <span class="kt">void</span> <span class="nf">WriteLog</span><span class="p">(</span><span class="k">const</span> <span class="n">vector</span><span class="o">&lt;</span><span class="n">string</span><span class="o">&gt;</span> <span class="o">&amp;</span><span class="p">)</span> <span class="p">{</span>
+        <span class="c1">// ... 日志id 时间戳 服务器id 具体日志内容 roleid
+</span><span class="c1"></span>    <span class="p">}</span>
+    <span class="n">vector</span><span class="o">&lt;</span><span class="n">string</span><span class="o">&gt;&amp;</span> <span class="n">ReadLog</span><span class="p">()</span> <span class="p">{</span>
+        <span class="c1">// ...
+</span><span class="c1"></span>        <span class="n">vector</span><span class="o">&lt;</span><span class="n">string</span><span class="o">&gt;</span> <span class="n">data</span> <span class="cm">/* = ...*/</span><span class="p">;</span>
+        <span class="k">return</span> <span class="n">data</span><span class="p">;</span>
+    <span class="p">}</span>
+<span class="p">};</span>
+
+<span class="k">class</span> <span class="nc">DB</span><span class="p">;</span>  <span class="c1">// 面向接口编程 而不是具体类 强依赖  耦合性高  mysql mongo
+</span><span class="c1"></span>
+<span class="k">class</span> <span class="nc">LogSysEx</span> <span class="o">:</span> <span class="k">public</span> <span class="n">LogSys</span> <span class="p">{</span>
+<span class="k">public</span><span class="o">:</span>
+    <span class="n">LogSysEx</span><span class="p">(</span><span class="n">DB</span> <span class="o">*</span><span class="n">db</span><span class="p">)</span> <span class="o">:</span> <span class="n">_db</span><span class="p">(</span><span class="n">db</span><span class="p">)</span> <span class="p">{}</span>
+
+    <span class="kt">void</span> <span class="nf">AddLog</span><span class="p">(</span><span class="k">const</span> <span class="n">vector</span><span class="o">&lt;</span><span class="n">string</span><span class="o">&gt;</span> <span class="o">&amp;</span><span class="n">data</span><span class="p">)</span> <span class="p">{</span>
+        <span class="n">LogSys</span><span class="o">::</span><span class="n">WriteLog</span><span class="p">(</span><span class="n">data</span><span class="p">);</span>
+        <span class="cm">/*
+</span><span class="cm">            这里调用 _db 的方法将 data 数据存储到数据库
+</span><span class="cm">        */</span>
+    <span class="p">}</span>
+
+    <span class="kt">void</span> <span class="nf">DelLog</span><span class="p">(</span><span class="k">const</span> <span class="kt">int</span> <span class="n">logid</span><span class="p">)</span> <span class="p">{</span>
+        <span class="n">vector</span><span class="o">&lt;</span><span class="n">string</span><span class="o">&gt;&amp;</span> <span class="n">data</span> <span class="o">=</span> <span class="n">LogSys</span><span class="o">::</span><span class="n">ReadLog</span><span class="p">();</span>
+        <span class="c1">// 从 vector&lt;string&gt; 中删除 logid的日志
+</span><span class="c1"></span>        <span class="n">LogSys</span><span class="o">::</span><span class="n">WriteLog</span><span class="p">(</span><span class="n">data</span><span class="p">);</span>
+        <span class="c1">// 调用 _db 的方法将 logid的日志删除
+</span><span class="c1"></span>    <span class="p">}</span>
+
+    <span class="kt">void</span> <span class="nf">UpdateLog</span><span class="p">(</span><span class="k">const</span> <span class="kt">int</span> <span class="n">logid</span><span class="p">,</span> <span class="k">const</span> <span class="n">string</span> <span class="o">&amp;</span><span class="n">udt</span><span class="p">)</span> <span class="p">{</span>
+        <span class="n">vector</span><span class="o">&lt;</span><span class="n">string</span><span class="o">&gt;&amp;</span> <span class="n">data</span> <span class="o">=</span> <span class="n">LogSys</span><span class="o">::</span><span class="n">ReadLog</span><span class="p">();</span>
+        <span class="c1">// 从 vector&lt;string&gt; 中更新 logid的日志 udt
+</span><span class="c1"></span>        <span class="n">LogSys</span><span class="o">::</span><span class="n">WriteLog</span><span class="p">(</span><span class="n">data</span><span class="p">);</span>
+        <span class="c1">// 调用 _db 的方法将 logid的日志更改
+</span><span class="c1"></span>    <span class="p">}</span>
+
+    <span class="n">string</span><span class="o">&amp;</span> <span class="n">LocateLog</span><span class="p">(</span><span class="k">const</span> <span class="kt">int</span> <span class="n">logid</span><span class="p">)</span> <span class="p">{</span>
+        <span class="n">vector</span><span class="o">&lt;</span><span class="n">string</span><span class="o">&gt;&amp;</span> <span class="n">data</span> <span class="o">=</span> <span class="n">LogSys</span><span class="o">::</span><span class="n">ReadLog</span><span class="p">();</span>
+        <span class="n">string</span> <span class="n">log1</span> <span class="cm">/* = from log file*/</span><span class="p">;</span>
+        <span class="n">string</span> <span class="n">log2</span> <span class="cm">/* = from db */</span><span class="p">;</span>
+        <span class="n">string</span> <span class="n">temp</span> <span class="o">=</span> <span class="n">log1</span> <span class="o">+</span> <span class="s">&#34;;&#34;</span> <span class="o">+</span> <span class="n">log2</span><span class="p">;</span>
+        <span class="k">return</span> <span class="n">temp</span><span class="p">;</span>
+    <span class="p">}</span>
+    
+<span class="k">private</span><span class="o">:</span>
+    <span class="n">DB</span><span class="o">*</span> <span class="n">_db</span><span class="p">;</span>
+<span class="p">};</span>
+
+
+</code></pre></div><h2 id="代理模式"><strong>代理模式</strong></h2>
+<p><figure 
+	>
+	<a href="/post/design_pattern/proxy.jpg" >
+		<img src="/post/design_pattern/proxy.jpg"
+			
+			
+			
+			loading="lazy"
+			>
+	</a>
+	
+</figure></p>
+<p><strong>定义：</strong> 为其他对象提供一种代理以控制对这对象的访问。</p>
+<h3 id="使用代理模式"><strong>使用代理模式</strong>：</h3>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-c++" data-lang="c++">
+
+<span class="k">class</span> <span class="nc">ISubject</span> <span class="p">{</span>
+<span class="k">public</span><span class="o">:</span>
+    <span class="k">virtual</span> <span class="kt">void</span> <span class="n">Handle</span><span class="p">()</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+    <span class="k">virtual</span> <span class="o">~</span><span class="n">ISubject</span><span class="p">()</span> <span class="p">{}</span>
+<span class="p">};</span>
+
+<span class="c1">// 该类在当前进程，也可能在其他进程当中
+</span><span class="c1"></span><span class="k">class</span> <span class="nc">RealSubject</span> <span class="o">:</span> <span class="k">public</span> <span class="n">ISubject</span> <span class="p">{</span>
+<span class="k">public</span><span class="o">:</span>
+    <span class="k">virtual</span> <span class="kt">void</span> <span class="n">Handle</span><span class="p">()</span> <span class="p">{</span>
+        <span class="c1">// 只完成功能相关的操作，不做其他模块的判断
+</span><span class="c1"></span>    <span class="p">}</span>
+<span class="p">};</span>
+
+<span class="c1">// 在当前进程当中  只会在某个模块中使用
+</span><span class="c1"></span><span class="k">class</span> <span class="nc">Proxy1</span> <span class="o">:</span> <span class="k">public</span> <span class="n">ISubject</span> <span class="p">{</span>
+<span class="k">public</span><span class="o">:</span>
+    <span class="n">Proxy1</span><span class="p">(</span><span class="n">ISubject</span> <span class="o">*</span><span class="n">subject</span><span class="p">)</span> <span class="o">:</span> <span class="n">_subject</span><span class="p">(</span><span class="n">subject</span><span class="p">)</span> <span class="p">{}</span>
+    <span class="k">virtual</span> <span class="kt">void</span> <span class="nf">Handle</span><span class="p">()</span> <span class="p">{</span>
+        <span class="c1">// 在访问 RealSubject 之前做一些处理
+</span><span class="c1"></span>        <span class="c1">//if (不满足条件)
+</span><span class="c1"></span>        <span class="c1">//    return;
+</span><span class="c1"></span>        <span class="n">_subject</span><span class="o">-&gt;</span><span class="n">Handle</span><span class="p">();</span>
+        <span class="n">count</span><span class="o">++</span><span class="p">;</span>
+        <span class="c1">// 在访问 RealSubject 之后做一些处理
+</span><span class="c1"></span>    <span class="p">}</span>
+<span class="k">private</span><span class="o">:</span>
+    <span class="n">ISubject</span><span class="o">*</span> <span class="n">_subject</span><span class="p">;</span>
+    <span class="k">static</span> <span class="kt">int</span> <span class="n">count</span><span class="p">;</span>
+<span class="p">};</span>
+<span class="kt">int</span> <span class="n">Proxy1</span><span class="o">::</span><span class="n">count</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+
+<span class="c1">// 在分布式系统当中  skynet actor
+</span><span class="c1"></span><span class="k">class</span> <span class="nc">Proxy2</span> <span class="o">:</span> <span class="k">public</span> <span class="n">ISubject</span> <span class="p">{</span>
+<span class="k">public</span><span class="o">:</span>
+    <span class="k">virtual</span> <span class="kt">void</span> <span class="n">Handle</span><span class="p">()</span> <span class="p">{</span>
+        <span class="c1">// 在访问 RealSubject 之前做一些处理
+</span><span class="c1"></span>        
+        <span class="c1">// 发送到数据到远端  网络处理  同步非阻塞 ntyco c协程
+</span><span class="c1"></span>        <span class="c1">//IResult * val = rpc-&gt;call(&#34;RealSubject&#34;, &#34;Handle&#34;);
+</span><span class="c1"></span>
+        <span class="c1">// 在访问 RealSubject 之后做一些处理
+</span><span class="c1"></span>    <span class="p">}</span>
+<span class="k">private</span><span class="o">:</span>
+    <span class="cm">/*void callback(IResult * val) {
+</span><span class="cm">        // 在访问 RealSubject 之后做一些处理
+</span><span class="cm">    }*/</span>
+<span class="p">};</span>
+
+</code></pre></div><h2 id="策略模式"><strong>策略模式</strong></h2>
+<p><figure 
+	>
+	<a href="/post/design_pattern/strategy.jpg" >
+		<img src="/post/design_pattern/strategy.jpg"
+			
+			
+			
+			loading="lazy"
+			>
+	</a>
+	
+</figure></p>
+<p><strong>定义：</strong> 定义一系列算法，把它们一个个封装起来，并且使它们可互相替换。该模式使得算法可独立于使用它的客户程序而变化。</p>
+<h3 id="未使用策略模式"><strong>未使用策略模式</strong>：</h3>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-c++" data-lang="c++">
+<span class="k">enum</span> <span class="nc">VacationEnum</span> <span class="p">{</span>
+	<span class="n">VAC_Spring</span><span class="p">,</span>
+    <span class="n">VAC_QiXi</span><span class="p">,</span>
+	<span class="n">VAC_Wuyi</span><span class="p">,</span>
+	<span class="n">VAC_GuoQing</span><span class="p">,</span>
+    <span class="c1">//VAC_ShengDan,
+</span><span class="c1"></span><span class="p">};</span>
+
+<span class="c1">// 稳定的  变化的
+</span><span class="c1"></span><span class="k">class</span> <span class="nc">Promotion</span> <span class="p">{</span>
+    <span class="n">VacationEnum</span> <span class="n">vac</span><span class="p">;</span>
+<span class="k">public</span><span class="o">:</span>
+    <span class="kt">double</span> <span class="n">CalcPromotion</span><span class="p">(){</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">vac</span> <span class="o">==</span> <span class="n">VAC_Spring</span><span class="p">){</span>
+            <span class="c1">// 春节
+</span><span class="c1"></span>        <span class="p">}</span>
+        <span class="k">else</span> <span class="nf">if</span> <span class="p">(</span><span class="n">vac</span> <span class="o">==</span> <span class="n">VAC_QiXi</span><span class="p">){</span>
+            <span class="c1">// 七夕
+</span><span class="c1"></span>        <span class="p">}</span>
+        <span class="k">else</span> <span class="nf">if</span> <span class="p">(</span><span class="n">vac</span> <span class="o">==</span> <span class="n">VAC_Wuyi</span><span class="p">){</span>
+            <span class="c1">// 五一
+</span><span class="c1"></span>        <span class="p">}</span>
+		<span class="k">else</span> <span class="nf">if</span> <span class="p">(</span><span class="n">vac</span> <span class="o">==</span> <span class="n">VAC_GuoQing</span><span class="p">){</span>
+			<span class="c1">// 国庆
+</span><span class="c1"></span>		<span class="p">}</span>
+     <span class="p">}</span>
+    
+<span class="p">};</span>
+
+</code></pre></div><h3 id="使用策略模式"><strong>使用策略模式</strong>：</h3>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-c++" data-lang="c++"><span class="k">class</span> <span class="nc">Context</span> <span class="p">{</span>
+
+<span class="p">};</span>
+
+<span class="k">class</span> <span class="nc">ProStategy</span> <span class="p">{</span>
+<span class="k">public</span><span class="o">:</span>
+    <span class="k">virtual</span> <span class="kt">double</span> <span class="n">CalcPro</span><span class="p">(</span><span class="k">const</span> <span class="n">Context</span> <span class="o">&amp;</span><span class="n">ctx</span><span class="p">)</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+    <span class="k">virtual</span> <span class="o">~</span><span class="n">ProStategy</span><span class="p">();</span>
+<span class="p">};</span>
+<span class="c1">// cpp
+</span><span class="c1"></span><span class="k">class</span> <span class="nc">VAC_Spring</span> <span class="o">:</span> <span class="k">public</span> <span class="n">ProStategy</span> <span class="p">{</span>
+<span class="k">public</span><span class="o">:</span>
+    <span class="k">virtual</span> <span class="kt">double</span> <span class="n">CalcPro</span><span class="p">(</span><span class="k">const</span> <span class="n">Context</span> <span class="o">&amp;</span><span class="n">ctx</span><span class="p">){}</span>
+<span class="p">};</span>
+<span class="c1">// cpp
+</span><span class="c1"></span><span class="k">class</span> <span class="nc">VAC_QiXi</span> <span class="o">:</span> <span class="k">public</span> <span class="n">ProStategy</span> <span class="p">{</span>
+<span class="k">public</span><span class="o">:</span>
+    <span class="k">virtual</span> <span class="kt">double</span> <span class="n">CalcPro</span><span class="p">(</span><span class="k">const</span> <span class="n">Context</span> <span class="o">&amp;</span><span class="n">ctx</span><span class="p">){}</span>
+<span class="p">};</span>
+<span class="k">class</span> <span class="nc">VAC_QiXi1</span>  <span class="o">:</span> <span class="k">public</span> <span class="n">VAC_QiXi</span> <span class="p">{</span>
+<span class="k">public</span><span class="o">:</span>
+    <span class="k">virtual</span> <span class="kt">double</span> <span class="n">CalcPro</span><span class="p">(</span><span class="k">const</span> <span class="n">Context</span> <span class="o">&amp;</span><span class="n">ctx</span><span class="p">){}</span>
+<span class="p">};</span>
+<span class="c1">// cpp
+</span><span class="c1"></span><span class="k">class</span> <span class="nc">VAC_Wuyi</span> <span class="o">:</span> <span class="k">public</span> <span class="n">ProStategy</span> <span class="p">{</span>
+<span class="k">public</span><span class="o">:</span>
+    <span class="k">virtual</span> <span class="kt">double</span> <span class="n">CalcPro</span><span class="p">(</span><span class="k">const</span> <span class="n">Context</span> <span class="o">&amp;</span><span class="n">ctx</span><span class="p">){}</span>
+<span class="p">};</span>
+<span class="c1">// cpp
+</span><span class="c1"></span><span class="k">class</span> <span class="nc">VAC_GuoQing</span> <span class="o">:</span> <span class="k">public</span> <span class="n">ProStategy</span> <span class="p">{</span>
+<span class="k">public</span><span class="o">:</span>
+    <span class="k">virtual</span> <span class="kt">double</span> <span class="n">CalcPro</span><span class="p">(</span><span class="k">const</span> <span class="n">Context</span> <span class="o">&amp;</span><span class="n">ctx</span><span class="p">){}</span>
+<span class="p">};</span>
+
+<span class="k">class</span> <span class="nc">VAC_Shengdan</span> <span class="o">:</span> <span class="k">public</span> <span class="n">ProStategy</span> <span class="p">{</span>
+<span class="k">public</span><span class="o">:</span>
+    <span class="k">virtual</span> <span class="kt">double</span> <span class="n">CalcPro</span><span class="p">(</span><span class="k">const</span> <span class="n">Context</span> <span class="o">&amp;</span><span class="n">ctx</span><span class="p">){}</span>
+<span class="p">};</span>
+
+<span class="c1">// 稳定的  变化的
+</span><span class="c1"></span><span class="k">class</span> <span class="nc">Promotion</span> <span class="p">{</span>
+<span class="k">public</span><span class="o">:</span>
+    <span class="n">Promotion</span><span class="p">(</span><span class="n">ProStategy</span> <span class="o">*</span><span class="n">sss</span><span class="p">)</span> <span class="o">:</span> <span class="n">s</span><span class="p">(</span><span class="n">sss</span><span class="p">){}</span>
+    <span class="o">~</span><span class="n">Promotion</span><span class="p">(){}</span>
+    <span class="kt">double</span> <span class="nf">CalcPromotion</span><span class="p">(</span><span class="k">const</span> <span class="n">Context</span> <span class="o">&amp;</span><span class="n">ctx</span><span class="p">){</span>
+        <span class="k">return</span> <span class="n">s</span><span class="o">-&gt;</span><span class="n">CalcPro</span><span class="p">(</span><span class="n">ctx</span><span class="p">);</span>
+    <span class="p">}</span>
+<span class="k">private</span><span class="o">:</span>
+    <span class="n">ProStategy</span> <span class="o">*</span><span class="n">s</span><span class="p">;</span>
+<span class="p">};</span>
+
+<span class="kt">int</span> <span class="nf">main</span> <span class="p">()</span> <span class="p">{</span>
+    <span class="n">Context</span> <span class="n">ctx</span><span class="p">;</span>
+    <span class="n">ProStategy</span> <span class="o">*</span><span class="n">s</span> <span class="o">=</span> <span class="k">new</span> <span class="n">VAC_QiXi1</span><span class="p">();</span>
+    <span class="n">Promotion</span> <span class="o">*</span><span class="n">p</span> <span class="o">=</span> <span class="k">new</span> <span class="n">Promotion</span><span class="p">(</span><span class="n">s</span><span class="p">);</span>
+    <span class="n">p</span><span class="o">-&gt;</span><span class="n">CalcPromotion</span><span class="p">(</span><span class="n">ctx</span><span class="p">);</span>
+    <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+
+
+
+</code></pre></div>
+</section>
+
+
+    <footer class="article-footer">
+    
+    <section class="article-tags">
+        
+            <a href="/tags/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/">设计模式</a>
+        
+    </section>
+
+
+    
+    <section class="article-copyright">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-copyright" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="12" r="9" />
+  <path d="M14.5 9a3.5 4 0 1 0 0 6" />
+</svg>
+
+
+
+        <span>Licensed under CC BY-NC-SA 4.0</span>
+    </section>
+    </footer>
+
+
+    
+</article>
+
+    <aside class="related-contents--wrapper">
+    
+    
+</aside>
+
+     
+     
+        
+    <div class="disqus-container">
+    <div id="disqus_thread"></div>
+<script type="application/javascript">
+    var disqus_config = function () {
+    
+    
+    
+    };
+    (function() {
+        if (["localhost", "127.0.0.1"].indexOf(window.location.hostname) != -1) {
+            document.getElementById('disqus_thread').innerHTML = 'Disqus comments not available by default when the website is previewed locally.';
+            return;
+        }
+        var d = document, s = d.createElement('script'); s.async = true;
+        s.src = '//' + "hugo-theme-stack" + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="https://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+</div>
+
+<style>
+    .disqus-container {
+        background-color: var(--card-background);
+        border-radius: var(--card-border-radius);
+        box-shadow: var(--shadow-l1);
+        padding: var(--card-padding);
+    }
+</style>
+
+<script>
+    window.addEventListener('onColorSchemeChange', (e) => {
+        if (DISQUS) {
+            DISQUS.reset({
+                reload: true
+            });
+        }
+    })
+</script>
+
+    
+
+    <footer class="site-footer">
+    <section class="copyright">
+        &copy; 
+        
+            2020 - 
+        
+        2021 Gao&#39;s happy day
+    </section>
+    
+    <section class="powerby">
+        Built with <a href="https://gohugo.io/" target="_blank" rel="noopener">Hugo</a> <br />
+        Theme <b><a href="https://github.com/CaiJimmy/hugo-theme-stack" target="_blank" rel="noopener" data-version="3.2.0">Stack</a></b> designed by <a href="https://jimmycai.com" target="_blank" rel="noopener">Jimmy</a>
+    </section>
+</footer>
+
+
+    
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+    
+    <div class="pswp__bg"></div>
+
+    
+    <div class="pswp__scroll-wrap">
+
+        
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+
+        
+        <div class="pswp__ui pswp__ui--hidden">
+
+            <div class="pswp__top-bar">
+
+                
+
+                <div class="pswp__counter"></div>
+
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+
+                <button class="pswp__button pswp__button--share" title="Share"></button>
+
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+
+                
+                
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                        <div class="pswp__preloader__cut">
+                            <div class="pswp__preloader__donut"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div>
+            </div>
+
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div><script 
+                src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js"integrity="sha256-ePwmChbbvXbsO02lbM3HoHbSHTHFAeChekF1xKJdleo="crossorigin="anonymous"
+                defer="true"
+                >
+            </script><script 
+                src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js"integrity="sha256-UKkzOn/w1mBxRmLLGrSeyB4e1xbrp4xylgAWb3M42pU="crossorigin="anonymous"
+                defer="true"
+                >
+            </script><link 
+                rel="stylesheet" 
+                href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.css"integrity="sha256-c0uckgykQ9v5k&#43;IqViZOZKc47Jn7KQil4/MP3ySA3F8="crossorigin="anonymous"
+            ><link 
+                rel="stylesheet" 
+                href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.css"integrity="sha256-SBLU4vv6CA6lHsZ1XyTdhyjJxCjPif/TRkjnsyGAGnE="crossorigin="anonymous"
+            >
+
+            </main>
+    
+        <aside class="sidebar right-sidebar sticky">
+            <section class="widget archives">
+                <div class="widget-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-hash" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <line x1="5" y1="9" x2="19" y2="9" />
+  <line x1="5" y1="15" x2="19" y2="15" />
+  <line x1="11" y1="4" x2="7" y2="20" />
+  <line x1="17" y1="4" x2="13" y2="20" />
+</svg>
+
+
+
+                </div>
+                <h2 class="widget-title section-title">Table of contents</h2>
+                
+                <div class="widget--toc">
+                    <nav id="TableOfContents">
+  <ol>
+    <li><a href="#原则"><strong>原则</strong></a></li>
+    <li><a href="#模板模式"><strong>模板模式</strong></a>
+      <ol>
+        <li><a href="#未使用模板模式"><strong>未使用模板模式：</strong></a></li>
+        <li><a href="#使用模板模式"><strong>使用模板模式：</strong></a></li>
+      </ol>
+    </li>
+    <li><a href="#观察者模式"><strong>观察者模式</strong></a>
+      <ol>
+        <li><a href="#未使用观察者模式"><strong>未使用观察者模式：</strong></a></li>
+        <li><a href="#使用观察者模式"><strong>使用观察者模式：</strong></a></li>
+      </ol>
+    </li>
+    <li><a href="#责任链模式"><strong>责任链模式</strong></a>
+      <ol>
+        <li><a href="#未使用责任链模式"><strong>未使用责任链模式：</strong></a></li>
+        <li><a href="#使用责任链模式"><strong>使用责任链模式：</strong></a></li>
+      </ol>
+    </li>
+    <li><a href="#装饰器模式"><strong>装饰器模式</strong></a>
+      <ol>
+        <li><a href="#未使用装饰器模式"><strong>未使用装饰器模式：</strong></a></li>
+        <li><a href="#使用装饰器模式"><strong>使用装饰器模式：</strong></a></li>
+      </ol>
+    </li>
+    <li><a href="#单例模式"><strong>单例模式</strong></a>
+      <ol>
+        <li><a href="#单例模式版本1"><strong>单例模式版本1</strong>：</a></li>
+        <li><a href="#单例模式版本2"><strong>单例模式版本2</strong>：</a></li>
+        <li><a href="#单例模式版本3"><strong>单例模式版本3</strong>：</a></li>
+        <li><a href="#单例模式版本4"><strong>单例模式版本4</strong>：</a></li>
+        <li><a href="#单例模式版本5"><strong>单例模式版本5</strong>：</a></li>
+        <li><a href="#单例模式版本6"><strong>单例模式版本6</strong>：</a></li>
+      </ol>
+    </li>
+    <li><a href="#工厂方法模式"><strong>工厂方法模式</strong></a>
+      <ol>
+        <li><a href="#未使用工厂方法模式"><strong>未使用工厂方法模式</strong>：</a></li>
+        <li><a href="#使用工厂方法模式"><strong>使用工厂方法模式</strong>：</a></li>
+      </ol>
+    </li>
+    <li><a href="#抽象工厂"><strong>抽象工厂</strong></a>
+      <ol>
+        <li><a href="#使用抽象工厂方法模式"><strong>使用抽象工厂方法模式</strong>：</a></li>
+      </ol>
+    </li>
+    <li><a href="#适配器模式"><strong>适配器模式</strong></a>
+      <ol>
+        <li><a href="#使用适配器模式"><strong>使用适配器模式</strong>：</a></li>
+      </ol>
+    </li>
+    <li><a href="#代理模式"><strong>代理模式</strong></a>
+      <ol>
+        <li><a href="#使用代理模式"><strong>使用代理模式</strong>：</a></li>
+      </ol>
+    </li>
+    <li><a href="#策略模式"><strong>策略模式</strong></a>
+      <ol>
+        <li><a href="#未使用策略模式"><strong>未使用策略模式</strong>：</a></li>
+        <li><a href="#使用策略模式"><strong>使用策略模式</strong>：</a></li>
+      </ol>
+    </li>
+  </ol>
+</nav>
+                </div>
+            </section>
+        </aside>
+    
+
+        </div>
+        <script 
+                src="https://cdn.jsdelivr.net/npm/node-vibrant@3.1.5/dist/vibrant.min.js"integrity="sha256-5NovOZc4iwiAWTYIFiIM7DxKUXKWvpVEuMEPLzcm5/g="crossorigin="anonymous"
+                defer="false"
+                >
+            </script><script type="text/javascript" src="/ts/main.js" defer></script>
+<script>
+    (function () {
+        const customFont = document.createElement('link');
+        customFont.href = "https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap";
+
+        customFont.type = "text/css";
+        customFont.rel = "stylesheet";
+
+        document.head.appendChild(customFont);
+    }());
+</script>
+
+    </body>
+</html>

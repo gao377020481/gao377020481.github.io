@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>设计模式 on Gao&#39;s happy day</title>
+    <link>https://gao377020481.github.io/categories/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/</link>
+    <description>Recent content in 设计模式 on Gao&#39;s happy day</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Thu, 10 Sep 2020 00:00:00 +0000</lastBuildDate><atom:link href="https://gao377020481.github.io/categories/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>设计模式</title>
+      <link>https://gao377020481.github.io/p/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/</link>
+      <pubDate>Thu, 10 Sep 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://gao377020481.github.io/p/%E8%AE%BE%E8%AE%A1%E6%A8%A1%E5%BC%8F/</guid>
+      <description>设计模式 首先先上所有设计模式的原则，这些原则贯彻于每一种设计模式中，是各种设计模式的根
+原则   依赖倒置原则
+ 高层模块不应该依赖低层模块，⼆者都应该依赖抽象。 抽象不应该依赖具体实现，具体实现应该依赖于抽象。    开放封闭原则
+ ⼀个类应该对扩展开放，对修改关闭。    面向接口编程
+ 不将变量类型声明为某个特定的具体类，而是声明为某个接⼝。 客户程序无需获知对象的具体类型，只需要知道对象所具有的接口。 减少系统中各部分的依赖关系，从而实现“高内聚、松耦合”的类型设计⽅案。    封装变化点
+ 将稳定点和变化点分离，扩展修改变化点；让稳定点与变化点的实现层次分离。    单一职责原则
+ ⼀个类应该仅有⼀个引起它变化的原因。    里氏替换原则
+ 子类型必须能够替换掉它的父类型；主要出现在⼦类覆盖父类实现，原来使用父亲类型的程序可能出现错误；覆盖了父类方法却没实现父类方法的职责；    接口隔离原则
+ 不应该强迫客户依赖于他们不用的方法。 ⼀般用于处理⼀个类拥有比较多的接口，而这些接口涉及到很多职责    对象组合优于类继承
+ 继承耦合度⾼，组合耦合度低    模板模式 
+首先，先提下使用到的原则：
+ 依赖倒置原则 单一职责原则 接口隔离原则  定义： 定义⼀个操作中的算法的骨架 ，⽽将⼀些步骤延迟到子类中。 Template Method使得子类可以不 改变⼀个算法的结构即可重定义该算法的某些特定步骤。</description>
+    </item>
+    
+  </channel>
+</rss>

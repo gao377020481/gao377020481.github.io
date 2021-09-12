@@ -288,7 +288,7 @@
 	
 	<span class="k">struct</span> <span class="nc">mp_node_s</span> <span class="o">*</span><span class="n">next</span><span class="p">;</span>
 	<span class="n">size_t</span> <span class="n">failed</span><span class="p">;</span>
-<span class="p">};</span><span class="c1">// 页内的小区域，用于小块的分配
+<span class="p">};</span><span class="c1">// 页，用于小块的分配,last指向页内使用到的位置
 </span><span class="c1"></span>
 <span class="k">struct</span> <span class="nc">mp_pool_s</span> <span class="p">{</span>
 
@@ -322,7 +322,7 @@
 	<span class="p">}</span>
 	
 	<span class="n">p</span><span class="o">-&gt;</span><span class="n">max</span> <span class="o">=</span> <span class="p">(</span><span class="n">size</span> <span class="o">&lt;</span> <span class="n">MP_MAX_ALLOC_FROM_POOL</span><span class="p">)</span> <span class="o">?</span> <span class="nl">size</span> <span class="p">:</span> <span class="n">MP_MAX_ALLOC_FROM_POOL</span><span class="p">;</span> <span class="c1">//内存池单块大小受我们定义的pagesize限制
-</span><span class="c1"></span>	<span class="n">p</span><span class="o">-&gt;</span><span class="n">current</span> <span class="o">=</span> <span class="n">p</span><span class="o">-&gt;</span><span class="n">head</span><span class="p">;</span><span class="c1">// 初始化时head无值且struct中head在最末尾，c++的struct内存布局决定了current就是head
+</span><span class="c1"></span>	<span class="n">p</span><span class="o">-&gt;</span><span class="n">current</span> <span class="o">=</span> <span class="n">p</span><span class="o">-&gt;</span><span class="n">head</span><span class="p">;</span><span class="c1">// 初始化时还有没分配数内存，所以head就是current
 </span><span class="c1"></span>	<span class="n">p</span><span class="o">-&gt;</span><span class="n">large</span> <span class="o">=</span> <span class="nb">NULL</span><span class="p">;</span><span class="c1">// 还没有分配large块
 </span><span class="c1"></span>
 	<span class="n">p</span><span class="o">-&gt;</span><span class="n">head</span><span class="o">-&gt;</span><span class="n">last</span> <span class="o">=</span> <span class="p">(</span><span class="kt">unsigned</span> <span class="kt">char</span> <span class="o">*</span><span class="p">)</span><span class="n">p</span> <span class="o">+</span> <span class="k">sizeof</span><span class="p">(</span><span class="k">struct</span> <span class="nc">mp_pool_s</span><span class="p">)</span> <span class="o">+</span> <span class="k">sizeof</span><span class="p">(</span><span class="k">struct</span> <span class="nc">mp_node_s</span><span class="p">);</span> <span class="c1">//最后一个分配的小块
