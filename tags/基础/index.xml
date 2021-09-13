@@ -22,6 +22,8 @@
 读写锁 读写锁即只能由一人写但可以由多人读的锁，适用于读操作很多但写操作很少的情况下。
 原子操作 多线程下使用原子操作确保我们的操作不会被其他线程参与，一般内联汇编 memory 内存屏障，只允许这一缓存写回内存，确保多线程安全。
 多进程下对共享内存的操作使用内联汇编lock，锁住总线，同一时刻只允许一个进程通过总线操作内存。
+粒度大小排序
+互斥锁 &amp;gt; 自旋锁 &amp;gt; 读写锁 &amp;gt; 原子操作
 代码实现 #include &amp;lt;stdio.h&amp;gt;#include &amp;lt;pthread.h&amp;gt;#include &amp;lt;unistd.h&amp;gt; #include &amp;lt;sys/mman.h&amp;gt; #define THREAD_SIZE 10  int count = 0; pthread_mutex_t mutex; pthread_spinlock_t spinlock; pthread_rwlock_t rwlock; // MOV dest, src; at&amp;amp;t // MOV src, dest; x86  int inc(int *value, int add) { int old; __asm__ volatile ( //lock 锁住总线 只允许一个cpu操作内存（通过总线）确保多进程安全  &amp;#34;lock; xaddl %2, %1;&amp;#34; // &amp;#34;lock; xchg %2, %1, %3;&amp;#34;  : &amp;#34;=a&amp;#34; (old) : &amp;#34;m&amp;#34; (*value), &amp;#34;a&amp;#34; (add) : &amp;#34;cc&amp;#34;, &amp;#34;memory&amp;#34; //memory 内存屏障，只允许这一缓存写回内存，确保多线程安全  ); return old; } // void *func(void *arg) { int *pcount = (int *)arg; int i = 0; while (i++ &amp;lt; 100000) { #if 0//无锁 (*pcount) ++; #elif 0// 互斥锁版本  pthread_mutex_lock(&amp;amp;mutex); (*pcount) ++; pthread_mutex_unlock(&amp;amp;mutex); #elif 0// 互斥锁非阻塞版本  if (0 !</description>
     </item>
     

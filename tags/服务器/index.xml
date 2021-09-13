@@ -33,5 +33,26 @@
 #define BUFFER_SIZE 1024 void *client_routine(void *arg) { int clientfd = *(int *) arg; while(1) { char buffer[BUFFER_SIZE] = {0}; int len = recv(clientfd, buffer, BUFFER_SIZE, 0); if(len &amp;lt;0 ) { close(clientfd); break; } else if(len ==0 ) { close(clientfd); break; } else{ printf(&amp;#34;Recv: %s, %d btye(s) from %d\n&amp;#34;, buffer, len, clientfd); } } } int main(int argc, char *argv[]) { if(argc &amp;lt;2) return -1; int port = atoi(argv[1]); int sockfd = socket(AF_INET, SOCK_STREAM, 0); struct sockaddr_in addr; memset(&amp;amp;addr, 0, sizeof(struct sockaddr_in)); addr.</description>
     </item>
     
+    <item>
+      <title>进阶TCP服务器</title>
+      <link>https://gao377020481.github.io/p/%E8%BF%9B%E9%98%B6tcp%E6%9C%8D%E5%8A%A1%E5%99%A8/</link>
+      <pubDate>Thu, 10 Sep 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://gao377020481.github.io/p/%E8%BF%9B%E9%98%B6tcp%E6%9C%8D%E5%8A%A1%E5%99%A8/</guid>
+      <description>进阶TCP服务器 该模块涉及TCP服务器常见点：并发量、IO模型
+IO网络模型 阻塞IO （Blocking IO） 
+阻塞IO的情况下，我们如果需要更多的并发，只能使用多线程，一个IO占用一个线程，资源浪费很大但是在并发量小的情况下性能很强。
+非阻塞IO （Non-Blocking IO） 
+在非阻塞状态下，recv() 接口在被调用后立即返回，返回值代表了不同的含义。如在本例中，
+ recv() 返回值大于 0，表示接受数据完毕，返回值即是接受到的字节数； recv() 返回 0，表示连接已经正常断开； recv() 返回 -1，且 errno 等于 EAGAIN，表示 recv 操作还没执行完成； recv() 返回 -1，且 errno 不等于 EAGAIN，表示 recv 操作遇到系统错误 errno。  非阻塞的接口相比于阻塞型接口的显著差异在于，在被调用之后立即返回。使用如下的函数可以将某句柄 fd 设为非阻塞状态：
+fcntl( fd, F_SETFL, O_NONBLOCK ); 多路复用IO （IO Multiplexing） 
+多路复用IO，select/poll、epoll。
+select/poll select和poll很相似，在检测IO时间的时候都需要遍历整个FD存储结构，只是select使用数组存储FD，其具有最大值限制，而poll使用链表无最大值限制（与内存大小相关）。
+先来分析select的优缺点，这样就知道epoll相比select的优势等。
+select 本质上是通过设置或检查存放fd标志位的数据结构进行下一步处理。 这带来缺点： 单个进程可监视的fd数量被限制，即能监听端口的数量有限 单个进程所能打开的最大连接数有FD_SETSIZE宏定义，其大小是32个整数的大小（在32位的机器上，大小就是3232，同理64位机器上FD_SETSIZE为3264），当然我们可以对进行修改，然后重新编译内核，但是性能可能会受到影响，这需要进一步的测试 一般该数和系统内存关系很大，具体数目可以cat /proc/sys/fs/file-max察看。32位机默认1024个，64位默认2048。
+当socket较多时，每次select都要通过遍历FD_SETSIZE个socket，不管是否活跃，这会浪费很多CPU时间。如果能给 socket 注册某个回调函数，当他们活跃时，自动完成相关操作，即可避免轮询，这就是epoll与kqueue。
+select 调用流程</description>
+    </item>
+    
   </channel>
 </rss>

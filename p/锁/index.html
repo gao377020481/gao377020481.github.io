@@ -147,6 +147,8 @@
 <h2 id="原子操作"><strong>原子操作</strong></h2>
 <p>多线程下使用原子操作确保我们的操作不会被其他线程参与，一般内联汇编 memory 内存屏障，只允许这一缓存写回内存，确保多线程安全。</p>
 <p><strong>多进程</strong>下对共享内存的操作使用内联汇编lock，锁住总线，同一时刻只允许一个进程通过总线操作内存。</p>
+<p><strong>粒度大小排序</strong></p>
+<p>互斥锁 &gt; 自旋锁 &gt; 读写锁 &gt; 原子操作</p>
 <h2 id="代码实现"><strong>代码实现</strong></h2>
 <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-c++" data-lang="c++">
 <span class="cp">#include</span> <span class="cpf">&lt;stdio.h&gt;</span><span class="cp">

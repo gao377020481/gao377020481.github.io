@@ -1,0 +1,1280 @@
+<!DOCTYPE html>
+<html lang="en-us">
+    <head><meta charset='utf-8'>
+<meta name='viewport' content='width=device-width, initial-scale=1'><meta name='description' content='基础知识'><title>进阶TCP服务器</title>
+
+<link rel='canonical' href='https://gao377020481.github.io/p/%E8%BF%9B%E9%98%B6tcp%E6%9C%8D%E5%8A%A1%E5%99%A8/'>
+
+<link rel="stylesheet" href="/scss/style.min.css"><meta property='og:title' content='进阶TCP服务器'>
+<meta property='og:description' content='基础知识'>
+<meta property='og:url' content='https://gao377020481.github.io/p/%E8%BF%9B%E9%98%B6tcp%E6%9C%8D%E5%8A%A1%E5%99%A8/'>
+<meta property='og:site_name' content='Gao&#39;s happy day'>
+<meta property='og:type' content='article'><meta property='article:section' content='Post' /><meta property='article:tag' content='服务器' /><meta property='article:published_time' content='2020-09-10T00:00:00&#43;00:00'/><meta property='article:modified_time' content='2020-09-10T00:00:00&#43;00:00'/><meta property='og:image' content='https://gao377020481.github.io/p/%E8%BF%9B%E9%98%B6tcp%E6%9C%8D%E5%8A%A1%E5%99%A8/406.jpg' />
+<meta name="twitter:title" content="进阶TCP服务器">
+<meta name="twitter:description" content="基础知识"><meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:image" content='https://gao377020481.github.io/p/%E8%BF%9B%E9%98%B6tcp%E6%9C%8D%E5%8A%A1%E5%99%A8/406.jpg' />
+    </head>
+    <body class="
+    article-page has-toc
+">
+    <script>
+        (function() {
+            const colorSchemeKey = 'StackColorScheme';
+            if(!localStorage.getItem(colorSchemeKey)){
+                localStorage.setItem(colorSchemeKey, "auto");
+            }
+        })();
+    </script><script>
+    (function() {
+        const colorSchemeKey = 'StackColorScheme';
+        const colorSchemeItem = localStorage.getItem(colorSchemeKey);
+        const supportDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches === true;
+
+        if (colorSchemeItem == 'dark' || colorSchemeItem === 'auto' && supportDarkMode) {
+            
+
+            document.documentElement.dataset.scheme = 'dark';
+        } else {
+            document.documentElement.dataset.scheme = 'light';
+        }
+    })();
+</script>
+<div class="container main-container flex 
+    
+        extended
+    
+">
+    
+        <div id="article-toolbar">
+            <a href="https://gao377020481.github.io" class="back-home">
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-chevron-left" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <polyline points="15 6 9 12 15 18" />
+</svg>
+
+
+
+                <span>Back</span>
+            </a>
+        </div>
+    
+<main class="main full-width">
+    <article class="has-image main-article">
+    <header class="article-header">
+        <div class="article-image">
+            <a href="/p/%E8%BF%9B%E9%98%B6tcp%E6%9C%8D%E5%8A%A1%E5%99%A8/">
+                <img src="/p/%E8%BF%9B%E9%98%B6tcp%E6%9C%8D%E5%8A%A1%E5%99%A8/406_huf20403e8966ebf3b89c1d187871e8eda_4587138_800x0_resize_q75_box.jpg"
+                        srcset="/p/%E8%BF%9B%E9%98%B6tcp%E6%9C%8D%E5%8A%A1%E5%99%A8/406_huf20403e8966ebf3b89c1d187871e8eda_4587138_800x0_resize_q75_box.jpg 800w, /p/%E8%BF%9B%E9%98%B6tcp%E6%9C%8D%E5%8A%A1%E5%99%A8/406_huf20403e8966ebf3b89c1d187871e8eda_4587138_1600x0_resize_q75_box.jpg 1600w"
+                        width="800" 
+                        height="500" 
+                        loading="lazy"
+                        alt="Featured image of post 进阶TCP服务器" />
+                
+            </a>
+        </div>
+    
+
+    <div class="article-details">
+    
+    <header class="article-category">
+        
+            <a href="/categories/%E7%BD%91%E7%BB%9C%E7%BC%96%E7%A8%8B/" style="background-color: #2a9d8f; color: #fff;">
+                网络编程
+            </a>
+        
+    </header>
+    
+
+    <h2 class="article-title">
+        <a href="/p/%E8%BF%9B%E9%98%B6tcp%E6%9C%8D%E5%8A%A1%E5%99%A8/">进阶TCP服务器</a>
+    </h2>
+
+    
+    <h3 class="article-subtitle">
+        基础知识
+    </h3>
+    
+
+    
+    <footer class="article-time">
+        
+            <div>
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-calendar-time" width="56" height="56" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <path d="M11.795 21h-6.795a2 2 0 0 1 -2 -2v-12a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v4" />
+  <circle cx="18" cy="18" r="4" />
+  <path d="M15 3v4" />
+  <path d="M7 3v4" />
+  <path d="M3 11h16" />
+  <path d="M18 16.496v1.504l1 1" />
+</svg>
+                <time class="article-time--published">Sep 10, 2020</time>
+            </div>
+        
+
+        
+            <div>
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="12" r="9" />
+  <polyline points="12 7 12 12 15 15" />
+</svg>
+
+
+
+                <time class="article-time--reading">
+                    8 minute read
+                </time>
+            </div>
+        
+    </footer>
+    
+</div>
+</header>
+
+    <section class="article-content">
+    <h1 id="进阶tcp服务器"><strong>进阶TCP服务器</strong></h1>
+<p><strong>该模块涉及TCP服务器常见点：并发量、IO模型</strong></p>
+<h2 id="io网络模型"><strong>IO网络模型</strong></h2>
+<h3 id="阻塞io-blocking-io"><strong>阻塞IO （Blocking IO）</strong></h3>
+<p><figure 
+	>
+	<a href="/post/server/blocking_io.jpg" >
+		<img src="/post/server/blocking_io.jpg"
+			
+			
+			
+			loading="lazy"
+			>
+	</a>
+	
+</figure></p>
+<p>阻塞IO的情况下，我们如果需要更多的并发，只能使用多线程，一个IO占用一个线程，资源浪费很大但是在并发量小的情况下性能很强。</p>
+<h3 id="非阻塞io-non-blocking-io"><strong>非阻塞IO （Non-Blocking IO）</strong></h3>
+<p><figure 
+	>
+	<a href="/post/server/non_blocking_io.jpg" >
+		<img src="/post/server/non_blocking_io.jpg"
+			
+			
+			
+			loading="lazy"
+			>
+	</a>
+	
+</figure></p>
+<p>在非阻塞状态下，recv() 接口在被调用后立即返回，返回值代表了不同的含义。如在本例中，</p>
+<ul>
+<li>recv() 返回值大于 0，表示接受数据完毕，返回值即是接受到的字节数；</li>
+<li>recv() 返回 0，表示连接已经正常断开；</li>
+<li>recv() 返回 -1，且 errno 等于 EAGAIN，表示 recv 操作还没执行完成；</li>
+<li>recv() 返回 -1，且 errno 不等于 EAGAIN，表示 recv 操作遇到系统错误 errno。</li>
+</ul>
+<p>非阻塞的接口相比于阻塞型接口的显著差异在于，在被调用之后立即返回。使用如下的函数可以将某句柄 fd 设为非阻塞状态：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="n">fcntl</span><span class="p">(</span> <span class="n">fd</span><span class="p">,</span> <span class="n">F_SETFL</span><span class="p">,</span> <span class="n">O_NONBLOCK</span> <span class="p">);</span>
+</code></pre></div><h3 id="多路复用io-io-multiplexing"><strong>多路复用IO （IO Multiplexing）</strong></h3>
+<p><figure 
+	>
+	<a href="/post/server/io_multiplex.jpg" >
+		<img src="/post/server/io_multiplex.jpg"
+			
+			
+			
+			loading="lazy"
+			>
+	</a>
+	
+</figure></p>
+<p>多路复用IO，select/poll、epoll。</p>
+<h4 id="selectpoll"><strong>select/poll</strong></h4>
+<p>select和poll很相似，在检测IO时间的时候都需要遍历整个FD存储结构，只是select使用数组存储FD，其具有最大值限制，而poll使用链表无最大值限制（与内存大小相关）。</p>
+<p>先来分析select的优缺点，这样就知道epoll相比select的优势等。</p>
+<p>select 本质上是通过设置或检查存放fd标志位的数据结构进行下一步处理。 这带来缺点：  单个进程可监视的fd数量被限制，即能监听端口的数量有限 单个进程所能打开的最大连接数有FD_SETSIZE宏定义，其大小是32个整数的大小（在32位的机器上，大小就是3232，同理64位机器上FD_SETSIZE为3264），当然我们可以对进行修改，然后重新编译内核，但是性能可能会受到影响，这需要进一步的测试 一般该数和系统内存关系很大，具体数目可以cat /proc/sys/fs/file-max察看。32位机默认1024个，64位默认2048。</p>
+<p>当socket较多时，每次select都要通过遍历FD_SETSIZE个socket，不管是否活跃，这会浪费很多CPU时间。如果能给 socket 注册某个回调函数，当他们活跃时，自动完成相关操作，即可避免轮询，这就是epoll与kqueue。</p>
+<p><strong>select 调用流程</strong></p>
+<ol>
+<li>
+<p>使用copy_from_user从用户空间拷贝fd_set到内核空间</p>
+</li>
+<li>
+<p>注册回调函数__pollwait</p>
+</li>
+<li>
+<p>遍历所有fd，调用其对应的poll方法（对于socket，这个poll方法是sock_poll，sock_poll根据情况会调用到tcp_poll,udp_poll或者datagram_poll）</p>
+</li>
+<li>
+<p>以tcp_poll为例，其核心实现就是__pollwait，也就是上面注册的回调函数。</p>
+</li>
+<li>
+<p>__pollwait的主要工作就是把current（当前进程）挂到设备的等待队列中，不同的设备有不同的等待队列，对于tcp_poll来说，其等待队列是sk-&gt;sk_sleep（注意把进程挂到等待队列中并不代表进程已经睡眠了）。在设备收到一条消息（网络设备）或填写完文件数据（磁盘设备）后，会唤醒设备等待队列上睡眠的进程，这时current便被唤醒了。</p>
+</li>
+<li>
+<p>poll方法返回时会返回一个描述读写操作是否就绪的mask掩码，根据这个mask掩码给fd_set赋值。</p>
+</li>
+<li>
+<p>如果遍历完所有的fd，还没有返回一个可读写的mask掩码，则会调用schedule_timeout是调用select的进程（也就是current）进入睡眠。当设备驱动发生自身资源可读写后，会唤醒其等待队列上睡眠的进程。如果超过一定的超时时间（schedule_timeout指定），还是没人唤醒，则调用select的进程会重新被唤醒获得CPU，进而重新遍历fd，判断有没有就绪的fd。</p>
+</li>
+<li>
+<p>把fd_set从内核空间拷贝到用户空间。</p>
+</li>
+</ol>
+<ul>
+<li>
+<p>内核需要将消息传递到用户空间，都需要内核拷贝动作。需要维护一个用来存放大量fd的数据结构，使得用户空间和内核空间在传递该结构时复制开销大。</p>
+</li>
+<li>
+<p>每次调用select，都需要把fd集合从用户态拷贝到内核态，这个开销在fd很多时会很大</p>
+</li>
+<li>
+<p>同时每次调用select都需要在内核遍历传递进来的所有fd，这个开销在fd很多时也很大</p>
+</li>
+<li>
+<p>select支持的文件描述符数量太小了，默认是1024</p>
+</li>
+</ul>
+<h4 id="epoll"><strong>epoll</strong></h4>
+<ul>
+<li>没有最大并发连接的限制，能打开的FD的上限远大于1024（1G的内存上能监听约10万个端口）</li>
+<li>效率提升，不是轮询，不会随着FD数目的增加效率下降。只有活跃可用的FD才会调用callback函数 即Epoll最大的优点就在于它只关心“活跃”的连接，而跟连接总数无关，因此在实际的网络环境中，Epoll的效率就会远远高于select和poll</li>
+<li>内存拷贝，利用mmap()文件映射内存加速与内核空间的消息传递；即epoll使用mmap减少复制开销。</li>
+<li>epoll通过内核和用户空间共享一块内存来实现的</li>
+</ul>
+<h3 id="异步-ioasynchronous-io"><strong>异步 IO（Asynchronous I/O）</strong></h3>
+<p><figure 
+	>
+	<a href="/post/server/asynchronous_io.jpg" >
+		<img src="/post/server/asynchronous_io.jpg"
+			
+			
+			
+			loading="lazy"
+			>
+	</a>
+	
+</figure></p>
+<p>异步IO工作流程可以看图</p>
+<h3 id="信号驱动-iosignal-driven-io-sigio"><strong>信号驱动 IO（signal driven I/O， SIGIO）</strong></h3>
+<p><figure 
+	>
+	<a href="/post/server/signal_driven_io.jpg" >
+		<img src="/post/server/signal_driven_io.jpg"
+			
+			
+			
+			loading="lazy"
+			>
+	</a>
+	
+</figure></p>
+<h2 id="服务器模型"><strong>服务器模型</strong></h2>
+<h3 id="reactor"><strong>Reactor</strong></h3>
+<p>首先来回想一下普通函数调用的机制：程序调用某函数，函数执行，程序等待，函数将
+结果和控制权返回给程序，程序继续处理。Reactor 释义“反应堆”，是一种事件驱动机制。
+和普通函数调用的不同之处在于：应用程序不是主动的调用某个 API 完成处理，而是恰恰
+相反，Reactor 逆置了事件处理流程，应用程序需要提供相应的接口并注册到 Reactor 上，
+如果相应的时间发生，Reactor 将主动调用应用程序注册的接口，这些接口又称为“回调函
+数”。</p>
+<p>Reactor 模式是处理并发 I/O 比较常见的一种模式，用于同步 I/O，中心思想是将所有要
+处理的 I/O 事件注册到一个中心 I/O 多路复用器上，同时主线程/进程阻塞在多路复用器上；
+一旦有 I/O 事件到来或是准备就绪(文件描述符或 socket 可读、写)，多路复用器返回并将事
+先注册的相应 I/O 事件分发到对应的处理器中。</p>
+<p>Reactor 模型有三个重要的组件：</p>
+<ul>
+<li>多路复用器：由操作系统提供，在 linux 上一般是 select, poll, epoll 等系统调用。</li>
+<li>事件分发器：将多路复用器中返回的就绪事件分到对应的处理函数中。</li>
+<li>事件处理器：负责处理特定事件的处理函数。</li>
+</ul>
+<h3 id="proactor"><strong>Proactor</strong></h3>
+<p>Proactor 最大的特点是
+使用异步 I/O。所有的 I/O 操作都交由系统提供的异步 I/O 接口去执行。工作线程仅仅负责业务逻辑。在 Proactor 中，用户函数启动一个异步的文件操作。同时将这个操作注册到多路复用器上。多路复用器并不关心文件是否可读或可写而是关心这个异步读操作是否完成。异步操作是操作系统完成，用户程序不需要关心。多路复用器等待直到有完成通知到来。当操作系统完成了读文件操作——将读到的数据复制到了用户先前提供的缓冲区之后，通知多路复用器相关操作已完成。多路复用器再调用相应的处理程序，处理数据。</p>
+<p>Proactor 增加了编程的复杂度，但给工作线程带来了更高的效率。Proactor 可以在
+系统态将读写优化，利用 I/O 并行能力，提供一个高性能单线程模型。在 windows 上，由于没有 epoll 这样的机制，因此提供了 IOCP 来支持高并发， 由于操作系统做了较好的优化，windows 较常采用 Proactor 的模型利用完成端口来实现服务器。在 linux 上，在2.6 内核出现了 aio 接口，但 aio 实际效果并不理想，它的出现，主要是解决 poll 性能不佳的问题，但实际上经过测试，epoll 的性能高于 poll+aio，并且 aio 不能处理 accept，因此 linux 主要还是以 Reactor 模型为主。在不使用操作系统提供的异步 I/O 接口的情况下，还可以使用 Reactor 来模拟 Proactor，
+差别是：使用异步接口可以利用系统提供的读写并行能力，而在模拟的情况下，这需要在用户态实现。具体的做法只需要这样：</p>
+<ol>
+<li>注册读事件（同时再提供一段缓冲区）</li>
+<li>事件分离器等待可读事件</li>
+<li>事件到来，激活分离器，分离器（立即读数据，写缓冲区）调用事件处理器</li>
+<li>事件处理器处理数据，删除事件(需要再用异步接口注册)</li>
+</ol>
+<p>我们知道，Boost.asio 库采用的即为 Proactor 模型。不过 Boost.asio 库在 Linux 平台采用
+epoll 实现的 Reactor 来模拟 Proactor，并且另外开了一个线程来完成读写调度。</p>
+<h2 id="并发量"><strong>并发量</strong></h2>
+<p>通过linux系统的配置、使用多路复用的IO就可以很容易达到百万的并发量这个数量级。</p>
+<h3 id="配置"><strong>配置：</strong></h3>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-haskell" data-lang="haskell">
+<span class="nf">net</span><span class="o">.</span><span class="n">ipv4</span><span class="o">.</span><span class="n">tcp_mem</span> <span class="ow">=</span> <span class="mi">252144</span> <span class="mi">524288</span> <span class="mi">786432</span>
+<span class="nf">net</span><span class="o">.</span><span class="n">ipv4</span><span class="o">.</span><span class="n">tcp_wmem</span> <span class="ow">=</span> <span class="mi">2048</span> <span class="mi">2048</span> <span class="mi">4096</span>
+<span class="nf">net</span><span class="o">.</span><span class="n">ipv4</span><span class="o">.</span><span class="n">tcp_rmem</span> <span class="ow">=</span> <span class="mi">2048</span> <span class="mi">2048</span> <span class="mi">4096</span>
+<span class="nf">fs</span><span class="o">.</span><span class="n">file</span><span class="o">-</span><span class="n">max</span> <span class="ow">=</span> <span class="mi">1048576</span> 
+<span class="nf">net</span><span class="o">.</span><span class="n">nf_conntrack_max</span> <span class="ow">=</span> <span class="mi">1048576</span>
+<span class="nf">net</span><span class="o">.</span><span class="n">netfilter</span><span class="o">.</span><span class="n">nf_conntrack_tcp_timeout_established</span> <span class="ow">=</span> <span class="mi">1200</span>
+
+</code></pre></div><p>fs.file-max为fd可以达到的最大值</p>
+<p>net.nf_conntrack_max为防火墙允许的最大连接数</p>
+<p>net.ipv4.tcp_mem 三道台阶，协议栈占有空间大于这三道台阶时采取不同的优化方案</p>
+<p>net.ipv4.tcp_wmem 和 net.ipv4.tcp_rmem 为写和收buffer大小阶梯，默认为中间大小，动态变化的最大值为第三个值。</p>
+<p>上面的buffer根据传输的文件类型可以采用不同的值。</p>
+<p>ulimit -a 可以看文件描述符数量限制，调整到1048576（ulimit -n）</p>
+<h3 id="io"><strong>IO：</strong></h3>
+<p>使用epoll，监听多个端口（100就够）</p>
+<h2 id="实现reactor-epoll"><strong>实现（Reactor-Epoll）</strong></h2>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-c++" data-lang="c++">
+
+
+<span class="cp">#include</span> <span class="cpf">&lt;stdio.h&gt;</span><span class="cp">
+</span><span class="cp">#include</span> <span class="cpf">&lt;stdlib.h&gt;</span><span class="cp">
+</span><span class="cp">#include</span> <span class="cpf">&lt;string.h&gt;</span><span class="cp">
+</span><span class="cp"></span>
+<span class="cp">#include</span> <span class="cpf">&lt;unistd.h&gt;</span><span class="cp">
+</span><span class="cp">#include</span> <span class="cpf">&lt;netinet/tcp.h&gt;</span><span class="cp">
+</span><span class="cp">#include</span> <span class="cpf">&lt;arpa/inet.h&gt;</span><span class="cp">
+</span><span class="cp">#include</span> <span class="cpf">&lt;pthread.h&gt;</span><span class="cp">
+</span><span class="cp"></span>
+<span class="cp">#include</span> <span class="cpf">&lt;errno.h&gt;</span><span class="cp">
+</span><span class="cp">#include</span> <span class="cpf">&lt;sys/epoll.h&gt;</span><span class="cp">
+</span><span class="cp"></span>
+<span class="cp">#define BUFFER_LENGTH		1024
+</span><span class="cp"></span>
+<span class="k">struct</span> <span class="nc">sockitem</span> <span class="p">{</span> <span class="c1">//
+</span><span class="c1"></span>	<span class="kt">int</span> <span class="n">sockfd</span><span class="p">;</span>
+	<span class="kt">int</span> <span class="p">(</span><span class="o">*</span><span class="n">callback</span><span class="p">)(</span><span class="kt">int</span> <span class="n">fd</span><span class="p">,</span> <span class="kt">int</span> <span class="n">events</span><span class="p">,</span> <span class="kt">void</span> <span class="o">*</span><span class="n">arg</span><span class="p">);</span>
+
+	<span class="kt">char</span> <span class="n">recvbuffer</span><span class="p">[</span><span class="n">BUFFER_LENGTH</span><span class="p">];</span> <span class="c1">//
+</span><span class="c1"></span>	<span class="kt">char</span> <span class="n">sendbuffer</span><span class="p">[</span><span class="n">BUFFER_LENGTH</span><span class="p">];</span>
+
+	<span class="kt">int</span> <span class="n">rlength</span><span class="p">;</span>
+	<span class="kt">int</span> <span class="n">slength</span><span class="p">;</span>
+<span class="p">};</span>
+
+<span class="c1">// mainloop / eventloop --&gt; epoll --&gt;  
+</span><span class="c1"></span><span class="k">struct</span> <span class="nc">reactor</span> <span class="p">{</span>
+
+	<span class="kt">int</span> <span class="n">epfd</span><span class="p">;</span>
+	<span class="k">struct</span> <span class="nc">epoll_event</span> <span class="n">events</span><span class="p">[</span><span class="mi">512</span><span class="p">];</span>
+	
+	
+
+<span class="p">};</span>
+
+
+<span class="k">struct</span> <span class="nc">reactor</span> <span class="o">*</span><span class="n">eventloop</span> <span class="o">=</span> <span class="nb">NULL</span><span class="p">;</span>
+
+
+<span class="kt">int</span> <span class="nf">recv_cb</span><span class="p">(</span><span class="kt">int</span> <span class="n">fd</span><span class="p">,</span> <span class="kt">int</span> <span class="n">events</span><span class="p">,</span> <span class="kt">void</span> <span class="o">*</span><span class="n">arg</span><span class="p">);</span>
+
+
+<span class="kt">int</span> <span class="nf">send_cb</span><span class="p">(</span><span class="kt">int</span> <span class="n">fd</span><span class="p">,</span> <span class="kt">int</span> <span class="n">events</span><span class="p">,</span> <span class="kt">void</span> <span class="o">*</span><span class="n">arg</span><span class="p">)</span> <span class="p">{</span>
+
+	<span class="k">struct</span> <span class="nc">sockitem</span> <span class="o">*</span><span class="n">si</span> <span class="o">=</span> <span class="p">(</span><span class="k">struct</span> <span class="nc">sockitem</span><span class="o">*</span><span class="p">)</span><span class="n">arg</span><span class="p">;</span>
+
+	<span class="n">send</span><span class="p">(</span><span class="n">fd</span><span class="p">,</span> <span class="n">si</span><span class="o">-&gt;</span><span class="n">sendbuffer</span><span class="p">,</span> <span class="n">si</span><span class="o">-&gt;</span><span class="n">slength</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span> <span class="c1">//
+</span><span class="c1"></span>
+	<span class="k">struct</span> <span class="nc">epoll_event</span> <span class="n">ev</span><span class="p">;</span>
+	<span class="n">ev</span><span class="p">.</span><span class="n">events</span> <span class="o">=</span> <span class="n">EPOLLIN</span> <span class="o">|</span> <span class="n">EPOLLET</span><span class="p">;</span>
+	<span class="c1">//ev.data.fd = clientfd;
+</span><span class="c1"></span>	<span class="n">si</span><span class="o">-&gt;</span><span class="n">sockfd</span> <span class="o">=</span> <span class="n">fd</span><span class="p">;</span>
+	<span class="n">si</span><span class="o">-&gt;</span><span class="n">callback</span> <span class="o">=</span> <span class="n">recv_cb</span><span class="p">;</span>
+	<span class="n">ev</span><span class="p">.</span><span class="n">data</span><span class="p">.</span><span class="n">ptr</span> <span class="o">=</span> <span class="n">si</span><span class="p">;</span>
+
+	<span class="n">epoll_ctl</span><span class="p">(</span><span class="n">eventloop</span><span class="o">-&gt;</span><span class="n">epfd</span><span class="p">,</span> <span class="n">EPOLL_CTL_MOD</span><span class="p">,</span> <span class="n">fd</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">ev</span><span class="p">);</span>
+
+<span class="p">}</span>
+
+<span class="c1">//  ./epoll 8080
+</span><span class="c1"></span>
+<span class="kt">int</span> <span class="nf">recv_cb</span><span class="p">(</span><span class="kt">int</span> <span class="n">fd</span><span class="p">,</span> <span class="kt">int</span> <span class="n">events</span><span class="p">,</span> <span class="kt">void</span> <span class="o">*</span><span class="n">arg</span><span class="p">)</span> <span class="p">{</span>
+
+	<span class="c1">//int clientfd = events[i].data.fd;
+</span><span class="c1"></span>	<span class="k">struct</span> <span class="nc">sockitem</span> <span class="o">*</span><span class="n">si</span> <span class="o">=</span> <span class="p">(</span><span class="k">struct</span> <span class="nc">sockitem</span><span class="o">*</span><span class="p">)</span><span class="n">arg</span><span class="p">;</span>
+	<span class="k">struct</span> <span class="nc">epoll_event</span> <span class="n">ev</span><span class="p">;</span>
+
+	<span class="c1">//char buffer[1024] = {0};
+</span><span class="c1"></span>	<span class="kt">int</span> <span class="n">ret</span> <span class="o">=</span> <span class="n">recv</span><span class="p">(</span><span class="n">fd</span><span class="p">,</span> <span class="n">si</span><span class="o">-&gt;</span><span class="n">recvbuffer</span><span class="p">,</span> <span class="n">BUFFER_LENGTH</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>
+	<span class="k">if</span> <span class="p">(</span><span class="n">ret</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+
+		<span class="k">if</span> <span class="p">(</span><span class="n">errno</span> <span class="o">==</span> <span class="n">EAGAIN</span> <span class="o">||</span> <span class="n">errno</span> <span class="o">==</span> <span class="n">EWOULDBLOCK</span><span class="p">)</span> <span class="p">{</span> <span class="c1">//
+</span><span class="c1"></span>			<span class="k">return</span> <span class="o">-</span><span class="mi">1</span><span class="p">;</span>
+		<span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+			
+		<span class="p">}</span>
+
+		
+
+		<span class="n">ev</span><span class="p">.</span><span class="n">events</span> <span class="o">=</span> <span class="n">EPOLLIN</span><span class="p">;</span>
+		<span class="c1">//ev.data.fd = fd;
+</span><span class="c1"></span>		<span class="n">epoll_ctl</span><span class="p">(</span><span class="n">eventloop</span><span class="o">-&gt;</span><span class="n">epfd</span><span class="p">,</span> <span class="n">EPOLL_CTL_DEL</span><span class="p">,</span> <span class="n">fd</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">ev</span><span class="p">);</span>
+
+		<span class="n">close</span><span class="p">(</span><span class="n">fd</span><span class="p">);</span>
+
+		<span class="n">free</span><span class="p">(</span><span class="n">si</span><span class="p">);</span>
+		
+
+	<span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="n">ret</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span> <span class="c1">//
+</span><span class="c1"></span>
+		<span class="c1">// 
+</span><span class="c1"></span>		<span class="n">printf</span><span class="p">(</span><span class="s">&#34;disconnect %d</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span> <span class="n">fd</span><span class="p">);</span>
+
+		<span class="n">ev</span><span class="p">.</span><span class="n">events</span> <span class="o">=</span> <span class="n">EPOLLIN</span><span class="p">;</span>
+		<span class="c1">//ev.data.fd = fd;
+</span><span class="c1"></span>		<span class="n">epoll_ctl</span><span class="p">(</span><span class="n">eventloop</span><span class="o">-&gt;</span><span class="n">epfd</span><span class="p">,</span> <span class="n">EPOLL_CTL_DEL</span><span class="p">,</span> <span class="n">fd</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">ev</span><span class="p">);</span>
+
+		<span class="n">close</span><span class="p">(</span><span class="n">fd</span><span class="p">);</span>
+
+		<span class="n">free</span><span class="p">(</span><span class="n">si</span><span class="p">);</span>
+		
+	<span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+
+		<span class="n">printf</span><span class="p">(</span><span class="s">&#34;Recv: %s, %d Bytes</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span> <span class="n">si</span><span class="o">-&gt;</span><span class="n">recvbuffer</span><span class="p">,</span> <span class="n">ret</span><span class="p">);</span>
+
+		<span class="n">si</span><span class="o">-&gt;</span><span class="n">rlength</span> <span class="o">=</span> <span class="n">ret</span><span class="p">;</span>
+		<span class="n">memcpy</span><span class="p">(</span><span class="n">si</span><span class="o">-&gt;</span><span class="n">sendbuffer</span><span class="p">,</span> <span class="n">si</span><span class="o">-&gt;</span><span class="n">recvbuffer</span><span class="p">,</span> <span class="n">si</span><span class="o">-&gt;</span><span class="n">rlength</span><span class="p">);</span>
+		<span class="n">si</span><span class="o">-&gt;</span><span class="n">slength</span> <span class="o">=</span> <span class="n">si</span><span class="o">-&gt;</span><span class="n">rlength</span><span class="p">;</span>
+
+		<span class="k">struct</span> <span class="nc">epoll_event</span> <span class="n">ev</span><span class="p">;</span>
+		<span class="n">ev</span><span class="p">.</span><span class="n">events</span> <span class="o">=</span> <span class="n">EPOLLOUT</span> <span class="o">|</span> <span class="n">EPOLLET</span><span class="p">;</span>
+		<span class="c1">//ev.data.fd = clientfd;
+</span><span class="c1"></span>		<span class="n">si</span><span class="o">-&gt;</span><span class="n">sockfd</span> <span class="o">=</span> <span class="n">fd</span><span class="p">;</span>
+		<span class="n">si</span><span class="o">-&gt;</span><span class="n">callback</span> <span class="o">=</span> <span class="n">send_cb</span><span class="p">;</span>
+		<span class="n">ev</span><span class="p">.</span><span class="n">data</span><span class="p">.</span><span class="n">ptr</span> <span class="o">=</span> <span class="n">si</span><span class="p">;</span>
+
+		<span class="n">epoll_ctl</span><span class="p">(</span><span class="n">eventloop</span><span class="o">-&gt;</span><span class="n">epfd</span><span class="p">,</span> <span class="n">EPOLL_CTL_MOD</span><span class="p">,</span> <span class="n">fd</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">ev</span><span class="p">);</span>
+
+	<span class="p">}</span>
+
+<span class="p">}</span>
+
+
+<span class="kt">int</span> <span class="nf">accept_cb</span><span class="p">(</span><span class="kt">int</span> <span class="n">fd</span><span class="p">,</span> <span class="kt">int</span> <span class="n">events</span><span class="p">,</span> <span class="kt">void</span> <span class="o">*</span><span class="n">arg</span><span class="p">)</span> <span class="p">{</span>
+
+	<span class="k">struct</span> <span class="nc">sockaddr_in</span> <span class="n">client_addr</span><span class="p">;</span>
+	<span class="n">memset</span><span class="p">(</span><span class="o">&amp;</span><span class="n">client_addr</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="k">sizeof</span><span class="p">(</span><span class="k">struct</span> <span class="nc">sockaddr_in</span><span class="p">));</span>
+	<span class="n">socklen_t</span> <span class="n">client_len</span> <span class="o">=</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">client_addr</span><span class="p">);</span>
+	
+	<span class="kt">int</span> <span class="n">clientfd</span> <span class="o">=</span> <span class="n">accept</span><span class="p">(</span><span class="n">fd</span><span class="p">,</span> <span class="p">(</span><span class="k">struct</span> <span class="nc">sockaddr</span><span class="o">*</span><span class="p">)</span><span class="o">&amp;</span><span class="n">client_addr</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">client_len</span><span class="p">);</span>
+	<span class="k">if</span> <span class="p">(</span><span class="n">clientfd</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">)</span> <span class="k">return</span> <span class="o">-</span><span class="mi">1</span><span class="p">;</span>
+
+	<span class="kt">char</span> <span class="n">str</span><span class="p">[</span><span class="n">INET_ADDRSTRLEN</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="mi">0</span><span class="p">};</span>
+	<span class="n">printf</span><span class="p">(</span><span class="s">&#34;recv from %s at port %d</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span> <span class="n">inet_ntop</span><span class="p">(</span><span class="n">AF_INET</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">client_addr</span><span class="p">.</span><span class="n">sin_addr</span><span class="p">,</span> <span class="n">str</span><span class="p">,</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">str</span><span class="p">)),</span>
+		<span class="n">ntohs</span><span class="p">(</span><span class="n">client_addr</span><span class="p">.</span><span class="n">sin_port</span><span class="p">));</span>
+
+	<span class="k">struct</span> <span class="nc">epoll_event</span> <span class="n">ev</span><span class="p">;</span>
+	<span class="n">ev</span><span class="p">.</span><span class="n">events</span> <span class="o">=</span> <span class="n">EPOLLIN</span> <span class="o">|</span> <span class="n">EPOLLET</span><span class="p">;</span>
+	<span class="c1">//ev.data.fd = clientfd;
+</span><span class="c1"></span>
+	<span class="k">struct</span> <span class="nc">sockitem</span> <span class="o">*</span><span class="n">si</span> <span class="o">=</span> <span class="p">(</span><span class="k">struct</span> <span class="nc">sockitem</span><span class="o">*</span><span class="p">)</span><span class="n">malloc</span><span class="p">(</span><span class="k">sizeof</span><span class="p">(</span><span class="k">struct</span> <span class="nc">sockitem</span><span class="p">));</span>
+	<span class="n">si</span><span class="o">-&gt;</span><span class="n">sockfd</span> <span class="o">=</span> <span class="n">clientfd</span><span class="p">;</span>
+	<span class="n">si</span><span class="o">-&gt;</span><span class="n">callback</span> <span class="o">=</span> <span class="n">recv_cb</span><span class="p">;</span>
+	<span class="n">ev</span><span class="p">.</span><span class="n">data</span><span class="p">.</span><span class="n">ptr</span> <span class="o">=</span> <span class="n">si</span><span class="p">;</span>
+	
+	<span class="n">epoll_ctl</span><span class="p">(</span><span class="n">eventloop</span><span class="o">-&gt;</span><span class="n">epfd</span><span class="p">,</span> <span class="n">EPOLL_CTL_ADD</span><span class="p">,</span> <span class="n">clientfd</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">ev</span><span class="p">);</span>
+	
+	<span class="k">return</span> <span class="n">clientfd</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">(</span><span class="kt">int</span> <span class="n">argc</span><span class="p">,</span> <span class="kt">char</span> <span class="o">*</span><span class="n">argv</span><span class="p">[])</span> <span class="p">{</span>
+
+	<span class="k">if</span> <span class="p">(</span><span class="n">argc</span> <span class="o">&lt;</span> <span class="mi">2</span><span class="p">)</span> <span class="p">{</span>
+		<span class="k">return</span> <span class="o">-</span><span class="mi">1</span><span class="p">;</span>
+	<span class="p">}</span>
+
+	<span class="kt">int</span> <span class="n">port</span> <span class="o">=</span> <span class="n">atoi</span><span class="p">(</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">]);</span>
+
+	
+
+	<span class="kt">int</span> <span class="n">sockfd</span> <span class="o">=</span> <span class="n">socket</span><span class="p">(</span><span class="n">AF_INET</span><span class="p">,</span> <span class="n">SOCK_STREAM</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>
+	<span class="k">if</span> <span class="p">(</span><span class="n">sockfd</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+		<span class="k">return</span> <span class="o">-</span><span class="mi">1</span><span class="p">;</span>
+	<span class="p">}</span>
+
+	<span class="k">struct</span> <span class="nc">sockaddr_in</span> <span class="n">addr</span><span class="p">;</span>
+	<span class="n">memset</span><span class="p">(</span><span class="o">&amp;</span><span class="n">addr</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="k">sizeof</span><span class="p">(</span><span class="k">struct</span> <span class="nc">sockaddr_in</span><span class="p">));</span>
+
+	<span class="n">addr</span><span class="p">.</span><span class="n">sin_family</span> <span class="o">=</span> <span class="n">AF_INET</span><span class="p">;</span>
+	<span class="n">addr</span><span class="p">.</span><span class="n">sin_port</span> <span class="o">=</span> <span class="n">htons</span><span class="p">(</span><span class="n">port</span><span class="p">);</span>
+	<span class="n">addr</span><span class="p">.</span><span class="n">sin_addr</span><span class="p">.</span><span class="n">s_addr</span> <span class="o">=</span> <span class="n">INADDR_ANY</span><span class="p">;</span>
+
+	<span class="k">if</span> <span class="p">(</span><span class="n">bind</span><span class="p">(</span><span class="n">sockfd</span><span class="p">,</span> <span class="p">(</span><span class="k">struct</span> <span class="nc">sockaddr</span><span class="o">*</span><span class="p">)</span><span class="o">&amp;</span><span class="n">addr</span><span class="p">,</span> <span class="k">sizeof</span><span class="p">(</span><span class="k">struct</span> <span class="nc">sockaddr_in</span><span class="p">))</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+		<span class="k">return</span> <span class="o">-</span><span class="mi">2</span><span class="p">;</span>
+	<span class="p">}</span>
+
+	<span class="k">if</span> <span class="p">(</span><span class="n">listen</span><span class="p">(</span><span class="n">sockfd</span><span class="p">,</span> <span class="mi">5</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+		<span class="k">return</span> <span class="o">-</span><span class="mi">3</span><span class="p">;</span>
+	<span class="p">}</span>
+
+	<span class="n">eventloop</span> <span class="o">=</span> <span class="p">(</span><span class="k">struct</span> <span class="nc">reactor</span><span class="o">*</span><span class="p">)</span><span class="n">malloc</span><span class="p">(</span><span class="k">sizeof</span><span class="p">(</span><span class="k">struct</span> <span class="nc">reactor</span><span class="p">));</span>
+	<span class="c1">// epoll opera
+</span><span class="c1"></span>
+	<span class="n">eventloop</span><span class="o">-&gt;</span><span class="n">epfd</span> <span class="o">=</span> <span class="n">epoll_create</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>
+	
+	<span class="k">struct</span> <span class="nc">epoll_event</span> <span class="n">ev</span><span class="p">;</span>
+	<span class="n">ev</span><span class="p">.</span><span class="n">events</span> <span class="o">=</span> <span class="n">EPOLLIN</span><span class="p">;</span>
+	
+	<span class="k">struct</span> <span class="nc">sockitem</span> <span class="o">*</span><span class="n">si</span> <span class="o">=</span> <span class="p">(</span><span class="k">struct</span> <span class="nc">sockitem</span><span class="o">*</span><span class="p">)</span><span class="n">malloc</span><span class="p">(</span><span class="k">sizeof</span><span class="p">(</span><span class="k">struct</span> <span class="nc">sockitem</span><span class="p">));</span>
+	<span class="n">si</span><span class="o">-&gt;</span><span class="n">sockfd</span> <span class="o">=</span> <span class="n">sockfd</span><span class="p">;</span>
+	<span class="n">si</span><span class="o">-&gt;</span><span class="n">callback</span> <span class="o">=</span> <span class="n">accept_cb</span><span class="p">;</span>
+	<span class="n">ev</span><span class="p">.</span><span class="n">data</span><span class="p">.</span><span class="n">ptr</span> <span class="o">=</span> <span class="n">si</span><span class="p">;</span>
+	
+	<span class="n">epoll_ctl</span><span class="p">(</span><span class="n">eventloop</span><span class="o">-&gt;</span><span class="n">epfd</span><span class="p">,</span> <span class="n">EPOLL_CTL_ADD</span><span class="p">,</span> <span class="n">sockfd</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">ev</span><span class="p">);</span>
+
+	<span class="k">while</span> <span class="p">(</span><span class="mi">1</span><span class="p">)</span> <span class="p">{</span>
+
+		<span class="kt">int</span> <span class="n">nready</span> <span class="o">=</span> <span class="n">epoll_wait</span><span class="p">(</span><span class="n">eventloop</span><span class="o">-&gt;</span><span class="n">epfd</span><span class="p">,</span> <span class="n">eventloop</span><span class="o">-&gt;</span><span class="n">events</span><span class="p">,</span> <span class="mi">512</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">);</span>
+		<span class="k">if</span> <span class="p">(</span><span class="n">nready</span> <span class="o">&lt;</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="p">{</span>
+			<span class="k">break</span><span class="p">;</span>
+		<span class="p">}</span>
+
+		<span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+		<span class="k">for</span> <span class="p">(</span><span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span><span class="n">i</span> <span class="o">&lt;</span> <span class="n">nready</span><span class="p">;</span><span class="n">i</span> <span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+
+
+
+			<span class="k">if</span> <span class="p">(</span><span class="n">eventloop</span><span class="o">-&gt;</span><span class="n">events</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">events</span> <span class="o">&amp;</span> <span class="n">EPOLLIN</span><span class="p">)</span> <span class="p">{</span>
+				<span class="c1">//printf(&#34;sockitem\n&#34;);
+</span><span class="c1"></span>				<span class="k">struct</span> <span class="nc">sockitem</span> <span class="o">*</span><span class="n">si</span> <span class="o">=</span> <span class="p">(</span><span class="k">struct</span> <span class="nc">sockitem</span><span class="o">*</span><span class="p">)</span><span class="n">eventloop</span><span class="o">-&gt;</span><span class="n">events</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">data</span><span class="p">.</span><span class="n">ptr</span><span class="p">;</span>
+				<span class="n">si</span><span class="o">-&gt;</span><span class="n">callback</span><span class="p">(</span><span class="n">si</span><span class="o">-&gt;</span><span class="n">sockfd</span><span class="p">,</span> <span class="n">eventloop</span><span class="o">-&gt;</span><span class="n">events</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">events</span><span class="p">,</span> <span class="n">si</span><span class="p">);</span>
+
+			<span class="p">}</span>
+
+			<span class="k">if</span> <span class="p">(</span><span class="n">eventloop</span><span class="o">-&gt;</span><span class="n">events</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">events</span> <span class="o">&amp;</span> <span class="n">EPOLLOUT</span><span class="p">)</span> <span class="p">{</span>
+
+				<span class="k">struct</span> <span class="nc">sockitem</span> <span class="o">*</span><span class="n">si</span> <span class="o">=</span> <span class="p">(</span><span class="k">struct</span> <span class="nc">sockitem</span><span class="o">*</span><span class="p">)</span><span class="n">eventloop</span><span class="o">-&gt;</span><span class="n">events</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">data</span><span class="p">.</span><span class="n">ptr</span><span class="p">;</span>
+				<span class="n">si</span><span class="o">-&gt;</span><span class="n">callback</span><span class="p">(</span><span class="n">si</span><span class="o">-&gt;</span><span class="n">sockfd</span><span class="p">,</span> <span class="n">eventloop</span><span class="o">-&gt;</span><span class="n">events</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">events</span><span class="p">,</span> <span class="n">si</span><span class="p">);</span>
+
+			<span class="p">}</span>
+		<span class="p">}</span>
+
+	<span class="p">}</span>
+
+<span class="p">}</span>
+
+
+
+
+
+
+
+
+</code></pre></div><h2 id="实现reactor-epoll的百万并发"><strong>实现（Reactor-Epoll的百万并发）</strong></h2>
+<p>前面有reactor-epoll自己实现的了，这里直接使用netty的reactor实现就可以。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-c++" data-lang="c++"><span class="cp">#include</span> <span class="cpf">&lt;stdio.h&gt;</span><span class="cp">
+</span><span class="cp">#include</span> <span class="cpf">&lt;stdlib.h&gt;</span><span class="cp">
+</span><span class="cp">#include</span> <span class="cpf">&lt;string.h&gt;</span><span class="cp">
+</span><span class="cp">#include</span> <span class="cpf">&lt;sys/socket.h&gt;</span><span class="cp">
+</span><span class="cp">#include</span> <span class="cpf">&lt;sys/epoll.h&gt;</span><span class="cp">
+</span><span class="cp">#include</span> <span class="cpf">&lt;arpa/inet.h&gt;</span><span class="cp">
+</span><span class="cp"></span>
+<span class="cp">#include</span> <span class="cpf">&lt;fcntl.h&gt;</span><span class="cp">
+</span><span class="cp">#include</span> <span class="cpf">&lt;unistd.h&gt;</span><span class="cp">
+</span><span class="cp">#include</span> <span class="cpf">&lt;errno.h&gt;</span><span class="cp">
+</span><span class="cp"></span>
+
+<span class="cp">#define BUFFER_LENGTH		1024
+</span><span class="cp">#define MAX_EPOLL_EVENTS	1024*1024 </span><span class="c1">//connection 
+</span><span class="c1"></span><span class="cp">#define MAX_EPOLL_ITEM		102400 </span><span class="c1">//con
+</span><span class="c1"></span><span class="cp">#define SERVER_PORT			8888
+</span><span class="cp"></span>
+<span class="cp">#define LISTEN_PORT_COUNT	100
+</span><span class="cp"></span>
+<span class="k">typedef</span> <span class="kt">int</span> <span class="nf">NCALLBACK</span><span class="p">(</span><span class="kt">int</span> <span class="p">,</span><span class="kt">int</span><span class="p">,</span> <span class="kt">void</span><span class="o">*</span><span class="p">);</span>
+
+<span class="k">struct</span> <span class="nc">ntyevent</span> <span class="p">{</span>
+	<span class="kt">int</span> <span class="n">fd</span><span class="p">;</span>
+	<span class="kt">int</span> <span class="n">events</span><span class="p">;</span>
+	<span class="kt">void</span> <span class="o">*</span><span class="n">arg</span><span class="p">;</span>
+	<span class="kt">int</span> <span class="p">(</span><span class="o">*</span><span class="n">callback</span><span class="p">)(</span><span class="kt">int</span> <span class="n">fd</span><span class="p">,</span> <span class="kt">int</span> <span class="n">events</span><span class="p">,</span> <span class="kt">void</span> <span class="o">*</span><span class="n">arg</span><span class="p">);</span>
+	
+	<span class="kt">int</span> <span class="n">status</span><span class="p">;</span>
+	<span class="kt">char</span> <span class="n">buffer</span><span class="p">[</span><span class="n">BUFFER_LENGTH</span><span class="p">];</span>
+	<span class="kt">int</span> <span class="n">length</span><span class="p">;</span>
+	<span class="kt">long</span> <span class="n">last_active</span><span class="p">;</span>
+<span class="p">};</span>
+
+
+
+<span class="k">struct</span> <span class="nc">ntyreactor</span> <span class="p">{</span>
+	<span class="kt">int</span> <span class="n">epfd</span><span class="p">;</span>
+	<span class="k">struct</span> <span class="nc">ntyevent</span> <span class="o">*</span><span class="n">events</span><span class="p">;</span> <span class="c1">// 1024 * 1024
+</span><span class="c1"></span><span class="p">};</span>
+
+
+<span class="kt">int</span> <span class="nf">recv_cb</span><span class="p">(</span><span class="kt">int</span> <span class="n">fd</span><span class="p">,</span> <span class="kt">int</span> <span class="n">events</span><span class="p">,</span> <span class="kt">void</span> <span class="o">*</span><span class="n">arg</span><span class="p">);</span>
+<span class="kt">int</span> <span class="nf">send_cb</span><span class="p">(</span><span class="kt">int</span> <span class="n">fd</span><span class="p">,</span> <span class="kt">int</span> <span class="n">events</span><span class="p">,</span> <span class="kt">void</span> <span class="o">*</span><span class="n">arg</span><span class="p">);</span>
+
+
+<span class="kt">void</span> <span class="nf">nty_event_set</span><span class="p">(</span><span class="k">struct</span> <span class="nc">ntyevent</span> <span class="o">*</span><span class="n">ev</span><span class="p">,</span> <span class="kt">int</span> <span class="n">fd</span><span class="p">,</span> <span class="n">NCALLBACK</span> <span class="n">callback</span><span class="p">,</span> <span class="kt">void</span> <span class="o">*</span><span class="n">arg</span><span class="p">)</span> <span class="p">{</span>
+
+	<span class="n">ev</span><span class="o">-&gt;</span><span class="n">fd</span> <span class="o">=</span> <span class="n">fd</span><span class="p">;</span>
+	<span class="n">ev</span><span class="o">-&gt;</span><span class="n">callback</span> <span class="o">=</span> <span class="n">callback</span><span class="p">;</span>
+	<span class="n">ev</span><span class="o">-&gt;</span><span class="n">events</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+	<span class="n">ev</span><span class="o">-&gt;</span><span class="n">arg</span> <span class="o">=</span> <span class="n">arg</span><span class="p">;</span>
+	<span class="n">ev</span><span class="o">-&gt;</span><span class="n">last_active</span> <span class="o">=</span> <span class="n">time</span><span class="p">(</span><span class="nb">NULL</span><span class="p">);</span>
+
+	<span class="k">return</span> <span class="p">;</span>
+	
+<span class="p">}</span>
+
+
+<span class="kt">int</span> <span class="nf">nty_event_add</span><span class="p">(</span><span class="kt">int</span> <span class="n">epfd</span><span class="p">,</span> <span class="kt">int</span> <span class="n">events</span><span class="p">,</span> <span class="k">struct</span> <span class="nc">ntyevent</span> <span class="o">*</span><span class="n">ev</span><span class="p">)</span> <span class="p">{</span>
+
+	<span class="k">struct</span> <span class="nc">epoll_event</span> <span class="n">ep_ev</span> <span class="o">=</span> <span class="p">{</span><span class="mi">0</span><span class="p">,</span> <span class="p">{</span><span class="mi">0</span><span class="p">}};</span>
+	<span class="n">ep_ev</span><span class="p">.</span><span class="n">data</span><span class="p">.</span><span class="n">ptr</span> <span class="o">=</span> <span class="n">ev</span><span class="p">;</span>
+	<span class="n">ep_ev</span><span class="p">.</span><span class="n">events</span> <span class="o">=</span> <span class="n">ev</span><span class="o">-&gt;</span><span class="n">events</span> <span class="o">=</span> <span class="n">events</span><span class="p">;</span>
+
+	<span class="kt">int</span> <span class="n">op</span><span class="p">;</span>
+	<span class="k">if</span> <span class="p">(</span><span class="n">ev</span><span class="o">-&gt;</span><span class="n">status</span> <span class="o">==</span> <span class="mi">1</span><span class="p">)</span> <span class="p">{</span>
+		<span class="n">op</span> <span class="o">=</span> <span class="n">EPOLL_CTL_MOD</span><span class="p">;</span>
+	<span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+		<span class="n">op</span> <span class="o">=</span> <span class="n">EPOLL_CTL_ADD</span><span class="p">;</span>
+		<span class="n">ev</span><span class="o">-&gt;</span><span class="n">status</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
+	<span class="p">}</span>
+
+	<span class="k">if</span> <span class="p">(</span><span class="n">epoll_ctl</span><span class="p">(</span><span class="n">epfd</span><span class="p">,</span> <span class="n">op</span><span class="p">,</span> <span class="n">ev</span><span class="o">-&gt;</span><span class="n">fd</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">ep_ev</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+		<span class="n">printf</span><span class="p">(</span><span class="s">&#34;event add failed [fd=%d], events[%d]</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span> <span class="n">ev</span><span class="o">-&gt;</span><span class="n">fd</span><span class="p">,</span> <span class="n">events</span><span class="p">);</span>
+		<span class="k">return</span> <span class="o">-</span><span class="mi">1</span><span class="p">;</span>
+	<span class="p">}</span>
+
+	<span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kt">int</span> <span class="nf">nty_event_del</span><span class="p">(</span><span class="kt">int</span> <span class="n">epfd</span><span class="p">,</span> <span class="k">struct</span> <span class="nc">ntyevent</span> <span class="o">*</span><span class="n">ev</span><span class="p">)</span> <span class="p">{</span>
+
+	<span class="k">struct</span> <span class="nc">epoll_event</span> <span class="n">ep_ev</span> <span class="o">=</span> <span class="p">{</span><span class="mi">0</span><span class="p">,</span> <span class="p">{</span><span class="mi">0</span><span class="p">}};</span>
+
+	<span class="k">if</span> <span class="p">(</span><span class="n">ev</span><span class="o">-&gt;</span><span class="n">status</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">)</span> <span class="p">{</span>
+		<span class="k">return</span> <span class="o">-</span><span class="mi">1</span><span class="p">;</span>
+	<span class="p">}</span>
+
+	<span class="n">ep_ev</span><span class="p">.</span><span class="n">data</span><span class="p">.</span><span class="n">ptr</span> <span class="o">=</span> <span class="n">ev</span><span class="p">;</span>
+	<span class="n">ev</span><span class="o">-&gt;</span><span class="n">status</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+	<span class="n">epoll_ctl</span><span class="p">(</span><span class="n">epfd</span><span class="p">,</span> <span class="n">EPOLL_CTL_DEL</span><span class="p">,</span> <span class="n">ev</span><span class="o">-&gt;</span><span class="n">fd</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">ep_ev</span><span class="p">);</span>
+
+	<span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kt">int</span> <span class="nf">recv_cb</span><span class="p">(</span><span class="kt">int</span> <span class="n">fd</span><span class="p">,</span> <span class="kt">int</span> <span class="n">events</span><span class="p">,</span> <span class="kt">void</span> <span class="o">*</span><span class="n">arg</span><span class="p">)</span> <span class="p">{</span>
+
+	<span class="k">struct</span> <span class="nc">ntyreactor</span> <span class="o">*</span><span class="n">reactor</span> <span class="o">=</span> <span class="p">(</span><span class="k">struct</span> <span class="nc">ntyreactor</span><span class="o">*</span><span class="p">)</span><span class="n">arg</span><span class="p">;</span>
+	<span class="k">struct</span> <span class="nc">ntyevent</span> <span class="o">*</span><span class="n">ev</span> <span class="o">=</span> <span class="n">reactor</span><span class="o">-&gt;</span><span class="n">events</span><span class="o">+</span><span class="n">fd</span><span class="p">;</span>
+
+	<span class="kt">int</span> <span class="n">len</span> <span class="o">=</span> <span class="n">recv</span><span class="p">(</span><span class="n">fd</span><span class="p">,</span> <span class="n">ev</span><span class="o">-&gt;</span><span class="n">buffer</span><span class="p">,</span> <span class="n">BUFFER_LENGTH</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>
+	<span class="n">nty_event_del</span><span class="p">(</span><span class="n">reactor</span><span class="o">-&gt;</span><span class="n">epfd</span><span class="p">,</span> <span class="n">ev</span><span class="p">);</span>
+
+	<span class="k">if</span> <span class="p">(</span><span class="n">len</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+		
+		<span class="n">ev</span><span class="o">-&gt;</span><span class="n">length</span> <span class="o">=</span> <span class="n">len</span><span class="p">;</span>
+		<span class="n">ev</span><span class="o">-&gt;</span><span class="n">buffer</span><span class="p">[</span><span class="n">len</span><span class="p">]</span> <span class="o">=</span> <span class="sc">&#39;\0&#39;</span><span class="p">;</span>
+
+		<span class="n">printf</span><span class="p">(</span><span class="s">&#34;C[%d]:%s</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span> <span class="n">fd</span><span class="p">,</span> <span class="n">ev</span><span class="o">-&gt;</span><span class="n">buffer</span><span class="p">);</span>
+
+		<span class="n">nty_event_set</span><span class="p">(</span><span class="n">ev</span><span class="p">,</span> <span class="n">fd</span><span class="p">,</span> <span class="n">send_cb</span><span class="p">,</span> <span class="n">reactor</span><span class="p">);</span>
+		<span class="n">nty_event_add</span><span class="p">(</span><span class="n">reactor</span><span class="o">-&gt;</span><span class="n">epfd</span><span class="p">,</span> <span class="n">EPOLLOUT</span><span class="p">,</span> <span class="n">ev</span><span class="p">);</span>
+		
+		
+	<span class="p">}</span> <span class="k">else</span> <span class="k">if</span> <span class="p">(</span><span class="n">len</span> <span class="o">==</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+
+		<span class="n">close</span><span class="p">(</span><span class="n">ev</span><span class="o">-&gt;</span><span class="n">fd</span><span class="p">);</span>
+		<span class="n">printf</span><span class="p">(</span><span class="s">&#34;[fd=%d] pos[%ld], closed</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span> <span class="n">fd</span><span class="p">,</span> <span class="n">ev</span><span class="o">-</span><span class="n">reactor</span><span class="o">-&gt;</span><span class="n">events</span><span class="p">);</span>
+		 
+	<span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+
+		<span class="n">close</span><span class="p">(</span><span class="n">ev</span><span class="o">-&gt;</span><span class="n">fd</span><span class="p">);</span>
+		<span class="n">printf</span><span class="p">(</span><span class="s">&#34;recv[fd=%d] error[%d]:%s</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span> <span class="n">fd</span><span class="p">,</span> <span class="n">errno</span><span class="p">,</span> <span class="n">strerror</span><span class="p">(</span><span class="n">errno</span><span class="p">));</span>
+		
+	<span class="p">}</span>
+
+	<span class="k">return</span> <span class="n">len</span><span class="p">;</span>
+<span class="p">}</span>
+
+
+<span class="kt">int</span> <span class="nf">send_cb</span><span class="p">(</span><span class="kt">int</span> <span class="n">fd</span><span class="p">,</span> <span class="kt">int</span> <span class="n">events</span><span class="p">,</span> <span class="kt">void</span> <span class="o">*</span><span class="n">arg</span><span class="p">)</span> <span class="p">{</span>
+
+	<span class="k">struct</span> <span class="nc">ntyreactor</span> <span class="o">*</span><span class="n">reactor</span> <span class="o">=</span> <span class="p">(</span><span class="k">struct</span> <span class="nc">ntyreactor</span><span class="o">*</span><span class="p">)</span><span class="n">arg</span><span class="p">;</span>
+	<span class="k">struct</span> <span class="nc">ntyevent</span> <span class="o">*</span><span class="n">ev</span> <span class="o">=</span> <span class="n">reactor</span><span class="o">-&gt;</span><span class="n">events</span><span class="o">+</span><span class="n">fd</span><span class="p">;</span>
+
+	<span class="kt">int</span> <span class="n">len</span> <span class="o">=</span> <span class="n">send</span><span class="p">(</span><span class="n">fd</span><span class="p">,</span> <span class="n">ev</span><span class="o">-&gt;</span><span class="n">buffer</span><span class="p">,</span> <span class="n">ev</span><span class="o">-&gt;</span><span class="n">length</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>
+	<span class="k">if</span> <span class="p">(</span><span class="n">len</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+		<span class="n">printf</span><span class="p">(</span><span class="s">&#34;send[fd=%d], [%d]%s</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span> <span class="n">fd</span><span class="p">,</span> <span class="n">len</span><span class="p">,</span> <span class="n">ev</span><span class="o">-&gt;</span><span class="n">buffer</span><span class="p">);</span>
+
+		<span class="n">nty_event_del</span><span class="p">(</span><span class="n">reactor</span><span class="o">-&gt;</span><span class="n">epfd</span><span class="p">,</span> <span class="n">ev</span><span class="p">);</span>
+		
+		<span class="n">nty_event_set</span><span class="p">(</span><span class="n">ev</span><span class="p">,</span> <span class="n">fd</span><span class="p">,</span> <span class="n">recv_cb</span><span class="p">,</span> <span class="n">reactor</span><span class="p">);</span>
+		<span class="n">nty_event_add</span><span class="p">(</span><span class="n">reactor</span><span class="o">-&gt;</span><span class="n">epfd</span><span class="p">,</span> <span class="n">EPOLLIN</span><span class="p">,</span> <span class="n">ev</span><span class="p">);</span>
+		
+	<span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+
+		<span class="n">close</span><span class="p">(</span><span class="n">ev</span><span class="o">-&gt;</span><span class="n">fd</span><span class="p">);</span>
+
+		<span class="n">nty_event_del</span><span class="p">(</span><span class="n">reactor</span><span class="o">-&gt;</span><span class="n">epfd</span><span class="p">,</span> <span class="n">ev</span><span class="p">);</span>
+		<span class="n">printf</span><span class="p">(</span><span class="s">&#34;send[fd=%d] error %s</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span> <span class="n">fd</span><span class="p">,</span> <span class="n">strerror</span><span class="p">(</span><span class="n">errno</span><span class="p">));</span>
+
+	<span class="p">}</span>
+
+	<span class="k">return</span> <span class="n">len</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="kt">int</span> <span class="nf">accept_cb</span><span class="p">(</span><span class="kt">int</span> <span class="n">fd</span><span class="p">,</span> <span class="kt">int</span> <span class="n">events</span><span class="p">,</span> <span class="kt">void</span> <span class="o">*</span><span class="n">arg</span><span class="p">)</span> <span class="p">{</span>
+
+	<span class="k">struct</span> <span class="nc">ntyreactor</span> <span class="o">*</span><span class="n">reactor</span> <span class="o">=</span> <span class="p">(</span><span class="k">struct</span> <span class="nc">ntyreactor</span><span class="o">*</span><span class="p">)</span><span class="n">arg</span><span class="p">;</span>
+	<span class="k">if</span> <span class="p">(</span><span class="n">reactor</span> <span class="o">==</span> <span class="nb">NULL</span><span class="p">)</span> <span class="k">return</span> <span class="o">-</span><span class="mi">1</span><span class="p">;</span>
+
+	<span class="k">struct</span> <span class="nc">sockaddr_in</span> <span class="n">client_addr</span><span class="p">;</span>
+	<span class="n">socklen_t</span> <span class="n">len</span> <span class="o">=</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">client_addr</span><span class="p">);</span>
+
+	<span class="kt">int</span> <span class="n">clientfd</span><span class="p">;</span>
+
+	<span class="k">if</span> <span class="p">((</span><span class="n">clientfd</span> <span class="o">=</span> <span class="n">accept</span><span class="p">(</span><span class="n">fd</span><span class="p">,</span> <span class="p">(</span><span class="k">struct</span> <span class="nc">sockaddr</span><span class="o">*</span><span class="p">)</span><span class="o">&amp;</span><span class="n">client_addr</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">len</span><span class="p">))</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span> <span class="p">{</span>
+		<span class="k">if</span> <span class="p">(</span><span class="n">errno</span> <span class="o">!=</span> <span class="n">EAGAIN</span> <span class="o">&amp;&amp;</span> <span class="n">errno</span> <span class="o">!=</span> <span class="n">EINTR</span><span class="p">)</span> <span class="p">{</span>
+			
+		<span class="p">}</span>
+		<span class="n">printf</span><span class="p">(</span><span class="s">&#34;accept: %s</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span> <span class="n">strerror</span><span class="p">(</span><span class="n">errno</span><span class="p">));</span>
+		<span class="k">return</span> <span class="o">-</span><span class="mi">1</span><span class="p">;</span>
+	<span class="p">}</span>
+
+	<span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+	<span class="k">do</span> <span class="p">{</span>
+<span class="cp">#if 0</span><span class="c">
+</span><span class="c">		for (i = 0;i &lt; MAX_EPOLL_EVENTS;i ++) {
+</span><span class="c">			if (reactor-&gt;events[i].status == 0) {
+</span><span class="c">				break;
+</span><span class="c">			}
+</span><span class="c">		}
+</span><span class="c">		if (i == MAX_EPOLL_EVENTS) {
+</span><span class="c">			printf(&#34;%s: max connect limit[%d]\n&#34;, __func__, MAX_EPOLL_EVENTS);
+</span><span class="c">			break;
+</span><span class="c">		}
+</span><span class="c"></span><span class="cp">#endif
+</span><span class="cp"></span>		<span class="kt">int</span> <span class="n">flag</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+		<span class="k">if</span> <span class="p">((</span><span class="n">flag</span> <span class="o">=</span> <span class="n">fcntl</span><span class="p">(</span><span class="n">clientfd</span><span class="p">,</span> <span class="n">F_SETFL</span><span class="p">,</span> <span class="n">O_NONBLOCK</span><span class="p">))</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+			<span class="n">printf</span><span class="p">(</span><span class="s">&#34;%s: fcntl nonblocking failed, %d</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span> <span class="n">__func__</span><span class="p">,</span> <span class="n">MAX_EPOLL_EVENTS</span><span class="p">);</span>
+			<span class="k">break</span><span class="p">;</span>
+		<span class="p">}</span>
+
+		<span class="n">nty_event_set</span><span class="p">(</span><span class="o">&amp;</span><span class="n">reactor</span><span class="o">-&gt;</span><span class="n">events</span><span class="p">[</span><span class="n">clientfd</span><span class="p">],</span> <span class="n">clientfd</span><span class="p">,</span> <span class="n">recv_cb</span><span class="p">,</span> <span class="n">reactor</span><span class="p">);</span>
+		<span class="n">nty_event_add</span><span class="p">(</span><span class="n">reactor</span><span class="o">-&gt;</span><span class="n">epfd</span><span class="p">,</span> <span class="n">EPOLLIN</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">reactor</span><span class="o">-&gt;</span><span class="n">events</span><span class="p">[</span><span class="n">clientfd</span><span class="p">]);</span>
+
+	<span class="p">}</span> <span class="k">while</span> <span class="p">(</span><span class="mi">0</span><span class="p">);</span>
+
+	<span class="n">printf</span><span class="p">(</span><span class="s">&#34;new connect [%s:%d][time:%ld], pos[%d]</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span> 
+		<span class="n">inet_ntoa</span><span class="p">(</span><span class="n">client_addr</span><span class="p">.</span><span class="n">sin_addr</span><span class="p">),</span> <span class="n">ntohs</span><span class="p">(</span><span class="n">client_addr</span><span class="p">.</span><span class="n">sin_port</span><span class="p">),</span> <span class="n">reactor</span><span class="o">-&gt;</span><span class="n">events</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">last_active</span><span class="p">,</span> <span class="n">i</span><span class="p">);</span>
+
+	<span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+
+<span class="p">}</span>
+
+<span class="kt">int</span> <span class="nf">init_sock</span><span class="p">(</span><span class="kt">short</span> <span class="n">port</span><span class="p">)</span> <span class="p">{</span>
+
+	<span class="kt">int</span> <span class="n">fd</span> <span class="o">=</span> <span class="n">socket</span><span class="p">(</span><span class="n">AF_INET</span><span class="p">,</span> <span class="n">SOCK_STREAM</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>
+	<span class="n">fcntl</span><span class="p">(</span><span class="n">fd</span><span class="p">,</span> <span class="n">F_SETFL</span><span class="p">,</span> <span class="n">O_NONBLOCK</span><span class="p">);</span>
+
+	<span class="k">struct</span> <span class="nc">sockaddr_in</span> <span class="n">server_addr</span><span class="p">;</span>
+	<span class="n">memset</span><span class="p">(</span><span class="o">&amp;</span><span class="n">server_addr</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">server_addr</span><span class="p">));</span>
+	<span class="n">server_addr</span><span class="p">.</span><span class="n">sin_family</span> <span class="o">=</span> <span class="n">AF_INET</span><span class="p">;</span>
+	<span class="n">server_addr</span><span class="p">.</span><span class="n">sin_addr</span><span class="p">.</span><span class="n">s_addr</span> <span class="o">=</span> <span class="n">htonl</span><span class="p">(</span><span class="n">INADDR_ANY</span><span class="p">);</span>
+	<span class="n">server_addr</span><span class="p">.</span><span class="n">sin_port</span> <span class="o">=</span> <span class="n">htons</span><span class="p">(</span><span class="n">port</span><span class="p">);</span>
+
+	<span class="n">bind</span><span class="p">(</span><span class="n">fd</span><span class="p">,</span> <span class="p">(</span><span class="k">struct</span> <span class="nc">sockaddr</span><span class="o">*</span><span class="p">)</span><span class="o">&amp;</span><span class="n">server_addr</span><span class="p">,</span> <span class="k">sizeof</span><span class="p">(</span><span class="n">server_addr</span><span class="p">));</span>
+
+	<span class="k">if</span> <span class="p">(</span><span class="n">listen</span><span class="p">(</span><span class="n">fd</span><span class="p">,</span> <span class="mi">20</span><span class="p">)</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+		<span class="n">printf</span><span class="p">(</span><span class="s">&#34;listen failed : %s</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span> <span class="n">strerror</span><span class="p">(</span><span class="n">errno</span><span class="p">));</span>
+	<span class="p">}</span>
+
+	<span class="n">printf</span><span class="p">(</span><span class="s">&#34;listen port : %d</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span> <span class="n">port</span><span class="p">);</span>
+
+	<span class="k">return</span> <span class="n">fd</span><span class="p">;</span>
+<span class="p">}</span>
+
+
+<span class="kt">int</span> <span class="nf">ntyreactor_init</span><span class="p">(</span><span class="k">struct</span> <span class="nc">ntyreactor</span> <span class="o">*</span><span class="n">reactor</span><span class="p">)</span> <span class="p">{</span>
+
+	<span class="k">if</span> <span class="p">(</span><span class="n">reactor</span> <span class="o">==</span> <span class="nb">NULL</span><span class="p">)</span> <span class="k">return</span> <span class="o">-</span><span class="mi">1</span><span class="p">;</span>
+	<span class="n">memset</span><span class="p">(</span><span class="n">reactor</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="k">sizeof</span><span class="p">(</span><span class="k">struct</span> <span class="nc">ntyreactor</span><span class="p">));</span>
+
+	<span class="n">reactor</span><span class="o">-&gt;</span><span class="n">epfd</span> <span class="o">=</span> <span class="n">epoll_create</span><span class="p">(</span><span class="mi">1</span><span class="p">);</span>
+	<span class="k">if</span> <span class="p">(</span><span class="n">reactor</span><span class="o">-&gt;</span><span class="n">epfd</span> <span class="o">&lt;=</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+		<span class="n">printf</span><span class="p">(</span><span class="s">&#34;create epfd in %s err %s</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span> <span class="n">__func__</span><span class="p">,</span> <span class="n">strerror</span><span class="p">(</span><span class="n">errno</span><span class="p">));</span>
+		<span class="k">return</span> <span class="o">-</span><span class="mi">2</span><span class="p">;</span>
+	<span class="p">}</span>
+
+	<span class="n">reactor</span><span class="o">-&gt;</span><span class="n">events</span> <span class="o">=</span> <span class="p">(</span><span class="k">struct</span> <span class="nc">ntyevent</span><span class="o">*</span><span class="p">)</span><span class="n">malloc</span><span class="p">((</span><span class="n">MAX_EPOLL_EVENTS</span><span class="p">)</span> <span class="o">*</span> <span class="k">sizeof</span><span class="p">(</span><span class="k">struct</span> <span class="nc">ntyevent</span><span class="p">));</span>
+	<span class="k">if</span> <span class="p">(</span><span class="n">reactor</span><span class="o">-&gt;</span><span class="n">events</span> <span class="o">==</span> <span class="nb">NULL</span><span class="p">)</span> <span class="p">{</span>
+		<span class="n">printf</span><span class="p">(</span><span class="s">&#34;create epfd in %s err %s</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span> <span class="n">__func__</span><span class="p">,</span> <span class="n">strerror</span><span class="p">(</span><span class="n">errno</span><span class="p">));</span>
+		<span class="n">close</span><span class="p">(</span><span class="n">reactor</span><span class="o">-&gt;</span><span class="n">epfd</span><span class="p">);</span>
+		<span class="k">return</span> <span class="o">-</span><span class="mi">3</span><span class="p">;</span>
+	<span class="p">}</span>
+<span class="p">}</span>
+
+<span class="kt">int</span> <span class="nf">ntyreactor_destory</span><span class="p">(</span><span class="k">struct</span> <span class="nc">ntyreactor</span> <span class="o">*</span><span class="n">reactor</span><span class="p">)</span> <span class="p">{</span>
+
+	<span class="n">close</span><span class="p">(</span><span class="n">reactor</span><span class="o">-&gt;</span><span class="n">epfd</span><span class="p">);</span>
+	<span class="n">free</span><span class="p">(</span><span class="n">reactor</span><span class="o">-&gt;</span><span class="n">events</span><span class="p">);</span>
+
+<span class="p">}</span>
+
+
+
+<span class="kt">int</span> <span class="nf">ntyreactor_addlistener</span><span class="p">(</span><span class="k">struct</span> <span class="nc">ntyreactor</span> <span class="o">*</span><span class="n">reactor</span><span class="p">,</span> <span class="kt">int</span> <span class="n">sockfd</span><span class="p">,</span> <span class="n">NCALLBACK</span> <span class="o">*</span><span class="n">acceptor</span><span class="p">)</span> <span class="p">{</span>
+
+	<span class="k">if</span> <span class="p">(</span><span class="n">reactor</span> <span class="o">==</span> <span class="nb">NULL</span><span class="p">)</span> <span class="k">return</span> <span class="o">-</span><span class="mi">1</span><span class="p">;</span>
+	<span class="k">if</span> <span class="p">(</span><span class="n">reactor</span><span class="o">-&gt;</span><span class="n">events</span> <span class="o">==</span> <span class="nb">NULL</span><span class="p">)</span> <span class="k">return</span> <span class="o">-</span><span class="mi">1</span><span class="p">;</span>
+
+	<span class="n">nty_event_set</span><span class="p">(</span><span class="o">&amp;</span><span class="n">reactor</span><span class="o">-&gt;</span><span class="n">events</span><span class="p">[</span><span class="n">sockfd</span><span class="p">],</span> <span class="n">sockfd</span><span class="p">,</span> <span class="n">acceptor</span><span class="p">,</span> <span class="n">reactor</span><span class="p">);</span>
+	<span class="n">nty_event_add</span><span class="p">(</span><span class="n">reactor</span><span class="o">-&gt;</span><span class="n">epfd</span><span class="p">,</span> <span class="n">EPOLLIN</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">reactor</span><span class="o">-&gt;</span><span class="n">events</span><span class="p">[</span><span class="n">sockfd</span><span class="p">]);</span>
+
+	<span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+
+
+
+<span class="kt">int</span> <span class="nf">ntyreactor_run</span><span class="p">(</span><span class="k">struct</span> <span class="nc">ntyreactor</span> <span class="o">*</span><span class="n">reactor</span><span class="p">)</span> <span class="p">{</span>
+	<span class="k">if</span> <span class="p">(</span><span class="n">reactor</span> <span class="o">==</span> <span class="nb">NULL</span><span class="p">)</span> <span class="k">return</span> <span class="o">-</span><span class="mi">1</span><span class="p">;</span>
+	<span class="k">if</span> <span class="p">(</span><span class="n">reactor</span><span class="o">-&gt;</span><span class="n">epfd</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span> <span class="k">return</span> <span class="o">-</span><span class="mi">1</span><span class="p">;</span>
+	<span class="k">if</span> <span class="p">(</span><span class="n">reactor</span><span class="o">-&gt;</span><span class="n">events</span> <span class="o">==</span> <span class="nb">NULL</span><span class="p">)</span> <span class="k">return</span> <span class="o">-</span><span class="mi">1</span><span class="p">;</span>
+	
+	<span class="k">struct</span> <span class="nc">epoll_event</span> <span class="n">events</span><span class="p">[</span><span class="n">MAX_EPOLL_ITEM</span><span class="p">];</span>
+	
+	<span class="kt">int</span> <span class="n">checkpos</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="n">i</span><span class="p">;</span>
+
+	<span class="k">while</span> <span class="p">(</span><span class="mi">1</span><span class="p">)</span> <span class="p">{</span>
+<span class="cp">#if 0</span><span class="c">
+</span><span class="c">		long now = time(NULL);
+</span><span class="c">		for (i = 0;i &lt; 100;i ++, checkpos ++) {
+</span><span class="c">			if (checkpos == MAX_EPOLL_EVENTS) {
+</span><span class="c">				checkpos = 0;
+</span><span class="c">			}
+</span><span class="c">
+</span><span class="c">			if (reactor-&gt;events[checkpos].status != 1) {
+</span><span class="c">				continue;
+</span><span class="c">			}
+</span><span class="c">
+</span><span class="c">			long duration = now - reactor-&gt;events[checkpos].last_active;
+</span><span class="c">
+</span><span class="c">			if (duration &gt;= 60) {
+</span><span class="c">				close(reactor-&gt;events[checkpos].fd);
+</span><span class="c">				printf(&#34;[fd=%d] timeout\n&#34;, reactor-&gt;events[checkpos].fd);
+</span><span class="c">				nty_event_del(reactor-&gt;epfd, &amp;reactor-&gt;events[checkpos]);
+</span><span class="c">			}
+</span><span class="c">		}
+</span><span class="c"></span><span class="cp">#endif
+</span><span class="cp"></span>
+		<span class="kt">int</span> <span class="n">nready</span> <span class="o">=</span> <span class="n">epoll_wait</span><span class="p">(</span><span class="n">reactor</span><span class="o">-&gt;</span><span class="n">epfd</span><span class="p">,</span> <span class="n">events</span><span class="p">,</span> <span class="n">MAX_EPOLL_ITEM</span><span class="p">,</span> <span class="mi">1000</span><span class="p">);</span>
+		<span class="k">if</span> <span class="p">(</span><span class="n">nready</span> <span class="o">&lt;</span> <span class="mi">0</span><span class="p">)</span> <span class="p">{</span>
+			<span class="n">printf</span><span class="p">(</span><span class="s">&#34;epoll_wait error, exit</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">);</span>
+			<span class="k">continue</span><span class="p">;</span>
+		<span class="p">}</span>
+
+		<span class="k">for</span> <span class="p">(</span><span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span><span class="n">i</span> <span class="o">&lt;</span> <span class="n">nready</span><span class="p">;</span><span class="n">i</span> <span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+
+			<span class="k">struct</span> <span class="nc">ntyevent</span> <span class="o">*</span><span class="n">ev</span> <span class="o">=</span> <span class="p">(</span><span class="k">struct</span> <span class="nc">ntyevent</span><span class="o">*</span><span class="p">)</span><span class="n">events</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">data</span><span class="p">.</span><span class="n">ptr</span><span class="p">;</span>
+
+			<span class="k">if</span> <span class="p">((</span><span class="n">events</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">events</span> <span class="o">&amp;</span> <span class="n">EPOLLIN</span><span class="p">)</span> <span class="o">&amp;&amp;</span> <span class="p">(</span><span class="n">ev</span><span class="o">-&gt;</span><span class="n">events</span> <span class="o">&amp;</span> <span class="n">EPOLLIN</span><span class="p">))</span> <span class="p">{</span>
+				<span class="n">ev</span><span class="o">-&gt;</span><span class="n">callback</span><span class="p">(</span><span class="n">ev</span><span class="o">-&gt;</span><span class="n">fd</span><span class="p">,</span> <span class="n">events</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">events</span><span class="p">,</span> <span class="n">ev</span><span class="o">-&gt;</span><span class="n">arg</span><span class="p">);</span>
+			<span class="p">}</span>
+			<span class="k">if</span> <span class="p">((</span><span class="n">events</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">events</span> <span class="o">&amp;</span> <span class="n">EPOLLOUT</span><span class="p">)</span> <span class="o">&amp;&amp;</span> <span class="p">(</span><span class="n">ev</span><span class="o">-&gt;</span><span class="n">events</span> <span class="o">&amp;</span> <span class="n">EPOLLOUT</span><span class="p">))</span> <span class="p">{</span>
+				<span class="n">ev</span><span class="o">-&gt;</span><span class="n">callback</span><span class="p">(</span><span class="n">ev</span><span class="o">-&gt;</span><span class="n">fd</span><span class="p">,</span> <span class="n">events</span><span class="p">[</span><span class="n">i</span><span class="p">].</span><span class="n">events</span><span class="p">,</span> <span class="n">ev</span><span class="o">-&gt;</span><span class="n">arg</span><span class="p">);</span>
+			<span class="p">}</span>
+			
+		<span class="p">}</span>
+
+	<span class="p">}</span>
+<span class="p">}</span>
+
+<span class="kt">int</span> <span class="nf">main</span><span class="p">(</span><span class="kt">int</span> <span class="n">argc</span><span class="p">,</span> <span class="kt">char</span> <span class="o">*</span><span class="n">argv</span><span class="p">[])</span> <span class="p">{</span>
+
+	<span class="kt">unsigned</span> <span class="kt">short</span> <span class="n">port</span> <span class="o">=</span> <span class="n">SERVER_PORT</span><span class="p">;</span>
+	<span class="k">if</span> <span class="p">(</span><span class="n">argc</span> <span class="o">==</span> <span class="mi">2</span><span class="p">)</span> <span class="p">{</span>
+		<span class="n">port</span> <span class="o">=</span> <span class="n">atoi</span><span class="p">(</span><span class="n">argv</span><span class="p">[</span><span class="mi">1</span><span class="p">]);</span>
+	<span class="p">}</span>
+	<span class="k">struct</span> <span class="nc">ntyreactor</span> <span class="o">*</span><span class="n">reactor</span> <span class="o">=</span> <span class="p">(</span><span class="k">struct</span> <span class="nc">ntyreactor</span><span class="o">*</span><span class="p">)</span><span class="n">malloc</span><span class="p">(</span><span class="k">sizeof</span><span class="p">(</span><span class="k">struct</span> <span class="nc">ntyreactor</span><span class="p">));</span>
+	<span class="n">ntyreactor_init</span><span class="p">(</span><span class="n">reactor</span><span class="p">);</span>
+	
+
+	<span class="kt">int</span> <span class="n">listenfd</span><span class="p">[</span><span class="n">LISTEN_PORT_COUNT</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span><span class="mi">0</span><span class="p">};</span>
+	<span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+
+	<span class="k">for</span> <span class="p">(</span><span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span><span class="n">i</span> <span class="o">&lt;</span> <span class="n">LISTEN_PORT_COUNT</span><span class="p">;</span><span class="n">i</span> <span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+		<span class="n">listenfd</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">init_sock</span><span class="p">(</span><span class="n">port</span><span class="o">+</span><span class="n">i</span><span class="p">);</span>
+		<span class="n">ntyreactor_addlistener</span><span class="p">(</span><span class="n">reactor</span><span class="p">,</span> <span class="n">listenfd</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">accept_cb</span><span class="p">);</span>
+	<span class="p">}</span>
+	
+	<span class="n">ntyreactor_run</span><span class="p">(</span><span class="n">reactor</span><span class="p">);</span>
+
+	<span class="n">ntyreactor_destory</span><span class="p">(</span><span class="n">reactor</span><span class="p">);</span>
+
+	<span class="k">for</span> <span class="p">(</span><span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span><span class="n">i</span> <span class="o">&lt;</span> <span class="n">LISTEN_PORT_COUNT</span><span class="p">;</span><span class="n">i</span> <span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+		<span class="n">close</span><span class="p">(</span><span class="n">listenfd</span><span class="p">[</span><span class="n">i</span><span class="p">]);</span>
+	<span class="p">}</span>
+	
+
+	<span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+<span class="p">}</span>
+
+</code></pre></div>
+</section>
+
+
+    <footer class="article-footer">
+    
+    <section class="article-tags">
+        
+            <a href="/tags/%E6%9C%8D%E5%8A%A1%E5%99%A8/">服务器</a>
+        
+    </section>
+
+
+    
+    <section class="article-copyright">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-copyright" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="12" r="9" />
+  <path d="M14.5 9a3.5 4 0 1 0 0 6" />
+</svg>
+
+
+
+        <span>Licensed under CC BY-NC-SA 4.0</span>
+    </section>
+    </footer>
+
+
+    
+</article>
+
+    <aside class="related-contents--wrapper">
+    
+    
+        <h2 class="section-title">Related contents</h2>
+        <div class="related-contents">
+            <div class="flex article-list--tile">
+                
+                    
+<article class="has-image">
+    <a href="/p/%E5%AE%9A%E6%97%B6%E5%99%A8/">
+        
+        
+            <div class="article-image">
+                <img src="/p/%E5%AE%9A%E6%97%B6%E5%99%A8/427.db3304a60891771936ed0e4c79ecb428_hud2c5f23b59d3c6c6e1b3f4674af3ff5b_6078631_250x150_fill_q75_box_smart1.jpg" 
+                        width="250" 
+                        height="150" 
+                        loading="lazy" 
+                        data-key="定时器" 
+                        data-hash="md5-2zMEpgiRdxk27Q5Meey0KA==">
+                
+            </div>
+        
+
+        <div class="article-details">
+            <h2 class="article-title">定时器</h2>
+        </div>
+    </a>
+</article>
+                
+                    
+<article class="has-image">
+    <a href="/p/%E7%AE%80%E6%98%93tcp%E6%9C%8D%E5%8A%A1%E5%99%A8/">
+        
+        
+            <div class="article-image">
+                <img src="/p/%E7%AE%80%E6%98%93tcp%E6%9C%8D%E5%8A%A1%E5%99%A8/029.155943df5a1ed5ef7aeb3d74a37bef67_hu5f7dae7e78ac97b0b045f4b1159a4d54_14023957_250x150_fill_q75_box_smart1.jpg" 
+                        width="250" 
+                        height="150" 
+                        loading="lazy" 
+                        data-key="简易Tcp服务器" 
+                        data-hash="md5-FVlD31oe1e966z10o3vvZw==">
+                
+            </div>
+        
+
+        <div class="article-details">
+            <h2 class="article-title">简易Tcp服务器</h2>
+        </div>
+    </a>
+</article>
+                
+                    
+<article class="has-image">
+    <a href="/p/dns%E5%8D%8F%E8%AE%AE%E8%A7%A3%E6%9E%90/">
+        
+        
+            <div class="article-image">
+                <img src="/p/dns%E5%8D%8F%E8%AE%AE%E8%A7%A3%E6%9E%90/081.eec9a01e1f368bff905b9f4613a97d42_hu7f5bc23efa6e31f2e831fa0dcdad6471_5540510_250x150_fill_q75_box_smart1.jpg" 
+                        width="250" 
+                        height="150" 
+                        loading="lazy" 
+                        data-key="DNS协议解析" 
+                        data-hash="md5-7smgHh82i/&#43;QW59GE6l9Qg==">
+                
+            </div>
+        
+
+        <div class="article-details">
+            <h2 class="article-title">DNS协议解析</h2>
+        </div>
+    </a>
+</article>
+                
+                    
+<article class="has-image">
+    <a href="/p/%E5%86%85%E5%AD%98%E6%B1%A0/">
+        
+        
+            <div class="article-image">
+                <img src="/p/%E5%86%85%E5%AD%98%E6%B1%A0/244.71de31cc6652d9902ea8c651f0059650_hud068d333fa339d76c3f1e66a3f8bf604_8126422_250x150_fill_q75_box_smart1.jpg" 
+                        width="250" 
+                        height="150" 
+                        loading="lazy" 
+                        data-key="内存池" 
+                        data-hash="md5-cd4xzGZS2ZAuqMZR8AWWUA==">
+                
+            </div>
+        
+
+        <div class="article-details">
+            <h2 class="article-title">内存池</h2>
+        </div>
+    </a>
+</article>
+                
+                    
+<article class="has-image">
+    <a href="/p/%E7%BA%BF%E7%A8%8B%E6%B1%A0/">
+        
+        
+            <div class="article-image">
+                <img src="/p/%E7%BA%BF%E7%A8%8B%E6%B1%A0/240.1d66d2f2f5cf2eed0d60df1bd2c599c2_huc6553c3d943592fc8492e4a8a4385797_5666304_250x150_fill_q75_box_smart1.jpg" 
+                        width="250" 
+                        height="150" 
+                        loading="lazy" 
+                        data-key="线程池" 
+                        data-hash="md5-HWbS8vXPLu0NYN8b0sWZwg==">
+                
+            </div>
+        
+
+        <div class="article-details">
+            <h2 class="article-title">线程池</h2>
+        </div>
+    </a>
+</article>
+                
+            </div>
+        </div>
+    
+</aside>
+
+     
+     
+        
+    <div class="disqus-container">
+    <div id="disqus_thread"></div>
+<script type="application/javascript">
+    var disqus_config = function () {
+    
+    
+    
+    };
+    (function() {
+        if (["localhost", "127.0.0.1"].indexOf(window.location.hostname) != -1) {
+            document.getElementById('disqus_thread').innerHTML = 'Disqus comments not available by default when the website is previewed locally.';
+            return;
+        }
+        var d = document, s = d.createElement('script'); s.async = true;
+        s.src = '//' + "hugo-theme-stack" + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="https://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+</div>
+
+<style>
+    .disqus-container {
+        background-color: var(--card-background);
+        border-radius: var(--card-border-radius);
+        box-shadow: var(--shadow-l1);
+        padding: var(--card-padding);
+    }
+</style>
+
+<script>
+    window.addEventListener('onColorSchemeChange', (e) => {
+        if (DISQUS) {
+            DISQUS.reset({
+                reload: true
+            });
+        }
+    })
+</script>
+
+    
+
+    <footer class="site-footer">
+    <section class="copyright">
+        &copy; 
+        
+            2020 - 
+        
+        2021 Gao&#39;s happy day
+    </section>
+    
+    <section class="powerby">
+        Built with <a href="https://gohugo.io/" target="_blank" rel="noopener">Hugo</a> <br />
+        Theme <b><a href="https://github.com/CaiJimmy/hugo-theme-stack" target="_blank" rel="noopener" data-version="3.2.0">Stack</a></b> designed by <a href="https://jimmycai.com" target="_blank" rel="noopener">Jimmy</a>
+    </section>
+</footer>
+
+
+    
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+    
+    <div class="pswp__bg"></div>
+
+    
+    <div class="pswp__scroll-wrap">
+
+        
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+
+        
+        <div class="pswp__ui pswp__ui--hidden">
+
+            <div class="pswp__top-bar">
+
+                
+
+                <div class="pswp__counter"></div>
+
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+
+                <button class="pswp__button pswp__button--share" title="Share"></button>
+
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+
+                
+                
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                        <div class="pswp__preloader__cut">
+                            <div class="pswp__preloader__donut"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div>
+            </div>
+
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div><script 
+                src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js"integrity="sha256-ePwmChbbvXbsO02lbM3HoHbSHTHFAeChekF1xKJdleo="crossorigin="anonymous"
+                defer="true"
+                >
+            </script><script 
+                src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js"integrity="sha256-UKkzOn/w1mBxRmLLGrSeyB4e1xbrp4xylgAWb3M42pU="crossorigin="anonymous"
+                defer="true"
+                >
+            </script><link 
+                rel="stylesheet" 
+                href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.css"integrity="sha256-c0uckgykQ9v5k&#43;IqViZOZKc47Jn7KQil4/MP3ySA3F8="crossorigin="anonymous"
+            ><link 
+                rel="stylesheet" 
+                href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.css"integrity="sha256-SBLU4vv6CA6lHsZ1XyTdhyjJxCjPif/TRkjnsyGAGnE="crossorigin="anonymous"
+            >
+
+            </main>
+    
+        <aside class="sidebar right-sidebar sticky">
+            <section class="widget archives">
+                <div class="widget-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-hash" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <line x1="5" y1="9" x2="19" y2="9" />
+  <line x1="5" y1="15" x2="19" y2="15" />
+  <line x1="11" y1="4" x2="7" y2="20" />
+  <line x1="17" y1="4" x2="13" y2="20" />
+</svg>
+
+
+
+                </div>
+                <h2 class="widget-title section-title">Table of contents</h2>
+                
+                <div class="widget--toc">
+                    <nav id="TableOfContents">
+  <ol>
+    <li><a href="#io网络模型"><strong>IO网络模型</strong></a>
+      <ol>
+        <li><a href="#阻塞io-blocking-io"><strong>阻塞IO （Blocking IO）</strong></a></li>
+        <li><a href="#非阻塞io-non-blocking-io"><strong>非阻塞IO （Non-Blocking IO）</strong></a></li>
+        <li><a href="#多路复用io-io-multiplexing"><strong>多路复用IO （IO Multiplexing）</strong></a>
+          <ol>
+            <li><a href="#selectpoll"><strong>select/poll</strong></a></li>
+            <li><a href="#epoll"><strong>epoll</strong></a></li>
+          </ol>
+        </li>
+        <li><a href="#异步-ioasynchronous-io"><strong>异步 IO（Asynchronous I/O）</strong></a></li>
+        <li><a href="#信号驱动-iosignal-driven-io-sigio"><strong>信号驱动 IO（signal driven I/O， SIGIO）</strong></a></li>
+      </ol>
+    </li>
+    <li><a href="#服务器模型"><strong>服务器模型</strong></a>
+      <ol>
+        <li><a href="#reactor"><strong>Reactor</strong></a></li>
+        <li><a href="#proactor"><strong>Proactor</strong></a></li>
+      </ol>
+    </li>
+    <li><a href="#并发量"><strong>并发量</strong></a>
+      <ol>
+        <li><a href="#配置"><strong>配置：</strong></a></li>
+        <li><a href="#io"><strong>IO：</strong></a></li>
+      </ol>
+    </li>
+    <li><a href="#实现reactor-epoll"><strong>实现（Reactor-Epoll）</strong></a></li>
+    <li><a href="#实现reactor-epoll的百万并发"><strong>实现（Reactor-Epoll的百万并发）</strong></a></li>
+  </ol>
+</nav>
+                </div>
+            </section>
+        </aside>
+    
+
+        </div>
+        <script 
+                src="https://cdn.jsdelivr.net/npm/node-vibrant@3.1.5/dist/vibrant.min.js"integrity="sha256-5NovOZc4iwiAWTYIFiIM7DxKUXKWvpVEuMEPLzcm5/g="crossorigin="anonymous"
+                defer="false"
+                >
+            </script><script type="text/javascript" src="/ts/main.js" defer></script>
+<script>
+    (function () {
+        const customFont = document.createElement('link');
+        customFont.href = "https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap";
+
+        customFont.type = "text/css";
+        customFont.rel = "stylesheet";
+
+        document.head.appendChild(customFont);
+    }());
+</script>
+
+    </body>
+</html>
