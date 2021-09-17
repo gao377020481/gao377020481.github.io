@@ -1,16 +1,33 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>服务器 on Gao&#39;s happy day</title>
+    <title>服务器 on 真正的大师，永远都怀着一颗学徒的心。</title>
     <link>https://gao377020481.github.io/tags/%E6%9C%8D%E5%8A%A1%E5%99%A8/</link>
-    <description>Recent content in 服务器 on Gao&#39;s happy day</description>
+    <description>Recent content in 服务器 on 真正的大师，永远都怀着一颗学徒的心。</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Thu, 10 Sep 2020 00:00:00 +0000</lastBuildDate><atom:link href="https://gao377020481.github.io/tags/%E6%9C%8D%E5%8A%A1%E5%99%A8/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Fri, 24 Apr 2020 00:00:00 +0000</lastBuildDate><atom:link href="https://gao377020481.github.io/tags/%E6%9C%8D%E5%8A%A1%E5%99%A8/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Reactor</title>
+      <link>https://gao377020481.github.io/p/reactor/</link>
+      <pubDate>Fri, 24 Apr 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://gao377020481.github.io/p/reactor/</guid>
+      <description>Reactor  组成：⾮阻塞的io + io多路复⽤； 特征：基于事件循环，以事件驱动或者事件回调的⽅式来实现业务逻辑； 表述：将连接的io处理转化为事件处理；  单Reactor 
+代表：redis 内存数据库 操作redis当中的数据结构 redis 6.0 多线程
+单reactor模型 + 任务队列 + 线程池 
+代表：skynet
+多Reactor 
+应⽤： memcached accept(fd, backlog) one eventloop per thread
+ 多进程应用  
+应⽤：nginx
+多reactor + 消息队列 + 线程池 </description>
+    </item>
+    
     <item>
       <title>定时器</title>
       <link>https://gao377020481.github.io/p/%E5%AE%9A%E6%97%B6%E5%99%A8/</link>
-      <pubDate>Thu, 10 Sep 2020 00:00:00 +0000</pubDate>
+      <pubDate>Fri, 10 Apr 2020 00:00:00 +0000</pubDate>
       
       <guid>https://gao377020481.github.io/p/%E5%AE%9A%E6%97%B6%E5%99%A8/</guid>
       <description>定时器 定时器作用很多，常见于心跳检测，冷却等等 实现时区别主要在于定时器队列的管控（排序）
@@ -23,20 +40,9 @@
     </item>
     
     <item>
-      <title>简易Tcp服务器</title>
-      <link>https://gao377020481.github.io/p/%E7%AE%80%E6%98%93tcp%E6%9C%8D%E5%8A%A1%E5%99%A8/</link>
-      <pubDate>Thu, 10 Sep 2020 00:00:00 +0000</pubDate>
-      
-      <guid>https://gao377020481.github.io/p/%E7%AE%80%E6%98%93tcp%E6%9C%8D%E5%8A%A1%E5%99%A8/</guid>
-      <description>Tcp服务器 一请求一线程 首先说明问题： 已请求一线程能承载的请求数量极少，posix标准线程8M，请求数量多时极其占用内存
-简单实现 实现一请求一线程很简单：
-#define BUFFER_SIZE 1024 void *client_routine(void *arg) { int clientfd = *(int *) arg; while(1) { char buffer[BUFFER_SIZE] = {0}; int len = recv(clientfd, buffer, BUFFER_SIZE, 0); if(len &amp;lt;0 ) { close(clientfd); break; } else if(len ==0 ) { close(clientfd); break; } else{ printf(&amp;#34;Recv: %s, %d btye(s) from %d\n&amp;#34;, buffer, len, clientfd); } } } int main(int argc, char *argv[]) { if(argc &amp;lt;2) return -1; int port = atoi(argv[1]); int sockfd = socket(AF_INET, SOCK_STREAM, 0); struct sockaddr_in addr; memset(&amp;amp;addr, 0, sizeof(struct sockaddr_in)); addr.</description>
-    </item>
-    
-    <item>
       <title>进阶TCP服务器</title>
       <link>https://gao377020481.github.io/p/%E8%BF%9B%E9%98%B6tcp%E6%9C%8D%E5%8A%A1%E5%99%A8/</link>
-      <pubDate>Thu, 10 Sep 2020 00:00:00 +0000</pubDate>
+      <pubDate>Fri, 03 Apr 2020 00:00:00 +0000</pubDate>
       
       <guid>https://gao377020481.github.io/p/%E8%BF%9B%E9%98%B6tcp%E6%9C%8D%E5%8A%A1%E5%99%A8/</guid>
       <description>进阶TCP服务器 该模块涉及TCP服务器常见点：并发量、IO模型
@@ -52,6 +58,17 @@ select/poll select和poll很相似，在检测IO时间的时候都需要遍历�
 select 本质上是通过设置或检查存放fd标志位的数据结构进行下一步处理。 这带来缺点： 单个进程可监视的fd数量被限制，即能监听端口的数量有限 单个进程所能打开的最大连接数有FD_SETSIZE宏定义，其大小是32个整数的大小（在32位的机器上，大小就是3232，同理64位机器上FD_SETSIZE为3264），当然我们可以对进行修改，然后重新编译内核，但是性能可能会受到影响，这需要进一步的测试 一般该数和系统内存关系很大，具体数目可以cat /proc/sys/fs/file-max察看。32位机默认1024个，64位默认2048。
 当socket较多时，每次select都要通过遍历FD_SETSIZE个socket，不管是否活跃，这会浪费很多CPU时间。如果能给 socket 注册某个回调函数，当他们活跃时，自动完成相关操作，即可避免轮询，这就是epoll与kqueue。
 select 调用流程</description>
+    </item>
+    
+    <item>
+      <title>简易Tcp服务器</title>
+      <link>https://gao377020481.github.io/p/%E7%AE%80%E6%98%93tcp%E6%9C%8D%E5%8A%A1%E5%99%A8/</link>
+      <pubDate>Thu, 20 Feb 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://gao377020481.github.io/p/%E7%AE%80%E6%98%93tcp%E6%9C%8D%E5%8A%A1%E5%99%A8/</guid>
+      <description>Tcp服务器 一请求一线程 首先说明问题： 已请求一线程能承载的请求数量极少，posix标准线程8M，请求数量多时极其占用内存
+简单实现 实现一请求一线程很简单：
+#define BUFFER_SIZE 1024 void *client_routine(void *arg) { int clientfd = *(int *) arg; while(1) { char buffer[BUFFER_SIZE] = {0}; int len = recv(clientfd, buffer, BUFFER_SIZE, 0); if(len &amp;lt;0 ) { close(clientfd); break; } else if(len ==0 ) { close(clientfd); break; } else{ printf(&amp;#34;Recv: %s, %d btye(s) from %d\n&amp;#34;, buffer, len, clientfd); } } } int main(int argc, char *argv[]) { if(argc &amp;lt;2) return -1; int port = atoi(argv[1]); int sockfd = socket(AF_INET, SOCK_STREAM, 0); struct sockaddr_in addr; memset(&amp;amp;addr, 0, sizeof(struct sockaddr_in)); addr.</description>
     </item>
     
   </channel>

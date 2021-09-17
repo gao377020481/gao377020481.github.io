@@ -1,16 +1,16 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Unix on Gao&#39;s happy day</title>
+    <title>Unix on 真正的大师，永远都怀着一颗学徒的心。</title>
     <link>https://gao377020481.github.io/categories/unix/</link>
-    <description>Recent content in Unix on Gao&#39;s happy day</description>
+    <description>Recent content in Unix on 真正的大师，永远都怀着一颗学徒的心。</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Thu, 10 Sep 2020 00:00:00 +0000</lastBuildDate><atom:link href="https://gao377020481.github.io/categories/unix/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Sat, 01 Feb 2020 00:00:00 +0000</lastBuildDate><atom:link href="https://gao377020481.github.io/categories/unix/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>ubuntu-server虚拟机配置</title>
       <link>https://gao377020481.github.io/p/ubuntu-server%E8%99%9A%E6%8B%9F%E6%9C%BA%E9%85%8D%E7%BD%AE/</link>
-      <pubDate>Thu, 10 Sep 2020 00:00:00 +0000</pubDate>
+      <pubDate>Sat, 01 Feb 2020 00:00:00 +0000</pubDate>
       
       <guid>https://gao377020481.github.io/p/ubuntu-server%E8%99%9A%E6%8B%9F%E6%9C%BA%E9%85%8D%E7%BD%AE/</guid>
       <description>ubuntu-server虚拟机配置 Sh配置 安装完ubuntu后先配置sh这样可以通过xshell连接 只需要：

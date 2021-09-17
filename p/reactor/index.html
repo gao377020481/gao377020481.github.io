@@ -1,0 +1,547 @@
+<!DOCTYPE html>
+<html lang="en-us">
+    <head><meta charset='utf-8'>
+<meta name='viewport' content='width=device-width, initial-scale=1'><meta name='description' content='基础知识'><title>Reactor</title>
+
+<link rel='canonical' href='https://gao377020481.github.io/p/reactor/'>
+
+<link rel="stylesheet" href="/scss/style.min.css"><meta property='og:title' content='Reactor'>
+<meta property='og:description' content='基础知识'>
+<meta property='og:url' content='https://gao377020481.github.io/p/reactor/'>
+<meta property='og:site_name' content='真正的大师，永远都怀着一颗学徒的心。'>
+<meta property='og:type' content='article'><meta property='article:section' content='Post' /><meta property='article:tag' content='服务器' /><meta property='article:published_time' content='2020-04-24T00:00:00&#43;00:00'/><meta property='article:modified_time' content='2020-04-24T00:00:00&#43;00:00'/><meta property='og:image' content='https://gao377020481.github.io/p/reactor/516.jpg' />
+<meta name="twitter:title" content="Reactor">
+<meta name="twitter:description" content="基础知识"><meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:image" content='https://gao377020481.github.io/p/reactor/516.jpg' />
+    </head>
+    <body class="
+    article-page has-toc
+">
+    <script>
+        (function() {
+            const colorSchemeKey = 'StackColorScheme';
+            if(!localStorage.getItem(colorSchemeKey)){
+                localStorage.setItem(colorSchemeKey, "auto");
+            }
+        })();
+    </script><script>
+    (function() {
+        const colorSchemeKey = 'StackColorScheme';
+        const colorSchemeItem = localStorage.getItem(colorSchemeKey);
+        const supportDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches === true;
+
+        if (colorSchemeItem == 'dark' || colorSchemeItem === 'auto' && supportDarkMode) {
+            
+
+            document.documentElement.dataset.scheme = 'dark';
+        } else {
+            document.documentElement.dataset.scheme = 'light';
+        }
+    })();
+</script>
+<div class="container main-container flex 
+    
+        extended
+    
+">
+    
+        <div id="article-toolbar">
+            <a href="https://gao377020481.github.io" class="back-home">
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-chevron-left" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <polyline points="15 6 9 12 15 18" />
+</svg>
+
+
+
+                <span>Back</span>
+            </a>
+        </div>
+    
+<main class="main full-width">
+    <article class="has-image main-article">
+    <header class="article-header">
+        <div class="article-image">
+            <a href="/p/reactor/">
+                <img src="/p/reactor/516_huf7159154d5ef9e1554acf4947cd6a0ec_16113861_800x0_resize_q75_box.jpg"
+                        srcset="/p/reactor/516_huf7159154d5ef9e1554acf4947cd6a0ec_16113861_800x0_resize_q75_box.jpg 800w, /p/reactor/516_huf7159154d5ef9e1554acf4947cd6a0ec_16113861_1600x0_resize_q75_box.jpg 1600w"
+                        width="800" 
+                        height="1200" 
+                        loading="lazy"
+                        alt="Featured image of post Reactor" />
+                
+            </a>
+        </div>
+    
+
+    <div class="article-details">
+    
+    <header class="article-category">
+        
+            <a href="/categories/%E7%BD%91%E7%BB%9C%E7%BC%96%E7%A8%8B/" style="background-color: #2a9d8f; color: #fff;">
+                网络编程
+            </a>
+        
+    </header>
+    
+
+    <h2 class="article-title">
+        <a href="/p/reactor/">Reactor</a>
+    </h2>
+
+    
+    <h3 class="article-subtitle">
+        基础知识
+    </h3>
+    
+
+    
+    <footer class="article-time">
+        
+            <div>
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-calendar-time" width="56" height="56" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <path d="M11.795 21h-6.795a2 2 0 0 1 -2 -2v-12a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v4" />
+  <circle cx="18" cy="18" r="4" />
+  <path d="M15 3v4" />
+  <path d="M7 3v4" />
+  <path d="M3 11h16" />
+  <path d="M18 16.496v1.504l1 1" />
+</svg>
+                <time class="article-time--published">Apr 24, 2020</time>
+            </div>
+        
+
+        
+            <div>
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="12" r="9" />
+  <polyline points="12 7 12 12 15 15" />
+</svg>
+
+
+
+                <time class="article-time--reading">
+                    1 minute read
+                </time>
+            </div>
+        
+    </footer>
+    
+</div>
+</header>
+
+    <section class="article-content">
+    <h1 id="reactor">Reactor</h1>
+<ul>
+<li>组成：⾮阻塞的io + io多路复⽤；</li>
+<li>特征：基于事件循环，以事件驱动或者事件回调的⽅式来实现业务逻辑；</li>
+<li>表述：将连接的io处理转化为事件处理；</li>
+</ul>
+<h2 id="单reactor">单Reactor</h2>
+<p><figure 
+	>
+	<a href="/post/reactor/single_reactor.jpg" >
+		<img src="/post/reactor/single_reactor.jpg"
+			
+			
+			
+			loading="lazy"
+			>
+	</a>
+	
+</figure></p>
+<p>代表：redis 内存数据库 操作redis当中的数据结构
+redis 6.0 多线程</p>
+<h2 id="单reactor模型--任务队列--线程池">单reactor模型 + 任务队列 + 线程池</h2>
+<p><figure 
+	>
+	<a href="/post/reactor/single_reactor2.jpg" >
+		<img src="/post/reactor/single_reactor2.jpg"
+			
+			
+			
+			loading="lazy"
+			>
+	</a>
+	
+</figure></p>
+<p>代表：skynet</p>
+<h2 id="多reactor">多Reactor</h2>
+<p><figure 
+	>
+	<a href="/post/reactor/multi_reactor.jpg" >
+		<img src="/post/reactor/multi_reactor.jpg"
+			
+			
+			
+			loading="lazy"
+			>
+	</a>
+	
+</figure></p>
+<p>应⽤： memcached accept(fd, backlog) one eventloop per thread</p>
+<ul>
+<li>多进程应用</li>
+</ul>
+<p><figure 
+	>
+	<a href="/post/reactor/multi_reactor2.jpg" >
+		<img src="/post/reactor/multi_reactor2.jpg"
+			
+			
+			
+			loading="lazy"
+			>
+	</a>
+	
+</figure></p>
+<p>应⽤：nginx</p>
+<h2 id="多reactor--消息队列--线程池">多reactor + 消息队列 + 线程池</h2>
+
+</section>
+
+
+    <footer class="article-footer">
+    
+    <section class="article-tags">
+        
+            <a href="/tags/%E6%9C%8D%E5%8A%A1%E5%99%A8/">服务器</a>
+        
+    </section>
+
+
+    
+    <section class="article-copyright">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-copyright" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="12" r="9" />
+  <path d="M14.5 9a3.5 4 0 1 0 0 6" />
+</svg>
+
+
+
+        <span>Licensed under CC BY-NC-SA 4.0</span>
+    </section>
+    </footer>
+
+
+    
+</article>
+
+    <aside class="related-contents--wrapper">
+    
+    
+        <h2 class="section-title">Related contents</h2>
+        <div class="related-contents">
+            <div class="flex article-list--tile">
+                
+                    
+<article class="has-image">
+    <a href="/p/%E5%AE%9A%E6%97%B6%E5%99%A8/">
+        
+        
+            <div class="article-image">
+                <img src="/p/%E5%AE%9A%E6%97%B6%E5%99%A8/427.db3304a60891771936ed0e4c79ecb428_hud2c5f23b59d3c6c6e1b3f4674af3ff5b_6078631_250x150_fill_q75_box_smart1.jpg" 
+                        width="250" 
+                        height="150" 
+                        loading="lazy" 
+                        data-key="定时器" 
+                        data-hash="md5-2zMEpgiRdxk27Q5Meey0KA==">
+                
+            </div>
+        
+
+        <div class="article-details">
+            <h2 class="article-title">定时器</h2>
+        </div>
+    </a>
+</article>
+                
+                    
+<article class="has-image">
+    <a href="/p/%E8%BF%9B%E9%98%B6tcp%E6%9C%8D%E5%8A%A1%E5%99%A8/">
+        
+        
+            <div class="article-image">
+                <img src="/p/%E8%BF%9B%E9%98%B6tcp%E6%9C%8D%E5%8A%A1%E5%99%A8/406.63c9b3715916c67136f4f1fae77fcd3a_huf20403e8966ebf3b89c1d187871e8eda_4587138_250x150_fill_q75_box_smart1.jpg" 
+                        width="250" 
+                        height="150" 
+                        loading="lazy" 
+                        data-key="进阶TCP服务器" 
+                        data-hash="md5-Y8mzcVkWxnE29PH653/NOg==">
+                
+            </div>
+        
+
+        <div class="article-details">
+            <h2 class="article-title">进阶TCP服务器</h2>
+        </div>
+    </a>
+</article>
+                
+                    
+<article class="has-image">
+    <a href="/p/%E7%AE%80%E6%98%93tcp%E6%9C%8D%E5%8A%A1%E5%99%A8/">
+        
+        
+            <div class="article-image">
+                <img src="/p/%E7%AE%80%E6%98%93tcp%E6%9C%8D%E5%8A%A1%E5%99%A8/029.155943df5a1ed5ef7aeb3d74a37bef67_hu5f7dae7e78ac97b0b045f4b1159a4d54_14023957_250x150_fill_q75_box_smart1.jpg" 
+                        width="250" 
+                        height="150" 
+                        loading="lazy" 
+                        data-key="简易Tcp服务器" 
+                        data-hash="md5-FVlD31oe1e966z10o3vvZw==">
+                
+            </div>
+        
+
+        <div class="article-details">
+            <h2 class="article-title">简易Tcp服务器</h2>
+        </div>
+    </a>
+</article>
+                
+                    
+<article class="has-image">
+    <a href="/p/%E5%BC%82%E5%B8%B8%E5%A4%84%E7%90%86/">
+        
+        
+            <div class="article-image">
+                <img src="/p/%E5%BC%82%E5%B8%B8%E5%A4%84%E7%90%86/529.75a4a43804d720cf5c3ca3c1e9f66709_huc139e517d88aa84bf66b7ba5d5d134e7_26286259_250x150_fill_q75_box_smart1.jpg" 
+                        width="250" 
+                        height="150" 
+                        loading="lazy" 
+                        data-key="异常处理" 
+                        data-hash="md5-daSkOATXIM9cPKPB6fZnCQ==">
+                
+            </div>
+        
+
+        <div class="article-details">
+            <h2 class="article-title">异常处理</h2>
+        </div>
+    </a>
+</article>
+                
+                    
+<article class="has-image">
+    <a href="/p/%E7%BA%BF%E7%A8%8B%E6%B1%A0%E8%BF%9B%E9%98%B6%E7%89%88/">
+        
+        
+            <div class="article-image">
+                <img src="/p/%E7%BA%BF%E7%A8%8B%E6%B1%A0%E8%BF%9B%E9%98%B6%E7%89%88/241.67ff17709516aab444e7c867cfe2b735_hudd714e7c3305b4c239dc02d266d283b9_7211866_250x150_fill_q75_box_smart1.jpg" 
+                        width="250" 
+                        height="150" 
+                        loading="lazy" 
+                        data-key="线程池进阶版" 
+                        data-hash="md5-Z/8XcJUWqrRE58hnz&#43;K3NQ==">
+                
+            </div>
+        
+
+        <div class="article-details">
+            <h2 class="article-title">线程池进阶版</h2>
+        </div>
+    </a>
+</article>
+                
+            </div>
+        </div>
+    
+</aside>
+
+     
+     
+        
+    <div class="disqus-container">
+    <div id="disqus_thread"></div>
+<script type="application/javascript">
+    var disqus_config = function () {
+    
+    
+    
+    };
+    (function() {
+        if (["localhost", "127.0.0.1"].indexOf(window.location.hostname) != -1) {
+            document.getElementById('disqus_thread').innerHTML = 'Disqus comments not available by default when the website is previewed locally.';
+            return;
+        }
+        var d = document, s = d.createElement('script'); s.async = true;
+        s.src = '//' + "hugo-theme-stack" + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="https://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+</div>
+
+<style>
+    .disqus-container {
+        background-color: var(--card-background);
+        border-radius: var(--card-border-radius);
+        box-shadow: var(--shadow-l1);
+        padding: var(--card-padding);
+    }
+</style>
+
+<script>
+    window.addEventListener('onColorSchemeChange', (e) => {
+        if (DISQUS) {
+            DISQUS.reset({
+                reload: true
+            });
+        }
+    })
+</script>
+
+    
+
+    <footer class="site-footer">
+    <section class="copyright">
+        &copy; 
+        
+            2020 - 
+        
+        2021 真正的大师，永远都怀着一颗学徒的心。
+    </section>
+    
+    <section class="powerby">
+        Built with <a href="https://gohugo.io/" target="_blank" rel="noopener">Hugo</a> <br />
+        Theme <b><a href="https://github.com/CaiJimmy/hugo-theme-stack" target="_blank" rel="noopener" data-version="3.2.0">Stack</a></b> designed by <a href="https://jimmycai.com" target="_blank" rel="noopener">Jimmy</a>
+    </section>
+</footer>
+
+
+    
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+    
+    <div class="pswp__bg"></div>
+
+    
+    <div class="pswp__scroll-wrap">
+
+        
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+
+        
+        <div class="pswp__ui pswp__ui--hidden">
+
+            <div class="pswp__top-bar">
+
+                
+
+                <div class="pswp__counter"></div>
+
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+
+                <button class="pswp__button pswp__button--share" title="Share"></button>
+
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+
+                
+                
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                        <div class="pswp__preloader__cut">
+                            <div class="pswp__preloader__donut"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div>
+            </div>
+
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div><script 
+                src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js"integrity="sha256-ePwmChbbvXbsO02lbM3HoHbSHTHFAeChekF1xKJdleo="crossorigin="anonymous"
+                defer="true"
+                >
+            </script><script 
+                src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js"integrity="sha256-UKkzOn/w1mBxRmLLGrSeyB4e1xbrp4xylgAWb3M42pU="crossorigin="anonymous"
+                defer="true"
+                >
+            </script><link 
+                rel="stylesheet" 
+                href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.css"integrity="sha256-c0uckgykQ9v5k&#43;IqViZOZKc47Jn7KQil4/MP3ySA3F8="crossorigin="anonymous"
+            ><link 
+                rel="stylesheet" 
+                href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.css"integrity="sha256-SBLU4vv6CA6lHsZ1XyTdhyjJxCjPif/TRkjnsyGAGnE="crossorigin="anonymous"
+            >
+
+            </main>
+    
+        <aside class="sidebar right-sidebar sticky">
+            <section class="widget archives">
+                <div class="widget-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-hash" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <line x1="5" y1="9" x2="19" y2="9" />
+  <line x1="5" y1="15" x2="19" y2="15" />
+  <line x1="11" y1="4" x2="7" y2="20" />
+  <line x1="17" y1="4" x2="13" y2="20" />
+</svg>
+
+
+
+                </div>
+                <h2 class="widget-title section-title">Table of contents</h2>
+                
+                <div class="widget--toc">
+                    <nav id="TableOfContents">
+  <ol>
+    <li><a href="#单reactor">单Reactor</a></li>
+    <li><a href="#单reactor模型--任务队列--线程池">单reactor模型 + 任务队列 + 线程池</a></li>
+    <li><a href="#多reactor">多Reactor</a></li>
+    <li><a href="#多reactor--消息队列--线程池">多reactor + 消息队列 + 线程池</a></li>
+  </ol>
+</nav>
+                </div>
+            </section>
+        </aside>
+    
+
+        </div>
+        <script 
+                src="https://cdn.jsdelivr.net/npm/node-vibrant@3.1.5/dist/vibrant.min.js"integrity="sha256-5NovOZc4iwiAWTYIFiIM7DxKUXKWvpVEuMEPLzcm5/g="crossorigin="anonymous"
+                defer="false"
+                >
+            </script><script type="text/javascript" src="/ts/main.js" defer></script>
+<script>
+    (function () {
+        const customFont = document.createElement('link');
+        customFont.href = "https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap";
+
+        customFont.type = "text/css";
+        customFont.rel = "stylesheet";
+
+        document.head.appendChild(customFont);
+    }());
+</script>
+
+    </body>
+</html>

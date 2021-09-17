@@ -1,16 +1,32 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>协议 on Gao&#39;s happy day</title>
+    <title>协议 on 真正的大师，永远都怀着一颗学徒的心。</title>
     <link>https://gao377020481.github.io/tags/%E5%8D%8F%E8%AE%AE/</link>
-    <description>Recent content in 协议 on Gao&#39;s happy day</description>
+    <description>Recent content in 协议 on 真正的大师，永远都怀着一颗学徒的心。</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Thu, 10 Sep 2020 00:00:00 +0000</lastBuildDate><atom:link href="https://gao377020481.github.io/tags/%E5%8D%8F%E8%AE%AE/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Sun, 01 Mar 2020 00:00:00 +0000</lastBuildDate><atom:link href="https://gao377020481.github.io/tags/%E5%8D%8F%E8%AE%AE/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>简易http客户端(C posix API)</title>
+      <link>https://gao377020481.github.io/p/http%E5%AE%A2%E6%88%B7%E7%AB%AF/</link>
+      <pubDate>Sun, 01 Mar 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://gao377020481.github.io/p/http%E5%AE%A2%E6%88%B7%E7%AB%AF/</guid>
+      <description>HTTP 实现http客户端程序
+基础 HTTP使用TCP连接
+HTTP报文：
+ 
+实现 域名到ip地址转换(dns) 直接调用api进行转换比较简单：
+char * host_to_ip(const char* hostname) { struct hostent *host_entry = gethostbyname(hostname); if(host_entry) { return inet_ntoa(*(struct in_addr*)*host_entry -&amp;gt; h_addr_list); } return NULL; } host_entry存储了dns请求的接收，从中取出第一个ip地址并将点分十进制转换为字符串返回
+创建TCP套接字（建立连接） posix api创建
+int http_create_socket(char *ip) { int sockfd = socket(AF_INET, SOCK_STREAM, 0); struct sockaddr_in sin = {0}; sin.sin_family = AF_INET; sin.sin_port = htons(80); sin.sin_addr.s_addr = inet_addr(ip); if(0 != connect(sockfd, (struct sockaddr*)&amp;amp;sin, sizeof(struct sockaddr_in))) { return -1; } fcntl(sockfd, F_SETFL, O_NONBLOCK); return sockfd; } fcntl(sockfd, F_SETFL, O_NONBLOCK);这个函数用于设置该套接字io为非阻塞</description>
+    </item>
+    
     <item>
       <title>DNS协议解析</title>
       <link>https://gao377020481.github.io/p/dns%E5%8D%8F%E8%AE%AE%E8%A7%A3%E6%9E%90/</link>
-      <pubDate>Thu, 10 Sep 2020 00:00:00 +0000</pubDate>
+      <pubDate>Sun, 23 Feb 2020 00:00:00 +0000</pubDate>
       
       <guid>https://gao377020481.github.io/p/dns%E5%8D%8F%E8%AE%AE%E8%A7%A3%E6%9E%90/</guid>
       <description>DNS Domain Name System 域名系统，是一个分布式数据库，用于映射IP与域名
@@ -25,22 +41,6 @@ DNS分层 顶级域：com org等 第二级域：baidu google等 第三级域：w
 具体查看文档
 DNS client UDP编程 首先需要自己定义数据结构用于存储dns报文
 struct dns_header{ unsigned short id; unsigned short flags; unsigned short questions; unsigned short answer; unsigned short authority; unsigned short additional; }; struct dns_question { int length; unsigned short qtype; unsigned short qclass; unsigned char *name; }; 这里只需要question和header是因为我们作为client只实现发送A请求也就是获取域名的ipv4地址，在实现中header的授权码和附加码都不需要使用只需要使用questions id和flags即可</description>
-    </item>
-    
-    <item>
-      <title>简易http客户端(C posix API)</title>
-      <link>https://gao377020481.github.io/p/http%E5%AE%A2%E6%88%B7%E7%AB%AF/</link>
-      <pubDate>Wed, 09 Sep 2020 00:00:00 +0000</pubDate>
-      
-      <guid>https://gao377020481.github.io/p/http%E5%AE%A2%E6%88%B7%E7%AB%AF/</guid>
-      <description>HTTP 实现http客户端程序
-基础 HTTP使用TCP连接
-HTTP报文：
- 
-实现 域名到ip地址转换(dns) 直接调用api进行转换比较简单：
-char * host_to_ip(const char* hostname) { struct hostent *host_entry = gethostbyname(hostname); if(host_entry) { return inet_ntoa(*(struct in_addr*)*host_entry -&amp;gt; h_addr_list); } return NULL; } host_entry存储了dns请求的接收，从中取出第一个ip地址并将点分十进制转换为字符串返回
-创建TCP套接字（建立连接） posix api创建
-int http_create_socket(char *ip) { int sockfd = socket(AF_INET, SOCK_STREAM, 0); struct sockaddr_in sin = {0}; sin.sin_family = AF_INET; sin.sin_port = htons(80); sin.sin_addr.s_addr = inet_addr(ip); if(0 != connect(sockfd, (struct sockaddr*)&amp;amp;sin, sizeof(struct sockaddr_in))) { return -1; } fcntl(sockfd, F_SETFL, O_NONBLOCK); return sockfd; } fcntl(sockfd, F_SETFL, O_NONBLOCK);这个函数用于设置该套接字io为非阻塞</description>
     </item>
     
   </channel>

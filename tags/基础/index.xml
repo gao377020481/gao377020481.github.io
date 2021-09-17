@@ -1,16 +1,16 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes"?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>基础 on Gao&#39;s happy day</title>
+    <title>基础 on 真正的大师，永远都怀着一颗学徒的心。</title>
     <link>https://gao377020481.github.io/tags/%E5%9F%BA%E7%A1%80/</link>
-    <description>Recent content in 基础 on Gao&#39;s happy day</description>
+    <description>Recent content in 基础 on 真正的大师，永远都怀着一颗学徒的心。</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Thu, 10 Sep 2020 00:00:00 +0000</lastBuildDate><atom:link href="https://gao377020481.github.io/tags/%E5%9F%BA%E7%A1%80/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Tue, 10 Mar 2020 00:00:00 +0000</lastBuildDate><atom:link href="https://gao377020481.github.io/tags/%E5%9F%BA%E7%A1%80/index.xml" rel="self" type="application/rss+xml" />
     <item>
       <title>锁</title>
       <link>https://gao377020481.github.io/p/%E9%94%81/</link>
-      <pubDate>Thu, 10 Sep 2020 00:00:00 +0000</pubDate>
+      <pubDate>Tue, 10 Mar 2020 00:00:00 +0000</pubDate>
       
       <guid>https://gao377020481.github.io/p/%E9%94%81/</guid>
       <description>锁 自旋锁 当一个线程尝试去获取某一把锁的时候，如果这个锁此时已经被别人获取(占用)，那么此线程就无法获取到这把锁，该线程将会等待，间隔一段时间后会再次尝试获取。这种采用循环加锁 -&amp;gt; 等待的机制被称为自旋锁(spinlock)。

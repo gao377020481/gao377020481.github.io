@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>网络编程 on 真正的大师，永远都怀着一颗学徒的心。</title>
+    <link>https://gao377020481.github.io/tags/%E7%BD%91%E7%BB%9C%E7%BC%96%E7%A8%8B/</link>
+    <description>Recent content in 网络编程 on 真正的大师，永远都怀着一颗学徒的心。</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Tue, 12 May 2020 00:00:00 +0000</lastBuildDate><atom:link href="https://gao377020481.github.io/tags/%E7%BD%91%E7%BB%9C%E7%BC%96%E7%A8%8B/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>异常处理</title>
+      <link>https://gao377020481.github.io/p/%E5%BC%82%E5%B8%B8%E5%A4%84%E7%90%86/</link>
+      <pubDate>Tue, 12 May 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://gao377020481.github.io/p/%E5%BC%82%E5%B8%B8%E5%A4%84%E7%90%86/</guid>
+      <description>Try Catch组件实现 先说明try catch组件使用setjump和longjump实现
+setjump longjump语法 jmp_buf env;环境
+setjump(env)设置回跳点，返回longjump(env,out)传的参数out，配套使用，longjump可穿越函数跳转
+jmp_buf env; int c = setjump(env); longjump(env,3); 这里longjump后就会跳回setjump这一行，并且setjump会返回3，也就是c = 3。
+int count = 0; jmp_buf env; void a(int indx) { longjump(env,indx); } int main() { int idx = 0; count = setjump(env); if(count == 0) { a(env,idx++); } else if (count == 1) { a(env,idx++); } else { printf(&amp;#34;ok&amp;#34;); } return 0; } 如上，函数a会调回开头setjump处，如果是这样a调用多次，a又没有返回（a运行到longjump处进入了，没返回），a的栈会不会还存在，存在的话如果有无数个a，会不会发生栈溢出。
+答案是不会，因为a在进入longjump后，其栈指针直接失效，a的栈直接失效，在setjump函数所在函数block中被覆盖，所以a的多次调用不会发生栈溢出。
+setjump 与 longjump本身是线程安全的
+setjump longjump与try catch的关系 先来个 代码：</description>
+    </item>
+    
+  </channel>
+</rss>
