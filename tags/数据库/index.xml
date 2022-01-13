@@ -6,7 +6,23 @@
     <description>Recent content in 数据库 on Gao&#39;s Happy Day</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Wed, 12 Feb 2020 00:00:00 +0000</lastBuildDate><atom:link href="https://gao377020481.github.io/tags/%E6%95%B0%E6%8D%AE%E5%BA%93/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Fri, 22 May 2020 00:00:00 +0000</lastBuildDate><atom:link href="https://gao377020481.github.io/tags/%E6%95%B0%E6%8D%AE%E5%BA%93/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Redis</title>
+      <link>https://gao377020481.github.io/p/redis/</link>
+      <pubDate>Fri, 22 May 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://gao377020481.github.io/p/redis/</guid>
+      <description>Redis Remote Dictionary Service， 远程字典服务，内存式数据库，非关系型，KV结构
+三张网图描述redis基本数据结构，并引出第一节编码：   
+value编码 String 字符数组，该字符串是动态字符串，字符串长度小于1M时，加倍扩容；超过1M每次只多扩1M；字符串最大长度为512M；Tips：redis字符串是二进制安全字符串；可以存储图片，二进制协议等二进制数据；1. 字符串长度小于等于 20 且能转成整数，则使用 int 存储；2. 字符串长度小于等于 44，则使用 embstr 存储；3. 字符串长度大于 44，则使用 raw 存储； 44为界
+首先说明redis以64字节作为大小结构分界点，但其sdshdr和redisobject结构会占用一些空间，所以真正保存数据的大小小于64字节旧版本使用39为界，新版本使用44为界，这是因为旧版本中sdshdr占用8字节目前的sdshdr8是针对小结构的优化（大结构使用shshdr16，64），仅占用3字节，节省了5字节空间。所以新版本以44为界。 raw和embstr
+raw 编码会调用两次内存分配函数来分别创建 redisObject 结构和 sdshdr 结构， 而 embstr 编码则通过调用一次内存分配函数来分配一块连续的空间存储两结构embstr使用连续内存，更高效的利用缓存，且一次内存操作带来了更好的创建和销毁效率 操作方式与转换
+1.以一个浮点数的value作为例子，浮点数会被转换成字符串然后存储到数据库内。如果要对V进行操作，他也会先从字符串转换为浮点数然后再进行操作。2.以一个整数2000的value作为例子，该数会被保存为int但使用append进行追加一个字符串“is a good number！”后， 该值会被转换为embstr， 然而embstr的对象从redis视角看来是只读的（未实现操作embstr的方法）， 所以该对象又会被转换raw然后实行相应操作并保存为raw List 链表，很容易理解
+列表中数据是否压缩的依据：
+ 元素长度小于 48，不压缩； 元素压缩前后长度差不超过 8，不压缩；  </description>
+    </item>
+    
     <item>
       <title>Mysql基本知识</title>
       <link>https://gao377020481.github.io/p/mysql/</link>
