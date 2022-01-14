@@ -123,7 +123,7 @@
 
 
                 <time class="article-time--reading">
-                    1 minute read
+                    4 minute read
                 </time>
             </div>
         
@@ -133,9 +133,9 @@
 </header>
 
     <section class="article-content">
-    <h1 id="redis">Redis</h1>
+    <h2 id="redis"><strong>Redis</strong></h2>
 <p>Remote Dictionary Service， 远程字典服务，内存式数据库，非关系型，KV结构</p>
-<p>三张网图描述redis基本数据结构，并引出第一节编码：
+<p>三张网图描述redis基本数据结构：
 <figure 
 	>
 	<a href="/post/redis/1.jpg" >
@@ -172,37 +172,314 @@
 	</a>
 	
 </figure></p>
-<h2 id="value编码">value编码</h2>
-<h3 id="string"><strong>String</strong></h3>
-<pre><code>字符数组，该字符串是动态字符串，字符串长度小于1M时，加倍扩容；超过1M每次只多扩1M；字符串最大长度为512M；
-
-Tips：redis字符串是二进制安全字符串；可以存储图片，二进制协议等二进制数据；
-
-1. 字符串长度小于等于 20 且能转成整数，则使用 int 存储；
-2. 字符串长度小于等于 44，则使用 embstr 存储；
-3. 字符串长度大于 44，则使用 raw 存储；
-</code></pre>
+<h1 id="数据与编码">数据与编码</h1>
+<h2 id="string"><strong>String</strong></h2>
+<p>字符数组，该字符串是动态字符串，字符串长度小于1M时，加倍扩容；超过1M每次只多扩1M；字符串最大长度为512M；</p>
+<p>Tips：redis字符串是二进制安全字符串；可以存储图片，二进制协议等二进制数据；</p>
+<ol>
+<li>字符串长度小于等于 20 且能转成整数，则使用 int 存储；</li>
+<li>字符串长度小于等于 44，则使用 embstr 存储；</li>
+<li>字符串长度大于 44，则使用 raw 存储；</li>
+</ol>
 <p><strong>44为界</strong></p>
-<pre><code>首先说明redis以64字节作为大小结构分界点，但其sdshdr和redisobject结构会占用一些空间，所以真正保存数据的大小小于64字节
-旧版本使用39为界，新版本使用44为界，这是因为旧版本中sdshdr占用8字节目前的sdshdr8是针对小结构的优化（大结构使用shshdr16，64），仅占用3字节，节省了5字节空间。所以新版本以44为界。
-</code></pre>
+<p>首先说明redis以64字节作为大小结构分界点，但其sdshdr和redisobject结构会占用一些空间，所以真正保存数据的大小小于64字节</p>
+<p>旧版本使用39为界，新版本使用44为界，这是因为旧版本中sdshdr占用8字节目前的sdshdr8是针对小结构的优化（大结构使用shshdr16，64），仅占用3字节，节省了5字节空间。所以新版本以44为界。</p>
 <p><strong>raw和embstr</strong></p>
-<pre><code>raw 编码会调用两次内存分配函数来分别创建 redisObject 结构和 sdshdr 结构， 而 embstr 编码则通过调用一次内存分配函数来分配一块连续的空间存储两结构
-
-embstr使用连续内存，更高效的利用缓存，且一次内存操作带来了更好的创建和销毁效率
-</code></pre>
+<p>raw 编码会调用两次内存分配函数来分别创建 redisObject 结构和 sdshdr 结构， 而 embstr 编码则通过调用一次内存分配函数来分配一块连续的空间存储两结构</p>
+<p>embstr使用连续内存，更高效的利用缓存，且一次内存操作带来了更好的创建和销毁效率</p>
 <p><strong>操作方式与转换</strong></p>
-<pre><code>1.以一个浮点数的value作为例子，浮点数会被转换成字符串然后存储到数据库内。如果要对V进行操作，他也会先从字符串转换为浮点数然后再进行操作。
-
-2.以一个整数2000的value作为例子，该数会被保存为int但使用append进行追加一个字符串“is a good number！”后， 该值会被转换为embstr， 然而embstr的对象从redis视角看来是只读的（未实现操作embstr的方法）， 所以该对象又会被转换raw然后实行相应操作并保存为raw
-</code></pre>
-<h3 id="list"><strong>List</strong></h3>
-<p>链表，很容易理解</p>
+<ol>
+<li>
+<p>以一个浮点数的value作为例子，浮点数会被转换成字符串然后存储到数据库内。如果要对V进行操作，他也会先从字符串转换为浮点数然后再进行操作。</p>
+</li>
+<li>
+<p>以一个整数2000的value作为例子，该数会被保存为int但使用append进行追加一个字符串“is a good number！”后， 该值会被转换为embstr， 然而embstr的对象从redis视角看来是只读的（未实现操作embstr的方法）， 所以该对象又会被转换raw然后实行相应操作并保存为raw</p>
+</li>
+</ol>
+<h2 id="list"><strong>List</strong></h2>
+<p>双向链表，很容易理解，但其node有讲究（压缩时使用ziplist）</p>
 <p>列表中数据是否压缩的依据：</p>
 <ol>
 <li>元素长度小于 48，不压缩；</li>
 <li>元素压缩前后长度差不超过 8，不压缩；</li>
 </ol>
+<p>直接放数据结构，然后分析:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-c" data-lang="c">
+<span class="cm">/* Minimum ziplist size in bytes for attempting compression. */</span>
+<span class="cp">#define MIN_COMPRESS_BYTES 48
+</span><span class="cp"></span><span class="cm">/* quicklistNode is a 32 byte struct describing a ziplist for a quicklist.
+</span><span class="cm"> * We use bit fields keep the quicklistNode at 32 bytes.
+</span><span class="cm"> * count: 16 bits, max 65536 (max zl bytes is 65k, so max count actually &lt;
+</span><span class="cm">32k).
+</span><span class="cm"> * encoding: 2 bits, RAW=1, LZF=2.
+</span><span class="cm"> * container: 2 bits, NONE=1, ZIPLIST=2.
+</span><span class="cm">
+</span><span class="cm"> * recompress: 1 bit, bool, true if node is temporary decompressed for
+</span><span class="cm">usage.
+</span><span class="cm"> * attempted_compress: 1 bit, boolean, used for verifying during testing.
+</span><span class="cm"> * extra: 10 bits, free for future use; pads out the remainder of 32 bits */</span>
+
+<span class="k">typedef</span> <span class="k">struct</span> <span class="n">quicklistNode</span> <span class="p">{</span>
+    <span class="k">struct</span> <span class="n">quicklistNode</span> <span class="o">*</span><span class="n">prev</span><span class="p">;</span>
+    <span class="k">struct</span> <span class="n">quicklistNode</span> <span class="o">*</span><span class="n">next</span><span class="p">;</span>
+    <span class="kt">unsigned</span> <span class="kt">char</span> <span class="o">*</span><span class="n">zl</span><span class="p">;</span>
+    <span class="kt">unsigned</span> <span class="kt">int</span> <span class="n">sz</span><span class="p">;</span> <span class="cm">/* ziplist size in bytes */</span>
+    <span class="kt">unsigned</span> <span class="kt">int</span> <span class="nl">count</span> <span class="p">:</span> <span class="mi">16</span><span class="p">;</span> <span class="cm">/* count of items in ziplist */</span>
+    <span class="kt">unsigned</span> <span class="kt">int</span> <span class="nl">encoding</span> <span class="p">:</span> <span class="mi">2</span><span class="p">;</span> <span class="cm">/* RAW==1 or LZF==2 */</span>
+    <span class="kt">unsigned</span> <span class="kt">int</span> <span class="nl">container</span> <span class="p">:</span> <span class="mi">2</span><span class="p">;</span> <span class="cm">/* NONE==1 or ZIPLIST==2 */</span>
+    <span class="kt">unsigned</span> <span class="kt">int</span> <span class="nl">recompress</span> <span class="p">:</span> <span class="mi">1</span><span class="p">;</span> <span class="cm">/* was this node previous compressed? */</span>
+    <span class="kt">unsigned</span> <span class="kt">int</span> <span class="nl">attempted_compress</span> <span class="p">:</span> <span class="mi">1</span><span class="p">;</span> <span class="cm">/* node can&#39;t compress; too small*/</span>
+    <span class="kt">unsigned</span> <span class="kt">int</span> <span class="nl">extra</span> <span class="p">:</span> <span class="mi">10</span><span class="p">;</span> <span class="cm">/* more bits to steal for future usage */</span>
+<span class="p">}</span> <span class="n">quicklistNode</span><span class="p">;</span>
+
+<span class="k">typedef</span> <span class="k">struct</span> <span class="n">quicklist</span> <span class="p">{</span>
+    <span class="n">quicklistNode</span> <span class="o">*</span><span class="n">head</span><span class="p">;</span>
+    <span class="n">quicklistNode</span> <span class="o">*</span><span class="n">tail</span><span class="p">;</span>
+    <span class="kt">unsigned</span> <span class="kt">long</span> <span class="n">count</span><span class="p">;</span> <span class="cm">/* total count of all entries in all
+</span><span class="cm">    ziplists */</span>
+    <span class="kt">unsigned</span> <span class="kt">long</span> <span class="n">len</span><span class="p">;</span> <span class="cm">/* number of quicklistNodes */</span>
+    <span class="kt">int</span> <span class="nl">fill</span> <span class="p">:</span> <span class="n">QL_FILL_BITS</span><span class="p">;</span> <span class="cm">/* fill factor for individual
+</span><span class="cm">    nodes */</span>
+    <span class="kt">unsigned</span> <span class="kt">int</span> <span class="nl">compress</span> <span class="p">:</span> <span class="n">QL_COMP_BITS</span><span class="p">;</span> <span class="cm">/* depth of end nodes not to
+</span><span class="cm">    compress;0=off */</span>
+    <span class="kt">unsigned</span> <span class="kt">int</span> <span class="nl">bookmark_count</span><span class="p">:</span> <span class="n">QL_BM_BITS</span><span class="p">;</span>
+    <span class="n">quicklistBookmark</span> <span class="n">bookmarks</span><span class="p">[];</span>
+<span class="p">}</span> <span class="n">quicklist</span><span class="p">;</span>
+
+</code></pre></div><p>OK, 可以很明显看到list本身是一个双向链表，但他会记录所有的entry的数目，node本身可能用来描述一个ziplist，ziplist本身是一块连续的内存空间，ziplist内的node不保存前后指针，因为其连续内存的特性，只需要保存当前size和前一项size即可完成向前和向后寻址，提供和双项链表一致的操作。</p>
+<h2 id="hash"><strong>hash</strong></h2>
+<p>哈希表，很容易理解</p>
+<p>但底层使用ziplist和dict两种结构进行存储。</p>
+<ol>
+<li>节点数量大于 512（hash-max-ziplist-entries） 或所有字符串长度大于 64（hash-max-ziplistvalue），则使用 dict 实现；</li>
+<li>节点数量小于等于 512 且有一个字符串长度小于 64，则使用 ziplist 实现；</li>
+</ol>
+<p>ziplist存储时将field与value（就是KV）连着放在一起，提供更高的存储效率。在未序列化的情况下，该方式相比于string更节省内存。不过如果把对象的各个KV序列化为一体然后存储为string，也许占用空间还更小。</p>
+<p>dict就是标准的哈希表实现，不过一个dict内部保存两个哈希表ht0和ht1，ht1用来进行rehash的中转。该表使用开链法解决hash冲突。一张引用自redisbook的图很清晰的说明了结构：
+<figure 
+	>
+	<a href="/post/redis/4.jpg" >
+		<img src="/post/redis/4.jpg"
+			
+			
+			
+			loading="lazy"
+			>
+	</a>
+	
+</figure></p>
+<p>当rehash工作量太大时，需要使用渐进式rehash，此时不会发生</p>
+<h2 id="set"><strong>set</strong></h2>
+<p>集合，不要求有序</p>
+<ol>
+<li>元素都为整数且节点数量小于等于 512（set-max-intset-entries），则使用整数数组存储；</li>
+<li>元素当中有一个不是整数或者节点数量大于 512，则使用字典存储；</li>
+</ol>
+<p>类比hash内部，这里不再详细分析，字典编码Value为NULL即可</p>
+<h2 id="zset"><strong>zset</strong></h2>
+<p>有序的集合</p>
+<ol>
+<li>节点数量大于 128或者有一个字符串长度大于64，则使用跳表（skiplist）；</li>
+<li>节点数量小于等于128（zset-max-ziplist-entries）且所有字符串长度小于等于64（zset-maxziplist-value），则使用 ziplist 存储；</li>
+</ol>
+<p><strong>ziplist编码</strong></p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-c" data-lang="c">
+          <span class="o">|&lt;--</span>  <span class="n">element</span> <span class="mi">1</span> <span class="o">--&gt;|&lt;--</span>  <span class="n">element</span> <span class="mi">2</span> <span class="o">--&gt;|&lt;--</span>   <span class="p">.......</span>   <span class="o">--&gt;|</span>
+
+<span class="o">+---------+---------+--------+---------+--------+---------+---------+---------+</span>
+<span class="o">|</span> <span class="n">ZIPLIST</span> <span class="o">|</span>         <span class="o">|</span>        <span class="o">|</span>         <span class="o">|</span>        <span class="o">|</span>         <span class="o">|</span>         <span class="o">|</span> <span class="n">ZIPLIST</span> <span class="o">|</span>
+<span class="o">|</span> <span class="n">ENTRY</span>   <span class="o">|</span> <span class="n">member1</span> <span class="o">|</span> <span class="n">score1</span> <span class="o">|</span> <span class="n">member2</span> <span class="o">|</span> <span class="n">score2</span> <span class="o">|</span>   <span class="p">...</span>   <span class="o">|</span>   <span class="p">...</span>   <span class="o">|</span> <span class="n">ENTRY</span>   <span class="o">|</span>
+<span class="o">|</span> <span class="n">HEAD</span>    <span class="o">|</span>         <span class="o">|</span>        <span class="o">|</span>         <span class="o">|</span>        <span class="o">|</span>         <span class="o">|</span>         <span class="o">|</span> <span class="n">END</span>     <span class="o">|</span>
+<span class="o">+---------+---------+--------+---------+--------+---------+---------+---------+</span>
+
+<span class="n">score1</span> <span class="o">&lt;=</span> <span class="n">score2</span> <span class="o">&lt;=</span> <span class="p">...</span>
+
+</code></pre></div><p>ziplist 内连续的有序的保存entry</p>
+<p><strong>skiplist编码</strong></p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-c" data-lang="c">
+<span class="cm">/*
+</span><span class="cm"> * 有序集
+</span><span class="cm"> */</span>
+<span class="k">typedef</span> <span class="k">struct</span> <span class="n">zset</span> <span class="p">{</span>
+
+    <span class="c1">// 字典
+</span><span class="c1"></span>    <span class="n">dict</span> <span class="o">*</span><span class="n">dict</span><span class="p">;</span>
+
+    <span class="c1">// 跳跃表
+</span><span class="c1"></span>    <span class="n">zskiplist</span> <span class="o">*</span><span class="n">zsl</span><span class="p">;</span>
+
+<span class="p">}</span> <span class="n">zset</span><span class="p">;</span>
+
+</code></pre></div><p>使用dict来检索，使用skiplist维持顺序
+引用redisbook的图，说的很清晰：
+<figure 
+	>
+	<a href="/post/redis/5.jpg" >
+		<img src="/post/redis/5.jpg"
+			
+			
+			
+			loading="lazy"
+			>
+	</a>
+	
+</figure></p>
+<h1 id="协议与网络">协议与网络</h1>
+<h2 id="网络层">网络层</h2>
+<p>redis6.0 单reactor模型，并发处理连接，线程串行处理命令。</p>
+<p>reactor管理触发的socket，调用其对应的callback（accept,recv or send），这里callback使用单线程串行处理</p>
+<p><figure 
+	>
+	<a href="/post/reactor/single_reactor.jpg" >
+		<img src="/post/reactor/single_reactor.jpg"
+			
+			
+			
+			loading="lazy"
+			>
+	</a>
+	
+</figure></p>
+<h2 id="事务">事务</h2>
+<p>MULTI 开启事务，事务执行过程中，单个命令是入队列操作，直到调用 EXEC 才会一起执行；</p>
+<p>也可以使用DISCARD取消事务</p>
+<p>WATCH 检测key的变动，若在事务执行中，key变动则取消事务，在事务开启前调用，乐观锁实现（cas）， 若被取消则事务返回 nil。</p>
+<h2 id="lua-脚本">lua 脚本</h2>
+<ol>
+<li>lua 脚本实现原子性。</li>
+<li>redis中加载了一个lua虚拟机，用来执行redis lua脚本。redis lua 脚本的执行是原子性的，当某个脚本正在执行的时候，不会有其他命令或者脚本被执行。</li>
+<li>lua脚本当中的命令会直接修改数据状态。</li>
+</ol>
+<p>Tips：如果项目中使用了lua脚本，不需要使用上面的事务命令。</p>
+<h2 id="发布订阅">发布订阅</h2>
+<p>为了支持消息的多播机制，redis引入了发布订阅模块。disque 消息队列</p>
+<p><strong>订阅</strong></p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-c" data-lang="c">
+<span class="k">struct</span> <span class="n">redisServer</span> <span class="p">{</span>
+    <span class="c1">// ...
+</span><span class="c1"></span>    <span class="n">dict</span> <span class="o">*</span><span class="n">pubsub_channels</span><span class="p">;</span>
+    <span class="c1">// ...
+</span><span class="c1"></span><span class="p">};</span>
+
+</code></pre></div><p>redisServer 中一项pubsub_channels的字典保存了订阅频道的信息。
+字典的键为正在被订阅的频道， 而字典的值则是一个链表， 链表中保存了所有订阅这个频道的客户端。</p>
+<p><strong>发布</strong></p>
+<p>首先根据 channel 定位到字典的键， 然后将信息发送给字典值链表中的所有客户端。</p>
+<p><strong>订阅模式</strong></p>
+<p>一个发布的信息，与其发布频道相匹配的所有模式频道也会将这个信息发布给自己旗下的订阅用户。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-c" data-lang="c">
+<span class="k">struct</span> <span class="n">redisServer</span> <span class="p">{</span>
+    <span class="c1">// ...
+</span><span class="c1"></span>    <span class="n">list</span> <span class="o">*</span><span class="n">pubsub_patterns</span><span class="p">;</span>
+    <span class="c1">// ...
+</span><span class="c1"></span><span class="p">};</span>
+
+</code></pre></div><p>这次是pubsub_patterns链表了，每个节点都有一个pubsubPattern结构</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-c" data-lang="c">
+<span class="k">typedef</span> <span class="k">struct</span> <span class="n">pubsubPattern</span> <span class="p">{</span>
+    <span class="n">redisClient</span> <span class="o">*</span><span class="n">client</span><span class="p">;</span>
+    <span class="n">robj</span> <span class="o">*</span><span class="n">pattern</span><span class="p">;</span>
+<span class="p">}</span> <span class="n">pubsubPattern</span><span class="p">;</span>
+
+</code></pre></div><p>client 属性保存着订阅模式的客户端，而 pattern 属性则保存着被订阅的模式。</p>
+<p>通过遍历整个 pubsub_patterns 链表，程序可以检查所有正在被订阅的模式，以及订阅这些模式的客户端。</p>
+<p><strong>发布到模式</strong></p>
+<p>PUBLISH 除了将 message 发送到所有订阅 channel 的客户端之外， 它还会将 channel 和 pubsub_patterns 中的模式进行对比， 如果 channel 和某个模式匹配的话， 那么也将 message 发送到订阅那个模式的客户端。</p>
+<h2 id="redis60-io多线程">redis6.0 io多线程</h2>
+<p>redis6.0版本后添加的 io多线程主要解决redis协议的压缩以及解压缩的耗时问题；一般项目中不
+需要开启；如果有大量并发请求，且返回数据包一般比较大的场景才有它的用武之地；</p>
+<p><strong>单线程</strong></p>
+<p>正常的redis单线程处理事件，但是其read write操作都需要经过内核栈，需要从内核的内存空间中取出或发送包，内核到用户内存空间的复制又涉及页表项的修改等。所以总的来说IO占用的CPU时间较多。如果这时引入多线程IO，有效利用多核可以进一步提升性能。</p>
+<p><strong>多线程实现</strong></p>
+<p>外部来看还是单线程的状态，这是因为多线程参考主线程的phase。只有主线程处于read phase，其他线程才做read操作，只有主线程处于write phase其他线程才做write。并且任务的分配也由主线程完成，每个thread维护一个任务队列（链表组织），主线程唤醒thread去执行任务，可以使用cond去唤醒。</p>
+<h1 id="redis扩展">redis扩展</h1>
+<p>Redis 通过对外提供一套 API 和一些数据类型，可以供开发者开发自己的模块并且加载到 redis
+中。类似插件。在不侵入 redis 源码基础上，提供一种高效的扩展数据结构的方式，也可以用来实现原子操作。</p>
+<h2 id="入口函数">入口函数</h2>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-c" data-lang="c">
+<span class="kt">int</span> <span class="nf">RedisModule_OnLoad</span><span class="p">(</span><span class="n">RedisModuleCtx</span> <span class="o">*</span><span class="n">ctx</span><span class="p">,</span> <span class="n">RedisModuleString</span> <span class="o">**</span><span class="n">argv</span><span class="p">,</span> <span class="kt">int</span>
+<span class="n">argc</span><span class="p">);</span>
+<span class="c1">// RedisModule_Init 应该要是第一个被调用的函数
+</span><span class="c1"></span><span class="k">static</span> <span class="kt">int</span> <span class="nf">RedisModule_Init</span><span class="p">(</span><span class="n">RedisModuleCtx</span> <span class="o">*</span><span class="n">ctx</span><span class="p">,</span> <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">name</span><span class="p">,</span> <span class="kt">int</span> <span class="n">ver</span><span class="p">,</span>
+<span class="kt">int</span> <span class="n">apiver</span><span class="p">);</span>
+<span class="c1">// RedisModule_CreateCommand 应该要是第二个被调用的函数
+</span><span class="c1"></span><span class="n">REDISMODULE_API</span> <span class="nf">int</span> <span class="p">(</span><span class="o">*</span><span class="n">RedisModule_CreateCommand</span><span class="p">)(</span><span class="n">RedisModuleCtx</span> <span class="o">*</span><span class="n">ctx</span><span class="p">,</span> <span class="k">const</span>
+<span class="kt">char</span> <span class="o">*</span><span class="n">name</span><span class="p">,</span> <span class="n">RedisModuleCmdFunc</span> <span class="n">cmdfunc</span><span class="p">,</span> <span class="k">const</span> <span class="kt">char</span> <span class="o">*</span><span class="n">strflags</span><span class="p">,</span> <span class="kt">int</span> <span class="n">firstkey</span><span class="p">,</span>
+<span class="kt">int</span> <span class="n">lastkey</span><span class="p">,</span> <span class="kt">int</span> <span class="n">keystep</span><span class="p">);</span>
+<span class="c1">// 回调函数
+</span><span class="c1"></span><span class="k">typedef</span> <span class="nf">int</span> <span class="p">(</span><span class="o">*</span><span class="n">RedisModuleCmdFunc</span><span class="p">)(</span><span class="n">RedisModuleCtx</span> <span class="o">*</span><span class="n">ctx</span><span class="p">,</span> <span class="n">RedisModuleString</span>
+<span class="o">**</span><span class="n">argv</span><span class="p">,</span> <span class="kt">int</span> <span class="n">argc</span><span class="p">);</span>
+
+</code></pre></div><h2 id="redisbloom">RedisBloom</h2>
+<p>布隆过滤器，准确判断不存在的值</p>
+<pre><code>
+git clone https://github.com/RedisBloom/RedisBloom.git
+cd RedisBloom
+make
+cp redisbloom.so /path/to
+vi redis.conf
+# loadmodules /path/to/redisbloom.so
+
+</code></pre><p>具体使用直接看github</p>
+<h2 id="hyperloglog">hyperloglog</h2>
+<p>少量内存下统计一个集合中唯一元素数量的近似值。</p>
+<p>在Redis实现中，每个键只使用 12kb 进行计数，使用 16384 个桶子，每个桶子6bit，标准误差为0.8125% ，并且对可以计数的项目数没有限制，除非接近 个项目数（这似乎不太可能）</p>
+<h1 id="持久化">持久化</h1>
+<p>redis 的数据全部在内存中，如果突然宕机，数据就会全部丢失，因此需要持久化来保证 Redis 的数据不会因为故障而丢失，redis 重启的时候可以重新加载持久化文件来恢复数据；</p>
+<p>三种方式：</p>
+<ol>
+<li>
+<p>aof (append only file)</p>
+</li>
+<li>
+<p>rdb (Redis Database)</p>
+</li>
+<li>
+<p>rdb + aof</p>
+</li>
+</ol>
+<h2 id="aof"><strong>AOF</strong></h2>
+<p>可以认为是一系列的操作log，以协议文本的方式，将所有对数据库进行过写入的命令（及其参数）记录到 AOF 文件，以此达到记录数据库状态的目的。</p>
+<p>同步命令到 AOF 文件的整个过程可以分为三个阶段：</p>
+<ol>
+<li>命令传播：Redis 将执行完的命令、命令的参数、命令的参数个数等信息发送到 AOF 程序中。</li>
+<li>缓存追加：AOF 程序根据接收到的命令数据，将命令转换为网络通讯协议的格式，然后将协议内容追加到服务器的 AOF 缓存中。</li>
+<li>文件写入和保存：AOF 缓存中的内容被写入到 AOF 文件末尾，如果设定的 AOF 保存条件被满足的话， fsync 函数或者 fdatasync 函数会被调用，将写入的内容真正地保存到磁盘中。</li>
+</ol>
+<p><strong>保存模式</strong></p>
+<p>Redis 目前支持三种 AOF 保存模式，它们分别是：</p>
+<ol>
+<li>AOF_FSYNC_NO ：不保存。</li>
+<li>AOF_FSYNC_EVERYSEC ：每一秒钟保存一次。</li>
+<li>AOF_FSYNC_ALWAYS ：每执行一个命令保存一次。</li>
+</ol>
+<p><strong>AOF 重写</strong></p>
+<p>AOF文件会积累变大，所以积累到一定量时，会创建一个新的 AOF 文件来代替原有的 AOF 文件， 新 AOF 文件和原有 AOF 文件保存的数据库状态完全一样， 但新 AOF 文件的体积小于等于原有 AOF 文件的体积。相当于对冗杂的指令进行简化，使最终结果一样就行。</p>
+<p>重写在后台子进程中发生，子进程带有主进程的数据副本，使用子进程而不是线程，可以在避免锁的情况下，保证数据的安全性。</p>
+<p>不过， 使用子进程也有一个问题需要解决： 因为子进程在进行 AOF 重写期间， 主进程还需要继续处理命令， 而新的命令可能对现有的数据进行修改， 这会让当前数据库的数据和重写后的 AOF 文件中的数据不一致。</p>
+<p>为了解决这个问题， Redis 增加了一个 AOF 重写缓存， 这个缓存在 fork 出子进程之后开始启用， Redis 主进程在接到新的写命令之后， 除了会将这个写命令的协议内容追加到现有的 AOF 文件之外， 还会追加到这个缓存中。</p>
+<p>重写完毕后会将缓存并入新的AOF文件中去。</p>
+<h2 id="rdb"><strong>RDB</strong></h2>
+<p>可以认为是当前存储的内存映像or快照，将数据库的快照（snapshot）以二进制的方式保存到磁盘中。</p>
+<p>核心方法：保存与载入</p>
+<p><strong>保存</strong></p>
+<p>rdbSave 函数负责将内存中的数据库数据以 RDB 格式保存到磁盘中， 如果 RDB 文件已存在， 那么新的 RDB 文件将替换已有的 RDB 文件。</p>
+<p>在保存 RDB 文件期间， 主进程会被阻塞， 直到保存完成为止。
+有两种方法：SAVE 和 BGSAVE
+SAVE： 会阻塞主进程开始保存RDB，直到保存完毕返回
+BGSAVE： 会fork出子进程进行保存RDB，但直到保存完毕中间的一段数据有可能会丢失
+SAVE与BGSAVE不能同时执行，且BGSAVE也不能与REWRITEAOF同时执行，这是因为创建俩进程来做这个事情效率太低
+SAVE的时候AOF一样会写入，因为AOF写入又后台线程完成</p>
+<p><strong>载入</strong></p>
+<p>在载入期间， 服务器每载入 1000 个键就处理一次所有已到达的请求， 不过只有 PUBLISH 、 SUBSCRIBE 、 PSUBSCRIBE 、 UNSUBSCRIBE 、 PUNSUBSCRIBE 五个命令的请求会被正确地处理， 其他命令一律返回错误。 等到载入完成之后， 服务器才会开始正常处理所有命令。</p>
+<p>Tips:发布与订阅功能和其他数据库功能是完全隔离的，前者不写入也不读取数据库，所以在服务器载入期间，订阅与发布功能仍然可以正常使用，而不必担心对载入数据的完整性产生影响。</p>
+<h2 id="rdb--aof"><strong>RDB + AOF</strong></h2>
+<p>因为RDB的保存过程较长可能会错过一些数据，所以在RDB进行保存的时候使用AOF缓存来记录保存时发生的写入操作，然后将AOF缓存持久化为AOF，通过AOF+RDB就可以完整的表述数据</p>
+<h1 id="主从复制">主从复制</h1>
+<p>主要用来实现 redis 数据的可靠性。防止主 redis 所在磁盘损坏，造成数据永久丢失。</p>
+<p>主从之间采用异步复制的方式。</p>
+<h1 id="集群">集群</h1>
+<p>Redis cluster集群</p>
 
 </section>
 
@@ -247,11 +524,33 @@ embstr使用连续内存，更高效的利用缓存，且一次内存操作带�
         
         
             <div class="article-image">
-                <img src="/p/mysql/_hud7e36f7e20e71be184458283bdae4646_55974_23a5d351d2fc2374f952239b6e9c423a.jpg" 
+                <img src="/p/mysql/537.c2519e5ebb5b221869f88dd1984e6b87_huc4722358eae36c77295feb62b7419b0c_34031398_250x150_fill_q75_box_smart1.jpg" 
                         width="250" 
                         height="150" 
                         loading="lazy" 
                         data-key="Mysql" 
+                        data-hash="md5-wlGeXrtbIhhp&#43;I3RmE5rhw==">
+                
+            </div>
+        
+
+        <div class="article-details">
+            <h2 class="article-title">Mysql</h2>
+        </div>
+    </a>
+</article>
+                
+                    
+<article class="has-image">
+    <a href="/p/mysql%E5%9F%BA%E6%9C%AC%E7%9F%A5%E8%AF%86/">
+        
+        
+            <div class="article-image">
+                <img src="/p/mysql%E5%9F%BA%E6%9C%AC%E7%9F%A5%E8%AF%86/_hud7e36f7e20e71be184458283bdae4646_55974_23a5d351d2fc2374f952239b6e9c423a.jpg" 
+                        width="250" 
+                        height="150" 
+                        loading="lazy" 
+                        data-key="Mysql基本知识" 
                         data-hash="md5-xRTZFpFxc6SKQuARS0aZYQ==">
                 
             </div>
@@ -430,12 +729,35 @@ embstr使用连续内存，更高效的利用缓存，且一次内存操作带�
                 <div class="widget--toc">
                     <nav id="TableOfContents">
   <ol>
-    <li><a href="#value编码">value编码</a>
-      <ol>
-        <li><a href="#string"><strong>String</strong></a></li>
-        <li><a href="#list"><strong>List</strong></a></li>
-      </ol>
-    </li>
+    <li><a href="#redis"><strong>Redis</strong></a></li>
+  </ol>
+
+  <ol>
+    <li><a href="#string"><strong>String</strong></a></li>
+    <li><a href="#list"><strong>List</strong></a></li>
+    <li><a href="#hash"><strong>hash</strong></a></li>
+    <li><a href="#set"><strong>set</strong></a></li>
+    <li><a href="#zset"><strong>zset</strong></a></li>
+  </ol>
+
+  <ol>
+    <li><a href="#网络层">网络层</a></li>
+    <li><a href="#事务">事务</a></li>
+    <li><a href="#lua-脚本">lua 脚本</a></li>
+    <li><a href="#发布订阅">发布订阅</a></li>
+    <li><a href="#redis60-io多线程">redis6.0 io多线程</a></li>
+  </ol>
+
+  <ol>
+    <li><a href="#入口函数">入口函数</a></li>
+    <li><a href="#redisbloom">RedisBloom</a></li>
+    <li><a href="#hyperloglog">hyperloglog</a></li>
+  </ol>
+
+  <ol>
+    <li><a href="#aof"><strong>AOF</strong></a></li>
+    <li><a href="#rdb"><strong>RDB</strong></a></li>
+    <li><a href="#rdb--aof"><strong>RDB + AOF</strong></a></li>
   </ol>
 </nav>
                 </div>

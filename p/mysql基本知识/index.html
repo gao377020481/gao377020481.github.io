@@ -1,0 +1,777 @@
+<!DOCTYPE html>
+<html lang="en-us">
+    <head><meta charset='utf-8'>
+<meta name='viewport' content='width=device-width, initial-scale=1'><meta name='description' content='基础知识'><title>Mysql基本知识</title>
+
+<link rel='canonical' href='https://gao377020481.github.io/p/mysql%E5%9F%BA%E6%9C%AC%E7%9F%A5%E8%AF%86/'>
+
+<link rel="stylesheet" href="/scss/style.min.css"><meta property='og:title' content='Mysql基本知识'>
+<meta property='og:description' content='基础知识'>
+<meta property='og:url' content='https://gao377020481.github.io/p/mysql%E5%9F%BA%E6%9C%AC%E7%9F%A5%E8%AF%86/'>
+<meta property='og:site_name' content='Gao&#39;s Happy Day'>
+<meta property='og:type' content='article'><meta property='article:section' content='Post' /><meta property='article:tag' content='数据库' /><meta property='article:published_time' content='2020-02-12T00:00:00&#43;00:00'/><meta property='article:modified_time' content='2020-02-12T00:00:00&#43;00:00'/><meta property='og:image' content='https://gao377020481.github.io/p/mysql%E5%9F%BA%E6%9C%AC%E7%9F%A5%E8%AF%86/pawel-czerwinski-8uZPynIu-rQ-unsplash.jpg' />
+<meta name="twitter:title" content="Mysql基本知识">
+<meta name="twitter:description" content="基础知识"><meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:image" content='https://gao377020481.github.io/p/mysql%E5%9F%BA%E6%9C%AC%E7%9F%A5%E8%AF%86/pawel-czerwinski-8uZPynIu-rQ-unsplash.jpg' />
+    </head>
+    <body class="
+    article-page has-toc
+">
+    <script>
+        (function() {
+            const colorSchemeKey = 'StackColorScheme';
+            if(!localStorage.getItem(colorSchemeKey)){
+                localStorage.setItem(colorSchemeKey, "auto");
+            }
+        })();
+    </script><script>
+    (function() {
+        const colorSchemeKey = 'StackColorScheme';
+        const colorSchemeItem = localStorage.getItem(colorSchemeKey);
+        const supportDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches === true;
+
+        if (colorSchemeItem == 'dark' || colorSchemeItem === 'auto' && supportDarkMode) {
+            
+
+            document.documentElement.dataset.scheme = 'dark';
+        } else {
+            document.documentElement.dataset.scheme = 'light';
+        }
+    })();
+</script>
+<div class="container main-container flex 
+    
+        extended
+    
+">
+    
+        <div id="article-toolbar">
+            <a href="https://gao377020481.github.io" class="back-home">
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-chevron-left" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <polyline points="15 6 9 12 15 18" />
+</svg>
+
+
+
+                <span>Back</span>
+            </a>
+        </div>
+    
+<main class="main full-width">
+    <article class="has-image main-article">
+    <header class="article-header">
+        <div class="article-image">
+            <a href="/p/mysql%E5%9F%BA%E6%9C%AC%E7%9F%A5%E8%AF%86/">
+                <img src="/p/mysql%E5%9F%BA%E6%9C%AC%E7%9F%A5%E8%AF%86/pawel-czerwinski-8uZPynIu-rQ-unsplash_hud7e36f7e20e71be184458283bdae4646_55974_800x0_resize_q75_box.jpg"
+                        srcset="/p/mysql%E5%9F%BA%E6%9C%AC%E7%9F%A5%E8%AF%86/pawel-czerwinski-8uZPynIu-rQ-unsplash_hud7e36f7e20e71be184458283bdae4646_55974_800x0_resize_q75_box.jpg 800w, /p/mysql%E5%9F%BA%E6%9C%AC%E7%9F%A5%E8%AF%86/pawel-czerwinski-8uZPynIu-rQ-unsplash_hud7e36f7e20e71be184458283bdae4646_55974_1600x0_resize_q75_box.jpg 1600w"
+                        width="800" 
+                        height="534" 
+                        loading="lazy"
+                        alt="Featured image of post Mysql基本知识" />
+                
+            </a>
+        </div>
+    
+
+    <div class="article-details">
+    
+    <header class="article-category">
+        
+            <a href="/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/" style="background-color: #2a9d8f; color: #fff;">
+                数据库
+            </a>
+        
+    </header>
+    
+
+    <h2 class="article-title">
+        <a href="/p/mysql%E5%9F%BA%E6%9C%AC%E7%9F%A5%E8%AF%86/">Mysql基本知识</a>
+    </h2>
+
+    
+    <h3 class="article-subtitle">
+        基础知识
+    </h3>
+    
+
+    
+    <footer class="article-time">
+        
+            <div>
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-calendar-time" width="56" height="56" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <path d="M11.795 21h-6.795a2 2 0 0 1 -2 -2v-12a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v4" />
+  <circle cx="18" cy="18" r="4" />
+  <path d="M15 3v4" />
+  <path d="M7 3v4" />
+  <path d="M3 11h16" />
+  <path d="M18 16.496v1.504l1 1" />
+</svg>
+                <time class="article-time--published">Feb 12, 2020</time>
+            </div>
+        
+
+        
+            <div>
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="12" r="9" />
+  <polyline points="12 7 12 12 15 15" />
+</svg>
+
+
+
+                <time class="article-time--reading">
+                    5 minute read
+                </time>
+            </div>
+        
+    </footer>
+    
+</div>
+</header>
+
+    <section class="article-content">
+    <h1 id="mysql">MYSQL</h1>
+<h2 id="mysql安装与配置">mysql安装与配置</h2>
+<p>在虚拟机上安装mysql,使用apt-get install就可以
+这里我只检索到了mysql-server-5.7就安装了5.7</p>
+<p>在本地win10上安装mysqlbench用于连接虚拟机的mysql服务器
+这里使用网络连接，可能是因为mysql版本的原因，本来应该在/etc/mysql中的my.cnf文件中显式的配置有基本信息，我只需要修改部分，但5.7在/etc/mysql/mysql.conf.d/mysqld.cnf,在它的基础上修改对应的bind-address为0.0.0.0保证回环地址可访问：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-haskell" data-lang="haskell">
+<span class="o">#</span>
+<span class="o">#</span> <span class="kt">The</span> <span class="kt">MySQL</span> <span class="n">database</span> <span class="n">server</span> <span class="n">configuration</span> <span class="n">file</span><span class="o">.</span>
+<span class="o">#</span>
+<span class="o">#</span> <span class="kt">You</span> <span class="n">can</span> <span class="n">copy</span> <span class="n">this</span> <span class="n">to</span> <span class="n">one</span> <span class="kr">of</span><span class="kt">:</span>
+<span class="o">#</span> <span class="o">-</span> <span class="s">&#34;/etc/mysql/my.cnf&#34;</span> <span class="n">to</span> <span class="n">set</span> <span class="n">global</span> <span class="n">options</span><span class="p">,</span>
+<span class="o">#</span> <span class="o">-</span> <span class="s">&#34;~/.my.cnf&#34;</span> <span class="n">to</span> <span class="n">set</span> <span class="n">user</span><span class="o">-</span><span class="n">specific</span> <span class="n">options</span><span class="o">.</span>
+<span class="o">#</span> 
+<span class="o">#</span> <span class="kt">One</span> <span class="n">can</span> <span class="n">use</span> <span class="n">all</span> <span class="n">long</span> <span class="n">options</span> <span class="n">that</span> <span class="n">the</span> <span class="n">program</span> <span class="n">supports</span><span class="o">.</span>
+<span class="o">#</span> <span class="kt">Run</span> <span class="n">program</span> <span class="n">with</span> <span class="c1">--help to get a list of available options and with</span>
+<span class="o">#</span> <span class="c1">--print-defaults to see which it would actually understand and use.</span>
+<span class="o">#</span>
+<span class="o">#</span> <span class="kt">For</span> <span class="n">explanations</span> <span class="n">see</span>
+<span class="o">#</span> <span class="n">http</span><span class="kt">://</span><span class="n">dev</span><span class="o">.</span><span class="n">mysql</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">doc</span><span class="o">/</span><span class="n">mysql</span><span class="o">/</span><span class="n">en</span><span class="o">/</span><span class="n">server</span><span class="o">-</span><span class="n">system</span><span class="o">-</span><span class="n">variables</span><span class="o">.</span><span class="n">html</span>
+
+<span class="o">#</span> <span class="kt">This</span> <span class="n">will</span> <span class="n">be</span> <span class="n">passed</span> <span class="n">to</span> <span class="n">all</span> <span class="n">mysql</span> <span class="n">clients</span>
+<span class="o">#</span> <span class="kt">It</span> <span class="n">has</span> <span class="n">been</span> <span class="n">reported</span> <span class="n">that</span> <span class="n">passwords</span> <span class="n">should</span> <span class="n">be</span> <span class="n">enclosed</span> <span class="n">with</span> <span class="n">ticks</span><span class="o">/</span><span class="n">quotes</span>
+<span class="o">#</span> <span class="n">escpecially</span> <span class="kr">if</span> <span class="n">they</span> <span class="n">contain</span> <span class="s">&#34;#&#34;</span> <span class="n">chars</span><span class="o">...</span>
+<span class="o">#</span> <span class="kt">Remember</span> <span class="n">to</span> <span class="n">edit</span> <span class="o">/</span><span class="n">etc</span><span class="o">/</span><span class="n">mysql</span><span class="o">/</span><span class="n">debian</span><span class="o">.</span><span class="n">cnf</span> <span class="n">when</span> <span class="n">changing</span> <span class="n">the</span> <span class="n">socket</span> <span class="n">location</span><span class="o">.</span>
+
+<span class="o">#</span> <span class="kt">Here</span> <span class="n">is</span> <span class="n">entries</span> <span class="n">for</span> <span class="n">some</span> <span class="n">specific</span> <span class="n">programs</span>
+<span class="o">#</span> <span class="kt">The</span> <span class="n">following</span> <span class="n">values</span> <span class="n">assume</span> <span class="n">you</span> <span class="n">have</span> <span class="n">at</span> <span class="n">least</span> <span class="mi">32</span><span class="kt">M</span> <span class="n">ram</span>
+
+<span class="p">[</span><span class="n">mysqld_safe</span><span class="p">]</span>
+<span class="nf">socket</span>          <span class="ow">=</span> <span class="o">/</span><span class="n">var</span><span class="o">/</span><span class="n">run</span><span class="o">/</span><span class="n">mysqld</span><span class="o">/</span><span class="n">mysqld</span><span class="o">.</span><span class="n">sock</span>
+<span class="nf">nice</span>            <span class="ow">=</span> <span class="mi">0</span>
+
+<span class="p">[</span><span class="n">mysqld</span><span class="p">]</span>
+<span class="o">#</span>
+<span class="o">#</span> <span class="o">*</span> <span class="kt">Basic</span> <span class="kt">Settings</span>
+<span class="o">#</span>
+<span class="nf">user</span>            <span class="ow">=</span> <span class="n">mysql</span>
+<span class="nf">pid</span><span class="o">-</span><span class="n">file</span>        <span class="ow">=</span> <span class="o">/</span><span class="n">var</span><span class="o">/</span><span class="n">run</span><span class="o">/</span><span class="n">mysqld</span><span class="o">/</span><span class="n">mysqld</span><span class="o">.</span><span class="n">pid</span>
+<span class="nf">socket</span>          <span class="ow">=</span> <span class="o">/</span><span class="n">var</span><span class="o">/</span><span class="n">run</span><span class="o">/</span><span class="n">mysqld</span><span class="o">/</span><span class="n">mysqld</span><span class="o">.</span><span class="n">sock</span>
+<span class="nf">port</span>            <span class="ow">=</span> <span class="mi">3306</span>
+<span class="nf">basedir</span>         <span class="ow">=</span> <span class="o">/</span><span class="n">usr</span>
+<span class="nf">datadir</span>         <span class="ow">=</span> <span class="o">/</span><span class="n">var</span><span class="o">/</span><span class="n">lib</span><span class="o">/</span><span class="n">mysql</span>
+<span class="nf">tmpdir</span>          <span class="ow">=</span> <span class="o">/</span><span class="n">tmp</span>
+<span class="nf">lc</span><span class="o">-</span><span class="n">messages</span><span class="o">-</span><span class="n">dir</span> <span class="ow">=</span> <span class="o">/</span><span class="n">usr</span><span class="o">/</span><span class="n">share</span><span class="o">/</span><span class="n">mysql</span>
+<span class="nf">skip</span><span class="o">-</span><span class="n">external</span><span class="o">-</span><span class="n">locking</span>
+<span class="o">#</span>
+<span class="o">#</span> <span class="kt">Instead</span> <span class="kr">of</span> <span class="n">skip</span><span class="o">-</span><span class="n">networking</span> <span class="n">the</span> <span class="kr">default</span> <span class="n">is</span> <span class="n">now</span> <span class="n">to</span> <span class="n">listen</span> <span class="n">only</span> <span class="n">on</span>
+<span class="o">#</span> <span class="n">localhost</span> <span class="n">which</span> <span class="n">is</span> <span class="n">more</span> <span class="n">compatible</span> <span class="n">and</span> <span class="n">is</span> <span class="n">not</span> <span class="n">less</span> <span class="n">secure</span><span class="o">.</span>
+<span class="nf">bind</span><span class="o">-</span><span class="n">address</span>            <span class="ow">=</span> <span class="mf">0.0</span><span class="o">.</span><span class="mf">0.0</span>
+<span class="o">#</span>
+<span class="o">#</span> <span class="o">*</span> <span class="kt">Fine</span> <span class="kt">Tuning</span>
+<span class="o">#</span>
+<span class="nf">key_buffer_size</span>         <span class="ow">=</span> <span class="mi">16</span><span class="kt">M</span>
+<span class="nf">max_allowed_packet</span>      <span class="ow">=</span> <span class="mi">16</span><span class="kt">M</span>
+<span class="nf">thread_stack</span>            <span class="ow">=</span> <span class="mi">192</span><span class="kt">K</span>
+<span class="nf">thread_cache_size</span>       <span class="ow">=</span> <span class="mi">8</span>
+<span class="o">#</span> <span class="kt">This</span> <span class="n">replaces</span> <span class="n">the</span> <span class="n">startup</span> <span class="n">script</span> <span class="n">and</span> <span class="n">checks</span> <span class="kt">MyISAM</span> <span class="n">tables</span> <span class="kr">if</span> <span class="n">needed</span>
+<span class="o">#</span> <span class="n">the</span> <span class="n">first</span> <span class="n">time</span> <span class="n">they</span> <span class="n">are</span> <span class="n">touched</span>
+<span class="nf">myisam</span><span class="o">-</span><span class="n">recover</span><span class="o">-</span><span class="n">options</span>  <span class="ow">=</span> <span class="kt">BACKUP</span>
+<span class="o">#</span><span class="n">max_connections</span>        <span class="ow">=</span> <span class="mi">100</span>
+<span class="o">#</span><span class="n">table_cache</span>            <span class="ow">=</span> <span class="mi">64</span>
+<span class="o">#</span><span class="n">thread_concurrency</span>     <span class="ow">=</span> <span class="mi">10</span>
+<span class="o">#</span>
+<span class="o">#</span> <span class="o">*</span> <span class="kt">Query</span> <span class="kt">Cache</span> <span class="kt">Configuration</span>
+<span class="o">#</span>
+<span class="nf">query_cache_limit</span>       <span class="ow">=</span> <span class="mi">1</span><span class="kt">M</span>
+<span class="nf">query_cache_size</span>        <span class="ow">=</span> <span class="mi">16</span><span class="kt">M</span>
+<span class="o">#</span>
+<span class="o">#</span> <span class="o">*</span> <span class="kt">Logging</span> <span class="n">and</span> <span class="kt">Replication</span>
+<span class="o">#</span>
+<span class="o">#</span> <span class="kt">Both</span> <span class="n">location</span> <span class="n">gets</span> <span class="n">rotated</span> <span class="n">by</span> <span class="n">the</span> <span class="n">cronjob</span><span class="o">.</span>
+<span class="o">#</span> <span class="kt">Be</span> <span class="n">aware</span> <span class="n">that</span> <span class="n">this</span> <span class="n">log</span> <span class="kr">type</span> <span class="n">is</span> <span class="n">a</span> <span class="n">performance</span> <span class="n">killer</span><span class="o">.</span>
+<span class="o">#</span> <span class="kt">As</span> <span class="kr">of</span> <span class="mf">5.1</span> <span class="n">you</span> <span class="n">can</span> <span class="n">enable</span> <span class="n">the</span> <span class="n">log</span> <span class="n">at</span> <span class="n">runtime</span><span class="o">!</span>
+<span class="o">#</span><span class="n">general_log_file</span>        <span class="ow">=</span> <span class="o">/</span><span class="n">var</span><span class="o">/</span><span class="n">log</span><span class="o">/</span><span class="n">mysql</span><span class="o">/</span><span class="n">mysql</span><span class="o">.</span><span class="n">log</span>
+<span class="o">#</span><span class="n">general_log</span>             <span class="ow">=</span> <span class="mi">1</span>
+<span class="o">#</span>
+<span class="o">#</span> <span class="kt">Error</span> <span class="n">log</span> <span class="o">-</span> <span class="n">should</span> <span class="n">be</span> <span class="n">very</span> <span class="n">few</span> <span class="n">entries</span><span class="o">.</span>
+<span class="o">#</span>
+<span class="nf">log_error</span> <span class="ow">=</span> <span class="o">/</span><span class="n">var</span><span class="o">/</span><span class="n">log</span><span class="o">/</span><span class="n">mysql</span><span class="o">/</span><span class="ne">error</span><span class="o">.</span><span class="n">log</span>
+<span class="o">#</span>
+<span class="o">#</span> <span class="kt">Here</span> <span class="n">you</span> <span class="n">can</span> <span class="n">see</span> <span class="n">queries</span> <span class="n">with</span> <span class="n">especially</span> <span class="n">long</span> <span class="n">duration</span>
+<span class="o">#</span><span class="n">log_slow_queries</span>       <span class="ow">=</span> <span class="o">/</span><span class="n">var</span><span class="o">/</span><span class="n">log</span><span class="o">/</span><span class="n">mysql</span><span class="o">/</span><span class="n">mysql</span><span class="o">-</span><span class="n">slow</span><span class="o">.</span><span class="n">log</span>
+<span class="o">#</span><span class="n">long_query_time</span> <span class="ow">=</span> <span class="mi">2</span>
+<span class="o">#</span><span class="n">log</span><span class="o">-</span><span class="n">queries</span><span class="o">-</span><span class="n">not</span><span class="o">-</span><span class="n">using</span><span class="o">-</span><span class="n">indexes</span>
+<span class="o">#</span>
+<span class="o">#</span> <span class="kt">The</span> <span class="n">following</span> <span class="n">can</span> <span class="n">be</span> <span class="n">used</span> <span class="n">as</span> <span class="n">easy</span> <span class="n">to</span> <span class="n">replay</span> <span class="n">backup</span> <span class="n">logs</span> <span class="n">or</span> <span class="n">for</span> <span class="n">replication</span><span class="o">.</span>
+<span class="o">#</span> <span class="n">note</span><span class="kt">:</span> <span class="kr">if</span> <span class="n">you</span> <span class="n">are</span> <span class="n">setting</span> <span class="n">up</span> <span class="n">a</span> <span class="n">replication</span> <span class="n">slave</span><span class="p">,</span> <span class="n">see</span> <span class="kt">README</span><span class="o">.</span><span class="kt">Debian</span> <span class="n">about</span>
+<span class="o">#</span>       <span class="n">other</span> <span class="n">settings</span> <span class="n">you</span> <span class="n">may</span> <span class="n">need</span> <span class="n">to</span> <span class="n">change</span><span class="o">.</span>
+<span class="o">#</span><span class="n">server</span><span class="o">-</span><span class="n">id</span>              <span class="ow">=</span> <span class="mi">1</span>
+<span class="o">#</span><span class="n">log_bin</span>                        <span class="ow">=</span> <span class="o">/</span><span class="n">var</span><span class="o">/</span><span class="n">log</span><span class="o">/</span><span class="n">mysql</span><span class="o">/</span><span class="n">mysql</span><span class="o">-</span><span class="n">bin</span><span class="o">.</span><span class="n">log</span>
+<span class="nf">expire_logs_days</span>        <span class="ow">=</span> <span class="mi">10</span>
+<span class="nf">max_binlog_size</span>   <span class="ow">=</span> <span class="mi">100</span><span class="kt">M</span>
+<span class="o">#</span><span class="n">binlog_do_db</span>           <span class="ow">=</span> <span class="n">include_database_name</span>
+<span class="o">#</span><span class="n">binlog_ignore_db</span>       <span class="ow">=</span> <span class="n">include_database_name</span>
+<span class="o">#</span>
+<span class="o">#</span> <span class="o">*</span> <span class="kt">InnoDB</span>
+<span class="o">#</span>
+<span class="o">#</span> <span class="kt">InnoDB</span> <span class="n">is</span> <span class="n">enabled</span> <span class="n">by</span> <span class="kr">default</span> <span class="n">with</span> <span class="n">a</span> <span class="mi">10</span><span class="kt">MB</span> <span class="n">datafile</span> <span class="kr">in</span> <span class="o">/</span><span class="n">var</span><span class="o">/</span><span class="n">lib</span><span class="o">/</span><span class="n">mysql</span><span class="o">/.</span>
+<span class="o">#</span> <span class="kt">Read</span> <span class="n">the</span> <span class="n">manual</span> <span class="n">for</span> <span class="n">more</span> <span class="kt">InnoDB</span> <span class="n">related</span> <span class="n">options</span><span class="o">.</span> <span class="kt">There</span> <span class="n">are</span> <span class="n">many</span><span class="o">!</span>
+<span class="o">#</span>
+<span class="o">#</span> <span class="o">*</span> <span class="kt">Security</span> <span class="kt">Features</span>
+<span class="o">#</span>
+<span class="o">#</span> <span class="kt">Read</span> <span class="n">the</span> <span class="n">manual</span><span class="p">,</span> <span class="n">too</span><span class="p">,</span> <span class="kr">if</span> <span class="n">you</span> <span class="n">want</span> <span class="n">chroot</span><span class="o">!</span>
+<span class="o">#</span> <span class="n">chroot</span> <span class="ow">=</span> <span class="o">/</span><span class="n">var</span><span class="o">/</span><span class="n">lib</span><span class="o">/</span><span class="n">mysql</span><span class="o">/</span>
+<span class="o">#</span>
+<span class="o">#</span> <span class="kt">For</span> <span class="n">generating</span> <span class="kt">SSL</span> <span class="n">certificates</span> <span class="kt">I</span> <span class="n">recommend</span> <span class="n">the</span> <span class="kt">OpenSSL</span> <span class="kt">GUI</span> <span class="s">&#34;tinyca&#34;</span><span class="o">.</span>
+<span class="o">#</span>
+<span class="o">#</span> <span class="n">ssl</span><span class="o">-</span><span class="n">ca</span><span class="o">=/</span><span class="n">etc</span><span class="o">/</span><span class="n">mysql</span><span class="o">/</span><span class="n">cacert</span><span class="o">.</span><span class="n">pem</span>
+<span class="o">#</span> <span class="n">ssl</span><span class="o">-</span><span class="n">cert</span><span class="o">=/</span><span class="n">etc</span><span class="o">/</span><span class="n">mysql</span><span class="o">/</span><span class="n">server</span><span class="o">-</span><span class="n">cert</span><span class="o">.</span><span class="n">pem</span>
+<span class="o">#</span> <span class="n">ssl</span><span class="o">-</span><span class="n">key</span><span class="o">=/</span><span class="n">etc</span><span class="o">/</span><span class="n">mysql</span><span class="o">/</span><span class="n">server</span><span class="o">-</span><span class="n">key</span><span class="o">.</span><span class="n">pem</span>
+
+</code></pre></div><p>这样保证win10的mysqlbench可以连接到虚拟机的mysql服务器</p>
+<p>但是还需要在mysql中设置对应用户并使之具有外部访问的权限和操作数据库的权限，我这里直接新建gao用户并赋予外部访问权限和操作权限：</p>
+<pre><code>CREATE USER 'gao'@'%' IDENTIFIED BY 'password';
+</code></pre><p>%号表示可以被任意位置访问也就允许了远程ip访问
+然后给gao用户授权，使其能随意操作数据库：</p>
+<pre><code>GRANT all privileges ON * TO 'gao'@'%';
+</code></pre><p>可以在mysql这个数据库内的user表内找到自己添加的用户信息</p>
+<h2 id="mysql-建表添加数据等操作">mysql 建表添加数据等操作</h2>
+<p>建立使用的数据库USR_DB</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sql" data-lang="sql"><span class="k">create</span><span class="w"> </span><span class="n">databases</span><span class="w"> </span><span class="n">USR_DB</span><span class="p">;</span><span class="w">
+</span></code></pre></div><p>使用USR_DB</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sql" data-lang="sql"><span class="n">use</span><span class="w"> </span><span class="n">USR_DB</span><span class="p">;</span><span class="w">
+</span></code></pre></div><p>建表TBL_USR</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sql" data-lang="sql"><span class="k">create</span><span class="w"> </span><span class="k">table</span><span class="w"> </span><span class="n">TBL_USR</span><span class="p">(</span><span class="w">
+</span><span class="w">    </span><span class="n">U_ID</span><span class="w"> </span><span class="nb">int</span><span class="w"> </span><span class="k">primary</span><span class="w"> </span><span class="k">key</span><span class="w"> </span><span class="n">auto_increment</span><span class="p">,</span><span class="w">
+</span><span class="w">    </span><span class="n">U_NAME</span><span class="w"> </span><span class="nb">char</span><span class="p">(</span><span class="mi">10</span><span class="p">),</span><span class="w"> 
+</span><span class="w">    </span><span class="n">U_GENGDER</span><span class="w"> </span><span class="nb">char</span><span class="p">(</span><span class="mi">10</span><span class="p">)</span><span class="w">
+</span><span class="w"></span><span class="p">);</span><span class="w">
+</span></code></pre></div><p>插入表项</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sql" data-lang="sql"><span class="k">insert</span><span class="w"> </span><span class="n">TBL_USR</span><span class="p">(</span><span class="n">U_NAME</span><span class="p">,</span><span class="w"> </span><span class="n">U_GENGDER</span><span class="p">)</span><span class="w"> </span><span class="k">values</span><span class="p">(</span><span class="s1">&#39;gao&#39;</span><span class="p">,</span><span class="w"> </span><span class="s1">&#39;man&#39;</span><span class="p">);</span><span class="w">
+</span></code></pre></div><p>选取表中所有数据显示</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sql" data-lang="sql"><span class="k">select</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="k">from</span><span class="w"> </span><span class="n">TBL_USR</span><span class="p">;</span><span class="w">
+</span></code></pre></div><p>删除与修改表项就涉及到安全模式，mysql默认运行在安全模式所以不能进行修改和删除表项的操作，所以需要取消安全模式然后操作，操作结束后需要再设置回安全模式</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sql" data-lang="sql"><span class="k">set</span><span class="w"> </span><span class="n">SQL_SAFE_UPDATES</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w">
+</span><span class="w"></span><span class="k">delete</span><span class="w"> </span><span class="k">from</span><span class="w"> </span><span class="n">TBL_USR</span><span class="w"> </span><span class="k">where</span><span class="w"> </span><span class="n">U_NAME</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">UNAME</span><span class="p">;</span><span class="w">
+</span><span class="w"></span><span class="k">set</span><span class="w"> </span><span class="n">SQL_SAFE_UPDATES</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span><span class="w">
+</span></code></pre></div><p>但这样操作是有问题的，如果这三部操作是原子的，是没有问题的，但不是原子的就引入不安全的因素，其他进程可能趁这个时候错误的篡改数据，所以将这三条合成一个过程来确保操作的安全性</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sql" data-lang="sql"><span class="k">DELIMITER</span><span class="w"> </span><span class="o">##</span><span class="w">
+</span><span class="w"></span><span class="k">create</span><span class="w"> </span><span class="k">procedure</span><span class="w"> </span><span class="n">proc_delete_usr</span><span class="p">(</span><span class="k">in</span><span class="w"> </span><span class="n">UNAME</span><span class="w"> </span><span class="nb">char</span><span class="p">(</span><span class="mi">10</span><span class="p">))</span><span class="w">
+</span><span class="w"></span><span class="k">begin</span><span class="w">
+</span><span class="w"></span><span class="k">set</span><span class="w"> </span><span class="n">SQL_SAFE_UPDATES</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w">
+</span><span class="w"></span><span class="k">delete</span><span class="w"> </span><span class="k">from</span><span class="w"> </span><span class="n">TBL_USR</span><span class="w"> </span><span class="k">where</span><span class="w"> </span><span class="n">U_NAME</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">UNAME</span><span class="p">;</span><span class="w">
+</span><span class="w"></span><span class="k">set</span><span class="w"> </span><span class="n">SQL_SAFE_UPDATES</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span><span class="w">
+</span><span class="w"></span><span class="k">end</span><span class="o">##</span><span class="w">
+</span></code></pre></div><p>上面这个DELIMITER ##的意思就是这一段使用##作为限制符号，也就是##框住的区域视为一个整体区域，用于指示过程的区域</p>
+<p>定义了过程之后就可以使用call调用过程达到安全的操作：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sql" data-lang="sql"><span class="k">call</span><span class="w"> </span><span class="n">proc_delete_usr</span><span class="p">(</span><span class="s1">&#39;gao&#39;</span><span class="p">);</span><span class="w">
+</span></code></pre></div><p>同样的，修改也可以这样：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sql" data-lang="sql"><span class="k">DELIMITER</span><span class="w"> </span><span class="o">##</span><span class="w">
+</span><span class="w"></span><span class="k">create</span><span class="w"> </span><span class="k">procedure</span><span class="w"> </span><span class="n">set_img</span><span class="p">(</span><span class="k">in</span><span class="w"> </span><span class="n">UNAME</span><span class="w"> </span><span class="nb">char</span><span class="p">(</span><span class="mi">10</span><span class="p">),</span><span class="w"> </span><span class="n">UIMG</span><span class="w"> </span><span class="nb">BLOB</span><span class="p">)</span><span class="w">
+</span><span class="w"></span><span class="k">begin</span><span class="w">
+</span><span class="w"></span><span class="k">set</span><span class="w"> </span><span class="n">SQL_SAFE_UPDATES</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">0</span><span class="p">;</span><span class="w">
+</span><span class="w"></span><span class="k">update</span><span class="w"> </span><span class="n">TBL_USR</span><span class="w"> </span><span class="k">set</span><span class="w"> </span><span class="n">U_IMG</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">UIMG</span><span class="w"> </span><span class="k">where</span><span class="w"> </span><span class="n">U_NAME</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="n">UNAME</span><span class="p">;</span><span class="w">
+</span><span class="w"></span><span class="k">set</span><span class="w"> </span><span class="n">SQL_SAFE_UPDATES</span><span class="w"> </span><span class="o">=</span><span class="w"> </span><span class="mi">1</span><span class="p">;</span><span class="w">
+</span><span class="w"></span><span class="k">end</span><span class="o">##</span><span class="w">
+</span><span class="w"></span><span class="k">call</span><span class="w"> </span><span class="n">set_img</span><span class="p">(</span><span class="s1">&#39;gao&#39;</span><span class="p">,</span><span class="n">IMG</span><span class="p">);</span><span class="w">
+</span></code></pre></div><p>这里的call set_img里的IMG其实在后面用于c的API调用,绑定statement之后传入的是一个char*的buffer接收的图像数据,然后设置到数据库里</p>
+<p>上面用到了U_IMG的column,这个列在建表时没有建立，需要使用添加column操作：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sql" data-lang="sql"><span class="k">ALTER</span><span class="w"> </span><span class="k">TABLE</span><span class="w"> </span><span class="n">TBL_USR</span><span class="w"> </span><span class="k">create</span><span class="w"> </span><span class="k">column</span><span class="w"> </span><span class="n">U_IMG</span><span class="p">;</span><span class="w">
+</span></code></pre></div><p>当然也可以使用以下操作删除：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sql" data-lang="sql"><span class="k">ALTER</span><span class="w"> </span><span class="k">TABLE</span><span class="w"> </span><span class="n">TBL_USR</span><span class="w"> </span><span class="k">drop</span><span class="w"> </span><span class="k">column</span><span class="w"> </span><span class="n">U_IMG</span><span class="p">;</span><span class="w">
+</span></code></pre></div><h2 id="c-api远程调用mysql">C api远程调用mysql</h2>
+<p><strong>编写C程序来做到控制mysql数据库</strong></p>
+<h3 id="安装库">安装库：</h3>
+<p>先安装相关依赖和库才可以调用c api：
+直接在虚拟机上</p>
+<pre><code>sudo apt-get install libmysqlclient-dev;
+</code></pre><p>就安装成功了相关的c开发套件</p>
+<p>使用时需要在程序中包含头文件：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="cp">#include</span><span class="cpf">&lt;mysql.h&gt;</span><span class="cp">
+</span></code></pre></div><p>在编译相关程序时:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-shell" data-lang="shell">gcc -o xxx xxx.c -I /usr/include/mysql -lmysqlclient
+</code></pre></div><p>这里基本准备就完成</p>
+<h3 id="基本操作">基本操作:</h3>
+<p>首先需要连接mysql数据库，可以想到的就是建立一个mysql的handler，所以很自然的这里就需要一个特殊的struct，库为我们提供了MYSQL的数据类型：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="n">MYSQL</span> <span class="n">mysql</span><span class="p">;</span>
+</code></pre></div><p>这样就建立了mysql这样一个handle，之后的所有操作都基于这个handle进行</p>
+<p>连接操作：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="k">if</span><span class="p">(</span><span class="nb">NULL</span> <span class="o">==</span> <span class="n">mysql_init</span><span class="p">(</span><span class="o">&amp;</span><span class="n">mysql</span><span class="p">))</span>
+<span class="p">{</span>
+    <span class="n">printf</span><span class="p">(</span><span class="s">&#34;mysql init %s</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span> <span class="n">mysql_error</span><span class="p">(</span><span class="o">&amp;</span><span class="n">mysql</span><span class="p">));</span>
+    <span class="k">return</span> <span class="o">-</span><span class="mi">1</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="k">if</span><span class="p">(</span><span class="o">!</span><span class="n">mysql_real_connect</span><span class="p">(</span><span class="o">&amp;</span><span class="n">mysql</span><span class="p">,</span> 
+    <span class="n">king_db_server_ip</span><span class="p">,</span> <span class="n">king_db_username</span><span class="p">,</span>
+    <span class="n">king_db_password</span><span class="p">,</span> <span class="n">king_db_default_db</span><span class="p">,</span> 
+    <span class="n">king_db_server_port</span><span class="p">,</span> <span class="nb">NULL</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>
+<span class="p">{</span>
+    <span class="n">printf</span><span class="p">(</span><span class="s">&#34;mysql_real_connect: %s</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span> <span class="n">mysql_error</span><span class="p">(</span><span class="o">&amp;</span><span class="n">mysql</span><span class="p">));</span>
+<span class="p">}</span>
+</code></pre></div><p>可读性很高，这里不解释</p>
+<p>然后发送自己预定义好的sql语句：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="cp">#define sql_insert &#34;insert TBL_USR(U_NAME, U_GENGDER) values(&#39;qiuxiang&#39;, &#39;woman&#39;);&#34;
+</span><span class="cp"></span>
+<span class="cp">#if 1
+</span><span class="cp"></span><span class="k">if</span><span class="p">(</span><span class="n">mysql_real_query</span><span class="p">(</span><span class="o">&amp;</span><span class="n">mysql</span><span class="p">,</span> <span class="n">sql_insert</span><span class="p">,</span> <span class="n">strlen</span><span class="p">(</span><span class="n">sql_insert</span><span class="p">)))</span>
+<span class="p">{</span>
+    <span class="n">printf</span><span class="p">(</span><span class="s">&#34;mysql_real_query: %s</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span> <span class="n">mysql_error</span><span class="p">(</span><span class="o">&amp;</span><span class="n">mysql</span><span class="p">));</span>
+<span class="p">}</span>
+<span class="cp">#endif
+</span></code></pre></div><p>一般情况下不进行其他操作了的话需要关闭mysql连接：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="n">mysql_close</span><span class="p">(</span><span class="o">&amp;</span><span class="n">mysql</span><span class="p">);</span>
+</code></pre></div><p>以上就是简单的基于c api的mysql操作了</p>
+<h3 id="其他操作">其他操作</h3>
+<p><strong>select基础</strong></p>
+<p>如果需要从mysql服务器接收数据，比如select一些数据，
+那么就需要一个容器来接受数据，这里使用MYSQL_RES来保存mysql的返回的结果:</p>
+<p>同样需要先query：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="k">if</span><span class="p">(</span><span class="n">mysql_real_query</span><span class="p">(</span><span class="n">mysql</span><span class="p">,</span> <span class="n">sql_select</span><span class="p">,</span> <span class="n">strlen</span><span class="p">(</span><span class="n">sql_select</span><span class="p">)))</span>
+<span class="p">{</span>
+    <span class="n">printf</span><span class="p">(</span><span class="s">&#34;mysql_real_query: %s</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span> <span class="n">mysql_error</span><span class="p">(</span><span class="n">mysql</span><span class="p">));</span>
+    <span class="k">return</span> <span class="o">-</span><span class="mi">1</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div><p>然后接收数据</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="n">MYSQL_RES</span> <span class="o">*</span><span class="n">res</span> <span class="o">=</span> <span class="n">mysql_store_result</span><span class="p">(</span><span class="n">mysql</span><span class="p">);</span>
+<span class="k">if</span><span class="p">(</span><span class="n">res</span> <span class="o">==</span> <span class="nb">NULL</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="n">printf</span><span class="p">(</span><span class="s">&#34;mysql_real_query: %s</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span> <span class="n">mysql_error</span><span class="p">(</span><span class="n">mysql</span><span class="p">));</span>
+    <span class="k">return</span> <span class="o">-</span><span class="mi">2</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div><p>然后处理数据（打印出来）
+想打印的话首先需要知道行列数然后再选取需要的数据来打印：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="kt">int</span> <span class="n">rows</span> <span class="o">=</span> <span class="n">mysql_num_rows</span><span class="p">(</span><span class="n">res</span><span class="p">);</span>
+<span class="n">printf</span><span class="p">(</span><span class="s">&#34;rows: %d</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span> <span class="n">rows</span><span class="p">);</span>
+<span class="kt">int</span> <span class="n">fields</span> <span class="o">=</span> <span class="n">mysql_num_fields</span><span class="p">(</span><span class="n">res</span><span class="p">);</span>
+<span class="n">printf</span><span class="p">(</span><span class="s">&#34;fields: %d</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span> <span class="n">fields</span><span class="p">);</span>
+</code></pre></div><p>再根据获取的行列数循环fetch数据行然后打印特定行列的数据</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="n">MYSQL_ROW</span> <span class="n">row</span><span class="p">;</span>
+    
+<span class="k">while</span><span class="p">(</span><span class="n">row</span> <span class="o">=</span> <span class="n">mysql_fetch_row</span><span class="p">(</span><span class="n">res</span><span class="p">))</span>
+<span class="p">{</span>
+    <span class="kt">int</span> <span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span>
+    <span class="k">for</span><span class="p">(</span><span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span> <span class="n">i</span><span class="o">&lt;</span><span class="n">fields</span><span class="p">;</span><span class="o">++</span><span class="n">i</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="n">printf</span><span class="p">(</span><span class="s">&#34;%s</span><span class="se">\t</span><span class="s">&#34;</span><span class="p">,</span> <span class="n">row</span><span class="p">[</span><span class="n">i</span><span class="p">]);</span>
+    <span class="p">}</span>
+    <span class="n">printf</span><span class="p">(</span><span class="s">&#34;</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">);</span>
+<span class="p">}</span>
+</code></pre></div><p>这里就可以看到，数据转存到了MYSQL_ROW这个结构中</p>
+<p>最后释放接收的结果</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="n">mysql_free_result</span><span class="p">(</span><span class="n">res</span><span class="p">);</span>
+</code></pre></div><p><strong>statement</strong></p>
+<p>使用statement来存储或发送数据到mysql服务器</p>
+<p>整个流程：
+1、初始化stmt，使用MYSQL* handle
+2、 准备statement类似于query但是不执行
+3、初始化绑定参数MYSQL_BIND param，因为要insert所以要初始化buffer用于指示insert数据
+4、将参数绑定到stmt上
+5、将buffer中的数据通过statement发送到mysql服务器？（不太清楚是否真的发送了）
+6、执行statement
+7、执行完毕关闭statement</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="n">MYSQL_STMT</span> <span class="o">*</span><span class="n">stmt</span> <span class="o">=</span> <span class="n">mysql_stmt_init</span><span class="p">(</span><span class="n">handle</span><span class="p">);</span>
+
+<span class="kt">int</span> <span class="n">ret</span> <span class="o">=</span> <span class="n">mysql_stmt_prepare</span><span class="p">(</span><span class="n">stmt</span><span class="p">,</span> <span class="n">sql_insert_img</span><span class="p">,</span> <span class="n">strlen</span><span class="p">(</span><span class="n">sql_insert_img</span><span class="p">));</span>
+<span class="k">if</span><span class="p">(</span><span class="n">ret</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="n">printf</span><span class="p">(</span><span class="s">&#34;mysql_stmt_prepare error: %s</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span> <span class="n">mysql_error</span><span class="p">(</span><span class="n">handle</span><span class="p">));</span>
+    <span class="k">return</span> <span class="o">-</span><span class="mi">2</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="n">MYSQL_BIND</span> <span class="n">param</span> <span class="o">=</span> <span class="p">{</span><span class="mi">0</span><span class="p">};</span>
+<span class="n">param</span><span class="p">.</span><span class="n">buffer_type</span> <span class="o">=</span> <span class="n">MYSQL_TYPE_LONG_BLOB</span><span class="p">;</span>
+<span class="n">param</span><span class="p">.</span><span class="n">buffer</span> <span class="o">=</span> <span class="nb">NULL</span><span class="p">;</span>
+<span class="n">param</span><span class="p">.</span><span class="n">is_null</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+<span class="n">param</span><span class="p">.</span><span class="n">length</span> <span class="o">=</span> <span class="nb">NULL</span><span class="p">;</span>
+
+<span class="n">ret</span> <span class="o">=</span> <span class="n">mysql_stmt_bind_param</span><span class="p">(</span><span class="n">stmt</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">param</span><span class="p">);</span>
+
+<span class="k">if</span><span class="p">(</span><span class="n">ret</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="n">printf</span><span class="p">(</span><span class="s">&#34;mysql_stmt_bind_param error: %s</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span> <span class="n">mysql_error</span><span class="p">(</span><span class="n">handle</span><span class="p">));</span>
+    <span class="k">return</span> <span class="o">-</span><span class="mi">3</span><span class="p">;</span>
+<span class="p">}</span>  
+
+<span class="n">ret</span> <span class="o">=</span> <span class="n">mysql_stmt_send_long_data</span><span class="p">(</span><span class="n">stmt</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">buffer</span><span class="p">,</span> <span class="n">length</span><span class="p">);</span>
+
+<span class="k">if</span><span class="p">(</span><span class="n">ret</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="n">printf</span><span class="p">(</span><span class="s">&#34;mysql_stmt_send_long_data error: %s</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span> <span class="n">mysql_error</span><span class="p">(</span><span class="n">handle</span><span class="p">));</span>
+    <span class="k">return</span> <span class="o">-</span><span class="mi">4</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="n">ret</span> <span class="o">=</span> <span class="n">mysql_stmt_execute</span><span class="p">(</span><span class="n">stmt</span><span class="p">);</span>
+
+<span class="k">if</span><span class="p">(</span><span class="n">ret</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="n">printf</span><span class="p">(</span><span class="s">&#34;mysql_stmt_execute error: %s</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span> <span class="n">mysql_error</span><span class="p">(</span><span class="n">handle</span><span class="p">));</span>
+    <span class="k">return</span> <span class="o">-</span><span class="mi">5</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="n">ret</span> <span class="o">=</span> <span class="n">mysql_stmt_close</span><span class="p">(</span><span class="n">stmt</span><span class="p">);</span>
+
+<span class="k">if</span><span class="p">(</span><span class="n">ret</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="n">printf</span><span class="p">(</span><span class="s">&#34;mysql_stmt_close error: %s</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span> <span class="n">mysql_error</span><span class="p">(</span><span class="n">handle</span><span class="p">));</span>
+    <span class="k">return</span> <span class="o">-</span><span class="mi">6</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre></div><p>以下是一个read的statement：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="n">MYSQL_STMT</span> <span class="o">*</span><span class="n">stmt</span> <span class="o">=</span> <span class="n">mysql_stmt_init</span><span class="p">(</span><span class="n">handle</span><span class="p">);</span>
+
+<span class="kt">int</span> <span class="n">ret</span> <span class="o">=</span> <span class="n">mysql_stmt_prepare</span><span class="p">(</span><span class="n">stmt</span><span class="p">,</span> <span class="n">sql_select_img</span><span class="p">,</span> <span class="n">strlen</span><span class="p">(</span><span class="n">sql_select_img</span><span class="p">));</span>
+<span class="k">if</span><span class="p">(</span><span class="n">ret</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="n">printf</span><span class="p">(</span><span class="s">&#34;mysql_stmt_prepare error: %s</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span> <span class="n">mysql_error</span><span class="p">(</span><span class="n">handle</span><span class="p">));</span>
+    <span class="k">return</span> <span class="o">-</span><span class="mi">2</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="n">MYSQL_BIND</span> <span class="n">result</span> <span class="o">=</span> <span class="p">{</span><span class="mi">0</span><span class="p">};</span>
+<span class="n">result</span><span class="p">.</span><span class="n">buffer_type</span> <span class="o">=</span> <span class="n">MYSQL_TYPE_LONG_BLOB</span><span class="p">;</span>
+<span class="kt">unsigned</span> <span class="kt">long</span> <span class="n">total_length</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+<span class="n">result</span><span class="p">.</span><span class="n">length</span> <span class="o">=</span> <span class="o">&amp;</span><span class="n">total_length</span><span class="p">;</span>
+
+<span class="n">ret</span> <span class="o">=</span> <span class="n">mysql_stmt_bind_result</span><span class="p">(</span><span class="n">stmt</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">result</span><span class="p">);</span>
+
+<span class="k">if</span><span class="p">(</span><span class="n">ret</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="n">printf</span><span class="p">(</span><span class="s">&#34;mysql_stmt_bind_result error: %s</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span> <span class="n">mysql_error</span><span class="p">(</span><span class="n">handle</span><span class="p">));</span>
+    <span class="k">return</span> <span class="o">-</span><span class="mi">3</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="n">ret</span> <span class="o">=</span> <span class="n">mysql_stmt_execute</span><span class="p">(</span><span class="n">stmt</span><span class="p">);</span>
+
+<span class="k">if</span><span class="p">(</span><span class="n">ret</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="n">printf</span><span class="p">(</span><span class="s">&#34;mysql_stmt_execute error: %s</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span> <span class="n">mysql_error</span><span class="p">(</span><span class="n">handle</span><span class="p">));</span>
+    <span class="k">return</span> <span class="o">-</span><span class="mi">4</span><span class="p">;</span>
+<span class="p">}</span>
+
+<span class="n">ret</span> <span class="o">=</span> <span class="n">mysql_stmt_store_result</span><span class="p">(</span><span class="n">stmt</span><span class="p">);</span>
+
+<span class="k">if</span><span class="p">(</span><span class="n">ret</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="n">printf</span><span class="p">(</span><span class="s">&#34;mysql_stmt_store_result error: %s</span><span class="se">\n</span><span class="s">&#34;</span><span class="p">,</span> <span class="n">mysql_error</span><span class="p">(</span><span class="n">handle</span><span class="p">));</span>
+    <span class="k">return</span> <span class="o">-</span><span class="mi">5</span><span class="p">;</span>
+<span class="p">}</span>  
+
+<span class="k">while</span><span class="p">(</span><span class="mi">1</span><span class="p">)</span>
+<span class="p">{</span>
+    <span class="n">ret</span> <span class="o">=</span> <span class="n">mysql_stmt_fetch</span><span class="p">(</span><span class="n">stmt</span><span class="p">);</span>
+    <span class="k">if</span><span class="p">(</span><span class="n">ret</span> <span class="o">!=</span><span class="mi">0</span> <span class="o">&amp;&amp;</span> <span class="n">ret</span> <span class="o">!=</span> <span class="n">MYSQL_DATA_TRUNCATED</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="k">break</span><span class="p">;</span>
+    <span class="p">}</span>
+    <span class="kt">int</span> <span class="n">start</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+    <span class="k">while</span><span class="p">(</span><span class="n">start</span> <span class="o">&lt;</span> <span class="p">(</span><span class="kt">int</span><span class="p">)</span><span class="n">total_length</span><span class="p">)</span>
+    <span class="p">{</span>
+        <span class="n">result</span><span class="p">.</span><span class="n">buffer</span> <span class="o">=</span> <span class="n">buffer</span> <span class="o">+</span> <span class="n">start</span><span class="p">;</span>
+        <span class="n">result</span><span class="p">.</span><span class="n">buffer_length</span> <span class="o">=</span> <span class="mi">1</span><span class="p">;</span>
+        <span class="n">mysql_stmt_fetch_column</span><span class="p">(</span><span class="n">stmt</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">result</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="n">start</span><span class="p">);</span>
+        <span class="n">start</span> <span class="o">+=</span> <span class="n">result</span><span class="p">.</span><span class="n">buffer_length</span><span class="p">;</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+<span class="n">mysql_stmt_close</span><span class="p">(</span><span class="n">stmt</span><span class="p">);</span>
+</code></pre></div><p>可以看到多了fetch操作将result的buffer成员指向外部接受用的buffer的最新的接受位置，mysql_stmt_fetch_column进行了接收工作，MYSQL_BIND result也有了新的定义方式</p>
+
+</section>
+
+
+    <footer class="article-footer">
+    
+    <section class="article-tags">
+        
+            <a href="/tags/%E6%95%B0%E6%8D%AE%E5%BA%93/">数据库</a>
+        
+    </section>
+
+
+    
+    <section class="article-copyright">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-copyright" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="12" r="9" />
+  <path d="M14.5 9a3.5 4 0 1 0 0 6" />
+</svg>
+
+
+
+        <span>Licensed under CC BY-NC-SA 4.0</span>
+    </section>
+    </footer>
+
+
+    
+</article>
+
+    <aside class="related-contents--wrapper">
+    
+    
+        <h2 class="section-title">Related contents</h2>
+        <div class="related-contents">
+            <div class="flex article-list--tile">
+                
+                    
+<article class="has-image">
+    <a href="/p/mysql/">
+        
+        
+            <div class="article-image">
+                <img src="/p/mysql/537.c2519e5ebb5b221869f88dd1984e6b87_huc4722358eae36c77295feb62b7419b0c_34031398_250x150_fill_q75_box_smart1.jpg" 
+                        width="250" 
+                        height="150" 
+                        loading="lazy" 
+                        data-key="Mysql" 
+                        data-hash="md5-wlGeXrtbIhhp&#43;I3RmE5rhw==">
+                
+            </div>
+        
+
+        <div class="article-details">
+            <h2 class="article-title">Mysql</h2>
+        </div>
+    </a>
+</article>
+                
+                    
+<article class="has-image">
+    <a href="/p/redis/">
+        
+        
+            <div class="article-image">
+                <img src="/p/redis/353.22a8d1f92c2c1fc3624e87f59876419c_hue47bacef190d5647cba0a16e01e338ad_4596808_250x150_fill_q75_box_smart1.jpg" 
+                        width="250" 
+                        height="150" 
+                        loading="lazy" 
+                        data-key="Redis" 
+                        data-hash="md5-IqjR&#43;SwsH8NiTof1mHZBnA==">
+                
+            </div>
+        
+
+        <div class="article-details">
+            <h2 class="article-title">Redis</h2>
+        </div>
+    </a>
+</article>
+                
+            </div>
+        </div>
+    
+</aside>
+
+     
+     
+        
+    <div class="disqus-container">
+    <div id="disqus_thread"></div>
+<script type="application/javascript">
+    var disqus_config = function () {
+    
+    
+    
+    };
+    (function() {
+        if (["localhost", "127.0.0.1"].indexOf(window.location.hostname) != -1) {
+            document.getElementById('disqus_thread').innerHTML = 'Disqus comments not available by default when the website is previewed locally.';
+            return;
+        }
+        var d = document, s = d.createElement('script'); s.async = true;
+        s.src = '//' + "hugo-theme-stack" + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="https://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+</div>
+
+<style>
+    .disqus-container {
+        background-color: var(--card-background);
+        border-radius: var(--card-border-radius);
+        box-shadow: var(--shadow-l1);
+        padding: var(--card-padding);
+    }
+</style>
+
+<script>
+    window.addEventListener('onColorSchemeChange', (e) => {
+        if (DISQUS) {
+            DISQUS.reset({
+                reload: true
+            });
+        }
+    })
+</script>
+
+    
+
+    <footer class="site-footer">
+    <section class="copyright">
+        &copy; 
+        
+            2020 - 
+        
+        2022 Gao&#39;s Happy Day
+    </section>
+    
+    <section class="powerby">
+        Built with <a href="https://gohugo.io/" target="_blank" rel="noopener">Hugo</a> <br />
+        Theme <b><a href="https://github.com/CaiJimmy/hugo-theme-stack" target="_blank" rel="noopener" data-version="3.2.0">Stack</a></b> designed by <a href="https://jimmycai.com" target="_blank" rel="noopener">Jimmy</a>
+    </section>
+</footer>
+
+
+    
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+    
+    <div class="pswp__bg"></div>
+
+    
+    <div class="pswp__scroll-wrap">
+
+        
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+
+        
+        <div class="pswp__ui pswp__ui--hidden">
+
+            <div class="pswp__top-bar">
+
+                
+
+                <div class="pswp__counter"></div>
+
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+
+                <button class="pswp__button pswp__button--share" title="Share"></button>
+
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+
+                
+                
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                        <div class="pswp__preloader__cut">
+                            <div class="pswp__preloader__donut"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div>
+            </div>
+
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div><script 
+                src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js"integrity="sha256-ePwmChbbvXbsO02lbM3HoHbSHTHFAeChekF1xKJdleo="crossorigin="anonymous"
+                defer="true"
+                >
+            </script><script 
+                src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js"integrity="sha256-UKkzOn/w1mBxRmLLGrSeyB4e1xbrp4xylgAWb3M42pU="crossorigin="anonymous"
+                defer="true"
+                >
+            </script><link 
+                rel="stylesheet" 
+                href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.css"integrity="sha256-c0uckgykQ9v5k&#43;IqViZOZKc47Jn7KQil4/MP3ySA3F8="crossorigin="anonymous"
+            ><link 
+                rel="stylesheet" 
+                href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.css"integrity="sha256-SBLU4vv6CA6lHsZ1XyTdhyjJxCjPif/TRkjnsyGAGnE="crossorigin="anonymous"
+            >
+
+            </main>
+    
+        <aside class="sidebar right-sidebar sticky">
+            <section class="widget archives">
+                <div class="widget-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-hash" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <line x1="5" y1="9" x2="19" y2="9" />
+  <line x1="5" y1="15" x2="19" y2="15" />
+  <line x1="11" y1="4" x2="7" y2="20" />
+  <line x1="17" y1="4" x2="13" y2="20" />
+</svg>
+
+
+
+                </div>
+                <h2 class="widget-title section-title">Table of contents</h2>
+                
+                <div class="widget--toc">
+                    <nav id="TableOfContents">
+  <ol>
+    <li><a href="#mysql安装与配置">mysql安装与配置</a></li>
+    <li><a href="#mysql-建表添加数据等操作">mysql 建表添加数据等操作</a></li>
+    <li><a href="#c-api远程调用mysql">C api远程调用mysql</a>
+      <ol>
+        <li><a href="#安装库">安装库：</a></li>
+        <li><a href="#基本操作">基本操作:</a></li>
+        <li><a href="#其他操作">其他操作</a></li>
+      </ol>
+    </li>
+  </ol>
+</nav>
+                </div>
+            </section>
+        </aside>
+    
+
+        </div>
+        <script 
+                src="https://cdn.jsdelivr.net/npm/node-vibrant@3.1.5/dist/vibrant.min.js"integrity="sha256-5NovOZc4iwiAWTYIFiIM7DxKUXKWvpVEuMEPLzcm5/g="crossorigin="anonymous"
+                defer="false"
+                >
+            </script><script type="text/javascript" src="/ts/main.js" defer></script>
+<script>
+    (function () {
+        const customFont = document.createElement('link');
+        customFont.href = "https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap";
+
+        customFont.type = "text/css";
+        customFont.rel = "stylesheet";
+
+        document.head.appendChild(customFont);
+    }());
+</script>
+
+    </body>
+</html>

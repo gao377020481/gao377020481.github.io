@@ -6,7 +6,30 @@
     <description>Recent content in 数据库 on Gao&#39;s Happy Day</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Fri, 22 May 2020 00:00:00 +0000</lastBuildDate><atom:link href="https://gao377020481.github.io/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Sat, 06 Jun 2020 00:00:00 +0000</lastBuildDate><atom:link href="https://gao377020481.github.io/categories/%E6%95%B0%E6%8D%AE%E5%BA%93/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Mysql</title>
+      <link>https://gao377020481.github.io/p/mysql/</link>
+      <pubDate>Sat, 06 Jun 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://gao377020481.github.io/p/mysql/</guid>
+      <description>Mysql 视图 视图（view）是一种虚拟存在的表，是一个逻辑表，本身并不包含数据。其内容由查询定义。 基表：用来创建视图的表叫做基表。 通过视图，可以展现基表的部分数据。 视图数据来自定义视图的查询中使用的表，使用视图动态生成。
+优点  简单：使用视图的用户完全不需要关心后面对应的表的结构、关联条件和筛选条件，对用户来说已经是过滤好的复合条件的结果集。 安全：使用视图的用户只能访问他们被允许查询的结果集，对表的权限管理并不能限制到某个行某个列，但是通过视图就可以简单的实现。 数据独立：一旦视图的结构确定了，可以屏蔽表结构变化对用户的影响，源表增加列对视图没有影响；源表修改列名，则可以通过修改视图来解决，不会造成对访问者的影响。  CREATEVIEW&amp;lt;视图名&amp;gt;AS&amp;lt;SELECT语句&amp;gt;触发器 触发器（trigger）是MySQL提供给程序员和数据分析员来保证数据完整性的一种方法，它是与表事件相关的特殊的存储过程，它的执行不是由程序调用，也不是手工启动，而是由事件来触发，比如当对一个表进行DML操作（ insert ， delete ， update ）时就会激活它执行。
+监视对象： table
+监视事件： insert 、 update 、 delete
+触发时间： before ， after
+触发事件： insert 、 update 、 delete
+CREATETABLE`work`(`id`INTPRIMARYKEYauto_increment,`address`VARCHAR(32))DEFAULTcharset=utf8ENGINE=INNODB;CREATETABLE`time`(`id`INTPRIMARYKEYauto_increment,`time`DATETIME)DEFAULTcharset=utf8ENGINE=INNODB;CREATETRIGGERtrig_test1AFTERINSERTON`work`FOREACHROWINSERTINTO`time`VALUES(NULL,NOW());存储过程 SQL语句需要先编译然后执行，而存储过程（Stored Procedure）是一组为了完成特定功能的SQL语句集，经编译后存储在数据库中，用户通过指定存储过程的名字并给定参数（如果该存储过程带有参数）来调用执行它。
+存储过程是可编程的函数，在数据库中创建并保存，可以由SQL语句和控制结构组成。当想要在不同的应用程序或平台上执行相同的函数，或者封装特定功能时，存储过程是非常有用的。数据库中的存储过程可以看做是对编程中面向对象方法的模拟，它允许控制数据的访问方式。
+优点
+ 能完成较复杂的判断和运算 有限的编程 可编程行强，灵活 SQL编程的代码可重复使用 执行的速度相对快一些 减少网络之间的数据传输，节省开销  CREATEPROCEDURE过程名([[IN|OUT|INOUT]参数名数据类型[,[IN|OUT|INOUT]参数名数据类型…]])[特性...]过程体存储过程根据需要可能会有输入、输出、输入输出参数，如果有多个参数用&amp;quot;,&amp;ldquo;分割开。
+MySQL 存储过程的参数用在存储过程的定义，共有三种参数类型 IN , OUT , INOUT 。
+IN ：参数的值必须在调用存储过程时指定，0在存储过程中修改该参数的值不能被返回，可以设置默认值
+OUT ：该值可在存储过程内部被改变，并可返回
+INOUT ：调用时指定，并且可被改变和返回
+过程体的开始与结束使用 BEGIN 与 END 进行标识。</description>
+    </item>
+    
     <item>
       <title>Redis</title>
       <link>https://gao377020481.github.io/p/redis/</link>
@@ -14,21 +37,29 @@
       
       <guid>https://gao377020481.github.io/p/redis/</guid>
       <description>Redis Remote Dictionary Service， 远程字典服务，内存式数据库，非关系型，KV结构
-三张网图描述redis基本数据结构，并引出第一节编码：   
-value编码 String 字符数组，该字符串是动态字符串，字符串长度小于1M时，加倍扩容；超过1M每次只多扩1M；字符串最大长度为512M；Tips：redis字符串是二进制安全字符串；可以存储图片，二进制协议等二进制数据；1. 字符串长度小于等于 20 且能转成整数，则使用 int 存储；2. 字符串长度小于等于 44，则使用 embstr 存储；3. 字符串长度大于 44，则使用 raw 存储； 44为界
-首先说明redis以64字节作为大小结构分界点，但其sdshdr和redisobject结构会占用一些空间，所以真正保存数据的大小小于64字节旧版本使用39为界，新版本使用44为界，这是因为旧版本中sdshdr占用8字节目前的sdshdr8是针对小结构的优化（大结构使用shshdr16，64），仅占用3字节，节省了5字节空间。所以新版本以44为界。 raw和embstr
-raw 编码会调用两次内存分配函数来分别创建 redisObject 结构和 sdshdr 结构， 而 embstr 编码则通过调用一次内存分配函数来分配一块连续的空间存储两结构embstr使用连续内存，更高效的利用缓存，且一次内存操作带来了更好的创建和销毁效率 操作方式与转换
-1.以一个浮点数的value作为例子，浮点数会被转换成字符串然后存储到数据库内。如果要对V进行操作，他也会先从字符串转换为浮点数然后再进行操作。2.以一个整数2000的value作为例子，该数会被保存为int但使用append进行追加一个字符串“is a good number！”后， 该值会被转换为embstr， 然而embstr的对象从redis视角看来是只读的（未实现操作embstr的方法）， 所以该对象又会被转换raw然后实行相应操作并保存为raw List 链表，很容易理解
+三张网图描述redis基本数据结构：   
+数据与编码 String 字符数组，该字符串是动态字符串，字符串长度小于1M时，加倍扩容；超过1M每次只多扩1M；字符串最大长度为512M；
+Tips：redis字符串是二进制安全字符串；可以存储图片，二进制协议等二进制数据；
+ 字符串长度小于等于 20 且能转成整数，则使用 int 存储； 字符串长度小于等于 44，则使用 embstr 存储； 字符串长度大于 44，则使用 raw 存储；  44为界
+首先说明redis以64字节作为大小结构分界点，但其sdshdr和redisobject结构会占用一些空间，所以真正保存数据的大小小于64字节
+旧版本使用39为界，新版本使用44为界，这是因为旧版本中sdshdr占用8字节目前的sdshdr8是针对小结构的优化（大结构使用shshdr16，64），仅占用3字节，节省了5字节空间。所以新版本以44为界。
+raw和embstr
+raw 编码会调用两次内存分配函数来分别创建 redisObject 结构和 sdshdr 结构， 而 embstr 编码则通过调用一次内存分配函数来分配一块连续的空间存储两结构
+embstr使用连续内存，更高效的利用缓存，且一次内存操作带来了更好的创建和销毁效率
+操作方式与转换
+  以一个浮点数的value作为例子，浮点数会被转换成字符串然后存储到数据库内。如果要对V进行操作，他也会先从字符串转换为浮点数然后再进行操作。
+  以一个整数2000的value作为例子，该数会被保存为int但使用append进行追加一个字符串“is a good number！”后， 该值会被转换为embstr， 然而embstr的对象从redis视角看来是只读的（未实现操作embstr的方法）， 所以该对象又会被转换raw然后实行相应操作并保存为raw
+  List 双向链表，很容易理解，但其node有讲究（压缩时使用ziplist）
 列表中数据是否压缩的依据：
- 元素长度小于 48，不压缩； 元素压缩前后长度差不超过 8，不压缩；  </description>
+ 元素长度小于 48，不压缩； 元素压缩前后长度差不超过 8，不压缩；  直接放数据结构，然后分析:</description>
     </item>
     
     <item>
       <title>Mysql基本知识</title>
-      <link>https://gao377020481.github.io/p/mysql/</link>
+      <link>https://gao377020481.github.io/p/mysql%E5%9F%BA%E6%9C%AC%E7%9F%A5%E8%AF%86/</link>
       <pubDate>Wed, 12 Feb 2020 00:00:00 +0000</pubDate>
       
-      <guid>https://gao377020481.github.io/p/mysql/</guid>
+      <guid>https://gao377020481.github.io/p/mysql%E5%9F%BA%E6%9C%AC%E7%9F%A5%E8%AF%86/</guid>
       <description>MYSQL mysql安装与配置 在虚拟机上安装mysql,使用apt-get install就可以 这里我只检索到了mysql-server-5.7就安装了5.7
 在本地win10上安装mysqlbench用于连接虚拟机的mysql服务器 这里使用网络连接，可能是因为mysql版本的原因，本来应该在/etc/mysql中的my.cnf文件中显式的配置有基本信息，我只需要修改部分，但5.7在/etc/mysql/mysql.conf.d/mysqld.cnf,在它的基础上修改对应的bind-address为0.0.0.0保证回环地址可访问：
 # # The MySQL database server configuration file. # # You can copy this to one of: # - &amp;#34;/etc/mysql/my.cnf&amp;#34; to set global options, # - &amp;#34;~/.my.cnf&amp;#34; to set user-specific options. # # One can use all long options that the program supports. # Run program with --help to get a list of available options and with # --print-defaults to see which it would actually understand and use.</description>
