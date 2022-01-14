@@ -172,8 +172,8 @@
 	</a>
 	
 </figure></p>
-<h1 id="数据与编码">数据与编码</h1>
-<h2 id="string"><strong>String</strong></h2>
+<h2 id="数据与编码">数据与编码</h2>
+<h3 id="string"><strong>String</strong></h3>
 <p>字符数组，该字符串是动态字符串，字符串长度小于1M时，加倍扩容；超过1M每次只多扩1M；字符串最大长度为512M；</p>
 <p>Tips：redis字符串是二进制安全字符串；可以存储图片，二进制协议等二进制数据；</p>
 <ol>
@@ -196,7 +196,7 @@
 <p>以一个整数2000的value作为例子，该数会被保存为int但使用append进行追加一个字符串“is a good number！”后， 该值会被转换为embstr， 然而embstr的对象从redis视角看来是只读的（未实现操作embstr的方法）， 所以该对象又会被转换raw然后实行相应操作并保存为raw</p>
 </li>
 </ol>
-<h2 id="list"><strong>List</strong></h2>
+<h3 id="list"><strong>List</strong></h3>
 <p>双向链表，很容易理解，但其node有讲究（压缩时使用ziplist）</p>
 <p>列表中数据是否压缩的依据：</p>
 <ol>
@@ -247,7 +247,7 @@
 <span class="p">}</span> <span class="n">quicklist</span><span class="p">;</span>
 
 </code></pre></div><p>OK, 可以很明显看到list本身是一个双向链表，但他会记录所有的entry的数目，node本身可能用来描述一个ziplist，ziplist本身是一块连续的内存空间，ziplist内的node不保存前后指针，因为其连续内存的特性，只需要保存当前size和前一项size即可完成向前和向后寻址，提供和双项链表一致的操作。</p>
-<h2 id="hash"><strong>hash</strong></h2>
+<h3 id="hash"><strong>hash</strong></h3>
 <p>哈希表，很容易理解</p>
 <p>但底层使用ziplist和dict两种结构进行存储。</p>
 <ol>
@@ -269,14 +269,14 @@
 	
 </figure></p>
 <p>当rehash工作量太大时，需要使用渐进式rehash，此时不会发生</p>
-<h2 id="set"><strong>set</strong></h2>
+<h3 id="set"><strong>set</strong></h3>
 <p>集合，不要求有序</p>
 <ol>
 <li>元素都为整数且节点数量小于等于 512（set-max-intset-entries），则使用整数数组存储；</li>
 <li>元素当中有一个不是整数或者节点数量大于 512，则使用字典存储；</li>
 </ol>
 <p>类比hash内部，这里不再详细分析，字典编码Value为NULL即可</p>
-<h2 id="zset"><strong>zset</strong></h2>
+<h3 id="zset"><strong>zset</strong></h3>
 <p>有序的集合</p>
 <ol>
 <li>节点数量大于 128或者有一个字符串长度大于64，则使用跳表（skiplist）；</li>
@@ -324,8 +324,8 @@
 	</a>
 	
 </figure></p>
-<h1 id="协议与网络">协议与网络</h1>
-<h2 id="网络层">网络层</h2>
+<h2 id="协议与网络">协议与网络</h2>
+<h3 id="网络层">网络层</h3>
 <p>redis6.0 单reactor模型，并发处理连接，线程串行处理命令。</p>
 <p>reactor管理触发的socket，调用其对应的callback（accept,recv or send），这里callback使用单线程串行处理</p>
 <p><figure 
@@ -340,18 +340,18 @@
 	</a>
 	
 </figure></p>
-<h2 id="事务">事务</h2>
+<h3 id="事务">事务</h3>
 <p>MULTI 开启事务，事务执行过程中，单个命令是入队列操作，直到调用 EXEC 才会一起执行；</p>
 <p>也可以使用DISCARD取消事务</p>
 <p>WATCH 检测key的变动，若在事务执行中，key变动则取消事务，在事务开启前调用，乐观锁实现（cas）， 若被取消则事务返回 nil。</p>
-<h2 id="lua-脚本">lua 脚本</h2>
+<h3 id="lua-脚本">lua 脚本</h3>
 <ol>
 <li>lua 脚本实现原子性。</li>
 <li>redis中加载了一个lua虚拟机，用来执行redis lua脚本。redis lua 脚本的执行是原子性的，当某个脚本正在执行的时候，不会有其他命令或者脚本被执行。</li>
 <li>lua脚本当中的命令会直接修改数据状态。</li>
 </ol>
 <p>Tips：如果项目中使用了lua脚本，不需要使用上面的事务命令。</p>
-<h2 id="发布订阅">发布订阅</h2>
+<h3 id="发布订阅">发布订阅</h3>
 <p>为了支持消息的多播机制，redis引入了发布订阅模块。disque 消息队列</p>
 <p><strong>订阅</strong></p>
 <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-c" data-lang="c">
@@ -385,17 +385,17 @@
 <p>通过遍历整个 pubsub_patterns 链表，程序可以检查所有正在被订阅的模式，以及订阅这些模式的客户端。</p>
 <p><strong>发布到模式</strong></p>
 <p>PUBLISH 除了将 message 发送到所有订阅 channel 的客户端之外， 它还会将 channel 和 pubsub_patterns 中的模式进行对比， 如果 channel 和某个模式匹配的话， 那么也将 message 发送到订阅那个模式的客户端。</p>
-<h2 id="redis60-io多线程">redis6.0 io多线程</h2>
+<h3 id="redis60-io多线程">redis6.0 io多线程</h3>
 <p>redis6.0版本后添加的 io多线程主要解决redis协议的压缩以及解压缩的耗时问题；一般项目中不
 需要开启；如果有大量并发请求，且返回数据包一般比较大的场景才有它的用武之地；</p>
 <p><strong>单线程</strong></p>
 <p>正常的redis单线程处理事件，但是其read write操作都需要经过内核栈，需要从内核的内存空间中取出或发送包，内核到用户内存空间的复制又涉及页表项的修改等。所以总的来说IO占用的CPU时间较多。如果这时引入多线程IO，有效利用多核可以进一步提升性能。</p>
 <p><strong>多线程实现</strong></p>
 <p>外部来看还是单线程的状态，这是因为多线程参考主线程的phase。只有主线程处于read phase，其他线程才做read操作，只有主线程处于write phase其他线程才做write。并且任务的分配也由主线程完成，每个thread维护一个任务队列（链表组织），主线程唤醒thread去执行任务，可以使用cond去唤醒。</p>
-<h1 id="redis扩展">redis扩展</h1>
+<h2 id="redis扩展">redis扩展</h2>
 <p>Redis 通过对外提供一套 API 和一些数据类型，可以供开发者开发自己的模块并且加载到 redis
 中。类似插件。在不侵入 redis 源码基础上，提供一种高效的扩展数据结构的方式，也可以用来实现原子操作。</p>
-<h2 id="入口函数">入口函数</h2>
+<h3 id="入口函数">入口函数</h3>
 <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-c" data-lang="c">
 <span class="kt">int</span> <span class="nf">RedisModule_OnLoad</span><span class="p">(</span><span class="n">RedisModuleCtx</span> <span class="o">*</span><span class="n">ctx</span><span class="p">,</span> <span class="n">RedisModuleString</span> <span class="o">**</span><span class="n">argv</span><span class="p">,</span> <span class="kt">int</span>
 <span class="n">argc</span><span class="p">);</span>
@@ -410,7 +410,7 @@
 </span><span class="c1"></span><span class="k">typedef</span> <span class="nf">int</span> <span class="p">(</span><span class="o">*</span><span class="n">RedisModuleCmdFunc</span><span class="p">)(</span><span class="n">RedisModuleCtx</span> <span class="o">*</span><span class="n">ctx</span><span class="p">,</span> <span class="n">RedisModuleString</span>
 <span class="o">**</span><span class="n">argv</span><span class="p">,</span> <span class="kt">int</span> <span class="n">argc</span><span class="p">);</span>
 
-</code></pre></div><h2 id="redisbloom">RedisBloom</h2>
+</code></pre></div><h3 id="redisbloom">RedisBloom</h3>
 <p>布隆过滤器，准确判断不存在的值</p>
 <pre><code>
 git clone https://github.com/RedisBloom/RedisBloom.git
@@ -421,10 +421,10 @@ vi redis.conf
 # loadmodules /path/to/redisbloom.so
 
 </code></pre><p>具体使用直接看github</p>
-<h2 id="hyperloglog">hyperloglog</h2>
+<h3 id="hyperloglog">hyperloglog</h3>
 <p>少量内存下统计一个集合中唯一元素数量的近似值。</p>
 <p>在Redis实现中，每个键只使用 12kb 进行计数，使用 16384 个桶子，每个桶子6bit，标准误差为0.8125% ，并且对可以计数的项目数没有限制，除非接近 个项目数（这似乎不太可能）</p>
-<h1 id="持久化">持久化</h1>
+<h2 id="持久化">持久化</h2>
 <p>redis 的数据全部在内存中，如果突然宕机，数据就会全部丢失，因此需要持久化来保证 Redis 的数据不会因为故障而丢失，redis 重启的时候可以重新加载持久化文件来恢复数据；</p>
 <p>三种方式：</p>
 <ol>
@@ -438,7 +438,7 @@ vi redis.conf
 <p>rdb + aof</p>
 </li>
 </ol>
-<h2 id="aof"><strong>AOF</strong></h2>
+<h3 id="aof"><strong>AOF</strong></h3>
 <p>可以认为是一系列的操作log，以协议文本的方式，将所有对数据库进行过写入的命令（及其参数）记录到 AOF 文件，以此达到记录数据库状态的目的。</p>
 <p>同步命令到 AOF 文件的整个过程可以分为三个阶段：</p>
 <ol>
@@ -459,7 +459,7 @@ vi redis.conf
 <p>不过， 使用子进程也有一个问题需要解决： 因为子进程在进行 AOF 重写期间， 主进程还需要继续处理命令， 而新的命令可能对现有的数据进行修改， 这会让当前数据库的数据和重写后的 AOF 文件中的数据不一致。</p>
 <p>为了解决这个问题， Redis 增加了一个 AOF 重写缓存， 这个缓存在 fork 出子进程之后开始启用， Redis 主进程在接到新的写命令之后， 除了会将这个写命令的协议内容追加到现有的 AOF 文件之外， 还会追加到这个缓存中。</p>
 <p>重写完毕后会将缓存并入新的AOF文件中去。</p>
-<h2 id="rdb"><strong>RDB</strong></h2>
+<h3 id="rdb"><strong>RDB</strong></h3>
 <p>可以认为是当前存储的内存映像or快照，将数据库的快照（snapshot）以二进制的方式保存到磁盘中。</p>
 <p>核心方法：保存与载入</p>
 <p><strong>保存</strong></p>
@@ -473,12 +473,12 @@ SAVE的时候AOF一样会写入，因为AOF写入又后台线程完成</p>
 <p><strong>载入</strong></p>
 <p>在载入期间， 服务器每载入 1000 个键就处理一次所有已到达的请求， 不过只有 PUBLISH 、 SUBSCRIBE 、 PSUBSCRIBE 、 UNSUBSCRIBE 、 PUNSUBSCRIBE 五个命令的请求会被正确地处理， 其他命令一律返回错误。 等到载入完成之后， 服务器才会开始正常处理所有命令。</p>
 <p>Tips:发布与订阅功能和其他数据库功能是完全隔离的，前者不写入也不读取数据库，所以在服务器载入期间，订阅与发布功能仍然可以正常使用，而不必担心对载入数据的完整性产生影响。</p>
-<h2 id="rdb--aof"><strong>RDB + AOF</strong></h2>
+<h3 id="rdb--aof"><strong>RDB + AOF</strong></h3>
 <p>因为RDB的保存过程较长可能会错过一些数据，所以在RDB进行保存的时候使用AOF缓存来记录保存时发生的写入操作，然后将AOF缓存持久化为AOF，通过AOF+RDB就可以完整的表述数据</p>
-<h1 id="主从复制">主从复制</h1>
+<h2 id="主从复制">主从复制</h2>
 <p>主要用来实现 redis 数据的可靠性。防止主 redis 所在磁盘损坏，造成数据永久丢失。</p>
 <p>主从之间采用异步复制的方式。</p>
-<h1 id="集群">集群</h1>
+<h2 id="集群">集群</h2>
 <p>Redis cluster集群</p>
 
 </section>
@@ -729,31 +729,40 @@ SAVE的时候AOF一样会写入，因为AOF写入又后台线程完成</p>
                 <div class="widget--toc">
                     <nav id="TableOfContents">
   <ol>
-    <li><a href="#string"><strong>String</strong></a></li>
-    <li><a href="#list"><strong>List</strong></a></li>
-    <li><a href="#hash"><strong>hash</strong></a></li>
-    <li><a href="#set"><strong>set</strong></a></li>
-    <li><a href="#zset"><strong>zset</strong></a></li>
-  </ol>
-
-  <ol>
-    <li><a href="#网络层">网络层</a></li>
-    <li><a href="#事务">事务</a></li>
-    <li><a href="#lua-脚本">lua 脚本</a></li>
-    <li><a href="#发布订阅">发布订阅</a></li>
-    <li><a href="#redis60-io多线程">redis6.0 io多线程</a></li>
-  </ol>
-
-  <ol>
-    <li><a href="#入口函数">入口函数</a></li>
-    <li><a href="#redisbloom">RedisBloom</a></li>
-    <li><a href="#hyperloglog">hyperloglog</a></li>
-  </ol>
-
-  <ol>
-    <li><a href="#aof"><strong>AOF</strong></a></li>
-    <li><a href="#rdb"><strong>RDB</strong></a></li>
-    <li><a href="#rdb--aof"><strong>RDB + AOF</strong></a></li>
+    <li><a href="#数据与编码">数据与编码</a>
+      <ol>
+        <li><a href="#string"><strong>String</strong></a></li>
+        <li><a href="#list"><strong>List</strong></a></li>
+        <li><a href="#hash"><strong>hash</strong></a></li>
+        <li><a href="#set"><strong>set</strong></a></li>
+        <li><a href="#zset"><strong>zset</strong></a></li>
+      </ol>
+    </li>
+    <li><a href="#协议与网络">协议与网络</a>
+      <ol>
+        <li><a href="#网络层">网络层</a></li>
+        <li><a href="#事务">事务</a></li>
+        <li><a href="#lua-脚本">lua 脚本</a></li>
+        <li><a href="#发布订阅">发布订阅</a></li>
+        <li><a href="#redis60-io多线程">redis6.0 io多线程</a></li>
+      </ol>
+    </li>
+    <li><a href="#redis扩展">redis扩展</a>
+      <ol>
+        <li><a href="#入口函数">入口函数</a></li>
+        <li><a href="#redisbloom">RedisBloom</a></li>
+        <li><a href="#hyperloglog">hyperloglog</a></li>
+      </ol>
+    </li>
+    <li><a href="#持久化">持久化</a>
+      <ol>
+        <li><a href="#aof"><strong>AOF</strong></a></li>
+        <li><a href="#rdb"><strong>RDB</strong></a></li>
+        <li><a href="#rdb--aof"><strong>RDB + AOF</strong></a></li>
+      </ol>
+    </li>
+    <li><a href="#主从复制">主从复制</a></li>
+    <li><a href="#集群">集群</a></li>
   </ol>
 </nav>
                 </div>

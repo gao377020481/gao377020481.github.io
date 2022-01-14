@@ -133,12 +133,12 @@
 </header>
 
     <section class="article-content">
-    <h1 id="视图">视图</h1>
+    <h2 id="视图">视图</h2>
 <p>视图（view）是一种虚拟存在的表，是一个逻辑表，本身并不包含数据。其内容由查询定义。
 基表：用来创建视图的表叫做基表。
 通过视图，可以展现基表的部分数据。
 视图数据来自定义视图的查询中使用的表，使用视图动态生成。</p>
-<h2 id="优点">优点</h2>
+<h3 id="优点">优点</h3>
 <ol>
 <li>简单：使用视图的用户完全不需要关心后面对应的表的结构、关联条件和筛选条件，对用户来说已经是过滤好的复合条件的结果集。</li>
 <li>安全：使用视图的用户只能访问他们被允许查询的结果集，对表的权限管理并不能限制到某个行某个列，但是通过视图就可以简单的实现。</li>
@@ -147,7 +147,7 @@
 <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sql" data-lang="sql"><span class="w">
 </span><span class="w"></span><span class="k">CREATE</span><span class="w"> </span><span class="k">VIEW</span><span class="w"> </span><span class="o">&lt;</span><span class="err">视图名</span><span class="o">&gt;</span><span class="w"> </span><span class="k">AS</span><span class="w"> </span><span class="o">&lt;</span><span class="n">SELECT语句</span><span class="o">&gt;</span><span class="w">
 </span><span class="w">
-</span></code></pre></div><h1 id="触发器">触发器</h1>
+</span></code></pre></div><h2 id="触发器">触发器</h2>
 <p>触发器（trigger）是MySQL提供给程序员和数据分析员来保证数据完整性的一种方法，它是与表事件相关的特殊的存储过程，它的执行不是由程序调用，也不是手工启动，而是由事件来触发，比如当对一个表进行DML操作（ insert ， delete ， update ）时就会激活它执行。</p>
 <p>监视对象： table</p>
 <p>监视事件： insert 、 update 、 delete</p>
@@ -168,10 +168,10 @@
 </span><span class="w"></span><span class="k">ON</span><span class="w"> </span><span class="o">`</span><span class="k">work</span><span class="o">`</span><span class="w"> </span><span class="k">FOR</span><span class="w"> </span><span class="k">EACH</span><span class="w"> </span><span class="k">ROW</span><span class="w">
 </span><span class="w"></span><span class="k">INSERT</span><span class="w"> </span><span class="k">INTO</span><span class="w"> </span><span class="o">`</span><span class="n">time</span><span class="o">`</span><span class="w"> </span><span class="k">VALUES</span><span class="p">(</span><span class="k">NULL</span><span class="p">,</span><span class="n">NOW</span><span class="p">());</span><span class="w">
 </span><span class="w">
-</span></code></pre></div><h1 id="存储过程">存储过程</h1>
+</span></code></pre></div><h2 id="存储过程">存储过程</h2>
 <p>SQL语句需要先编译然后执行，而存储过程（Stored Procedure）是一组为了完成特定功能的SQL语句集，经编译后存储在数据库中，用户通过指定存储过程的名字并给定参数（如果该存储过程带有参数）来调用执行它。</p>
 <p>存储过程是可编程的函数，在数据库中创建并保存，可以由SQL语句和控制结构组成。当想要在不同的应用程序或平台上执行相同的函数，或者封装特定功能时，存储过程是非常有用的。数据库中的存储过程可以看做是对编程中面向对象方法的模拟，它允许控制数据的访问方式。</p>
-<p><strong>优点</strong></p>
+<h3 id="优点-1"><strong>优点</strong></h3>
 <ol>
 <li>能完成较复杂的判断和运算 有限的编程</li>
 <li>可编程行强，灵活</li>
@@ -189,7 +189,7 @@
 <p>OUT ：该值可在存储过程内部被改变，并可返回</p>
 <p>INOUT ：调用时指定，并且可被改变和返回</p>
 <p>过程体的开始与结束使用 BEGIN 与 END 进行标识。</p>
-<h1 id="游标">游标</h1>
+<h2 id="游标">游标</h2>
 <p>游标是针对行操作的，对从数据库中 select 查询得到的结果集的每一行可以进行分开的独立的相同或者不相同的操作。</p>
 <p>对于取出多行数据集，需要针对每行操作；可以使用游标；游标常用于存储过程、函数、触发器、事件。</p>
 <p>游标相当于迭代器</p>
@@ -240,35 +240,35 @@
 </span><span class="w"></span><span class="k">SELECT</span><span class="w"> </span><span class="o">@</span><span class="n">total</span><span class="p">;</span><span class="w">
 </span><span class="w">
 </span><span class="w">
-</span></code></pre></div><h1 id="索引">索引</h1>
+</span></code></pre></div><h2 id="索引">索引</h2>
 <p>分类：主键索引、唯一索引、普通索引、组合索引、以及全文索引；</p>
-<h2 id="主键索引">主键索引</h2>
+<h3 id="主键索引">主键索引</h3>
 <p>非空唯一索引，一个表只有一个主键索引；在 innodb 中，主键索引的B+树包含表数据信息。</p>
 <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sql" data-lang="sql"><span class="w">
 </span><span class="w"></span><span class="k">PRIMARY</span><span class="w"> </span><span class="k">KEY</span><span class="p">(</span><span class="k">key</span><span class="p">)</span><span class="w">
 </span><span class="w">
-</span></code></pre></div><h2 id="唯一索引">唯一索引</h2>
+</span></code></pre></div><h3 id="唯一索引">唯一索引</h3>
 <p>不可以出现相同的值，可以有NULL值。</p>
 <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sql" data-lang="sql"><span class="w">
 </span><span class="w"></span><span class="k">UNIQUE</span><span class="p">(</span><span class="k">key</span><span class="p">)</span><span class="w">
 </span><span class="w">
-</span></code></pre></div><h2 id="普通索引">普通索引</h2>
+</span></code></pre></div><h3 id="普通索引">普通索引</h3>
 <p>允许出现相同的索引内容。</p>
 <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sql" data-lang="sql"><span class="w">
 </span><span class="w"></span><span class="k">INDEX</span><span class="p">(</span><span class="k">key</span><span class="p">)</span><span class="w">
 </span><span class="w"></span><span class="c1">-- OR
 </span><span class="c1"></span><span class="k">KEY</span><span class="p">(</span><span class="k">key</span><span class="p">[,...])</span><span class="w">
-</span></code></pre></div><h2 id="组合索引">组合索引</h2>
+</span></code></pre></div><h3 id="组合索引">组合索引</h3>
 <p>对表上的多个列进行索引。 符合<strong>最左匹配原则</strong>：从左到右依次匹配，遇到 &gt; &lt; between like 就停止匹配；</p>
 <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sql" data-lang="sql"><span class="w">
 </span><span class="w"></span><span class="k">INDEX</span><span class="w"> </span><span class="n">idx</span><span class="p">(</span><span class="n">key1</span><span class="p">,</span><span class="n">key2</span><span class="p">[,...]);</span><span class="w">
 </span><span class="w"></span><span class="k">UNIQUE</span><span class="p">(</span><span class="n">key1</span><span class="p">,</span><span class="n">key2</span><span class="p">[,...]);</span><span class="w">
 </span><span class="w"></span><span class="k">PRIMARY</span><span class="w"> </span><span class="k">KEY</span><span class="p">(</span><span class="n">key1</span><span class="p">,</span><span class="n">key2</span><span class="p">[,...]);</span><span class="w">
 </span><span class="w">
-</span></code></pre></div><h2 id="全文索引">全文索引</h2>
+</span></code></pre></div><h3 id="全文索引">全文索引</h3>
 <p>将存储在数据库当中的整本书和整篇文章中的任意内容信息查找出来的技术；关键词 FULLTEXT;
 在短字符串中用 LIKE % ；在全文索引中用 match 和 against。</p>
-<h2 id="主键选择规则">主键选择规则</h2>
+<h3 id="主键选择规则">主键选择规则</h3>
 <p>innodb 中表是索引组织表，每张表有且仅有一个主键。</p>
 <ol>
 <li>如果显示设置 PRIMARY KEY ，则该设置的key为该表的主键。</li>
@@ -280,17 +280,17 @@
 </li>
 <li>没有非空唯一索引，则自动生成一个 6 字节的 _rowid 作为主键。</li>
 </ol>
-<h2 id="索引实现">索引实现</h2>
-<h3 id="索引存储">索引存储</h3>
+<h3 id="索引实现">索引实现</h3>
+<h4 id="索引存储"><strong>索引存储</strong></h4>
 <p>innodb由段、区、页组成；段分为数据段、索引段、回滚段等。区大小为 1 MB（一个区由64个连续页构成）。页的默认值为16k。页为逻辑页，磁盘物理页大小一般为 4K 或者 8K。为了保证区中的页的连续，存储引擎一般一次从磁盘中申请 4~5 个区。</p>
-<h3 id="聚集索引与辅助索引">聚集索引与辅助索引</h3>
+<h4 id="聚集索引与辅助索引"><strong>聚集索引与辅助索引</strong></h4>
 <p>聚集索引就是以主键为key构造B+树</p>
 <p>辅助索引就是以辅助索引为key构造B+树，value为对应的主键</p>
-<h3 id="页和b树">页和B+树</h3>
+<h4 id="页和b树"><strong>页和B+树</strong></h4>
 <p>B+树单个节点是页，页中由id再向下分裂指向多个页。</p>
 <p>我们知道主键索引的id就是B+树节点的key，为了范围查询我们不使用hashmap，那为什么不用B树呢？</p>
 <p>这是因为B树在叶子节点上保存数据，执行范围查询时，可能需要反复载入不连续的页，cache和内存的利用率都不是很高。而B+树直接进入叶子节点，然后范围查询只需要根据叶子节点之间的指针载入连续的页就行，这种确定的内存访问优化空间更大，效率更高。</p>
-<h2 id="索引失效">索引失效</h2>
+<h3 id="索引失效">索引失效</h3>
 <ol>
 <li>select &hellip; where A and B 若 A 和 B 中有一个不包含索引，则索引失效。</li>
 <li>索引字段参与运算，则索引失效；例如： from_unixtime(idx) = &lsquo;2021-04-30&rsquo;。</li>
@@ -299,7 +299,7 @@
 <li>在索引字段上使用 NOT &lt;&gt; != 索引失效；如果判断 id &lt;&gt; 0 则修改为 idx &gt; 0 or idx &lt; 0 。</li>
 <li>组合索引中，没使用第一列索引，索引失效。</li>
 </ol>
-<h2 id="索引原则">索引原则</h2>
+<h3 id="索引原则">索引原则</h3>
 <ol>
 <li>查询频次较⾼且数据量⼤的表建⽴索引；索引选择使⽤频次较⾼，过滤效果好的列或者组合。</li>
 <li>使⽤短索引；节点包含的信息多，较少磁盘io操作。</li>
@@ -310,13 +310,13 @@
 <li>不要 select * ； 尽量只列出需要的列字段。</li>
 <li>索引列，列尽量设置为非空。</li>
 </ol>
-<h1 id="约束">约束</h1>
+<h3 id="约束">约束</h3>
 <p>为了实现数据的完整性，对于innodb，提供了以下几种约束，primary key，unique key，foreign key， default, not null。</p>
-<h3 id="外键约束">外键约束</h3>
+<h4 id="外键约束"><strong>外键约束</strong></h4>
 <p>外键用来关联两个表，来保证参照完整性；MyISAM存储引擎本身并不支持外键，只起到注释作用。而innodb完整支持外键。</p>
-<p><strong>约束于索引的区别</strong></p>
+<h4 id="约束于索引的区别"><strong>约束于索引的区别</strong></h4>
 <p>创建主键索引或者唯一索引的时候同时创建了相应的约束；但是约束是<strong>逻辑上的概念</strong>；索引是一个<strong>数据结构</strong>既包含逻辑的概念也包含物理的存储方式；</p>
-<h1 id="事务">事务</h1>
+<h2 id="事务">事务</h2>
 <p>事务将数据库从一种一致性状态转换为另一种一致性状态。</p>
 <p>在数据库提交事务时，可以确保要么所有修改都已经保存，要么所有修改都不保存。</p>
 <p>事务是访问并更新数据库各种数据项的一个程序执行单元。</p>
@@ -335,31 +335,31 @@
 </span><span class="w"></span><span class="c1">-- 事务回滚到保存点
 </span><span class="c1"></span><span class="k">ROLLBACK</span><span class="w"> </span><span class="k">TO</span><span class="w"> </span><span class="p">[</span><span class="n">SAVEPOINT</span><span class="p">]</span><span class="w"> </span><span class="n">identifier</span><span class="w">
 </span><span class="w">
-</span></code></pre></div><h2 id="acid特性">ACID特性</h2>
-<h3 id="原子性a">原子性（A）</h3>
+</span></code></pre></div><h3 id="acid特性">ACID特性</h3>
+<h4 id="原子性a"><strong>原子性（A）</strong></h4>
 <p>事务操作要么都做（提交），要么都不做（回滚）。事务是访问并更新数据库各种数据项的一个程序执行单元，是不可分割的工作单位。通过undolog来实现回滚操作。undolog记录的是事务每步具体操作，当回滚时，回放事务具体操作的逆运算。</p>
-<h3 id="隔离性i">隔离性（I）</h3>
+<h4 id="隔离性i"><strong>隔离性（I）</strong></h4>
 <p>事务的隔离性要求每个读写事务的对象对其他事务的操作对象能相互分离，也就是事务提交前对其他事务都不可见。通过 MVCC 和 锁来实现。MVCC 时多版本并发控制，主要解决一致性非锁定读，通过记录和获取行版本，而不是使用锁来限制读操作，从而实现高效并发读性能。锁用来处理并发 DML 操作。数据库中提供粒度锁的策略，针对表（聚集索引B+树）、页（聚集索引B+树叶子节点）、行（叶子节点当中某一段记录行）三种粒度加锁。</p>
-<h3 id="持久性d">持久性（D）</h3>
+<h4 id="持久性d"><strong>持久性（D）</strong></h4>
 <p>事务提交后，事务DML操作将会持久化（写入redolog磁盘文件 哪一个页 页偏移值 具体数据）。即使发生宕机等故障，数据库也能将数据恢复。redolog记录的是物理日志。</p>
-<h3 id="一致性c">一致性（C）</h3>
+<h4 id="一致性c"><strong>一致性（C）</strong></h4>
 <p>一致性指事务将数据库从一种一致性状态转变为下一种一致性的状态，在事务执行前后，数据库完整性约束没有被破坏。例如：一个表的姓名是唯一键，如果一个事务对姓名进行修改，但是在事务提交或事务回滚后，表中的姓名变得不唯一了，这样就破坏了一致性。一致性由原子性、隔离性以及持久性共同来维护的。</p>
-<h2 id="事务并发异常">事务并发异常</h2>
-<h3 id="脏读">脏读</h3>
+<h3 id="事务并发异常">事务并发异常</h3>
+<h4 id="脏读"><strong>脏读</strong></h4>
 <p>事务（A）可以读到另外一个事务（B）中未提交的数据，也就是事务A读到脏数据。在读写分离的场景下，可以将slave节点设置为 READ UNCOMMITTED。此时脏读不影响，在slave上查询并不需要特别精准的返回值。</p>
-<h3 id="不可重复读">不可重复读</h3>
+<h4 id="不可重复读"><strong>不可重复读</strong></h4>
 <p>事务（A) 可以读到另外一个事务（B）中提交的数据。通常发生在一个事务中两次读到的数据是不一样的情况。不可重复读在隔离级别 READ COMMITTED 存在。一般而言，不可重复读的问题是可以接受的，因为读到已经提交的数据，一般不会带来很大的问题，所以很多厂商（如Oracle、SQL Server）默认隔离级别就是READ COMMITTED。</p>
-<h3 id="幻读">幻读</h3>
+<h4 id="幻读"><strong>幻读</strong></h4>
 <p>事务中一次读操作不能支撑接下来的业务逻辑。通常发生在一个事务中一次读判断接下来写操作失败的情况。例如：以name为唯一键的表，一个事务中查询 select * from t where name =&lsquo;mark&rsquo;。不存在，接下来 insert into t(name) values (&lsquo;mark&rsquo;)。 出现错误，此时另外一个事务也执行了 insert 操作。幻读在隔离级别 REPEATABLE READ 及以下存在。但是可以在REPEATABLE READ 级别下通过读加锁（使用next-key locking）解决。</p>
-<h2 id="隔离级别">隔离级别</h2>
+<h3 id="隔离级别">隔离级别</h3>
 <p>ISO和ANIS SQL标准制定了四种事务隔离级别的标准，各数据库厂商在正确性和性能之间做了妥协，并没有严格遵循这些标准。MySQL innodb默认支持的隔离级别是 REPEATABLE READ。</p>
-<h3 id="read-uncommitted">READ UNCOMMITTED</h3>
+<h4 id="read-uncommitted"><strong>READ UNCOMMITTED</strong></h4>
 <p>读未提交：该级别下读不加锁，写加排他锁，写锁在事务提交或回滚后释放锁。</p>
-<h3 id="read-committed">READ COMMITTED</h3>
+<h4 id="read-committed"><strong>READ COMMITTED</strong></h4>
 <p>读已提交：从该级别后支持 MVCC (多版本并发控制)，也就是提供一致性非锁定读。此时读取操作读取历史快照数据。该隔离级别下选择读取快照中历史版本的最新数据，所以读取的是已提交的数据。</p>
-<h3 id="repeatable-read">REPEATABLE READ</h3>
+<h4 id="repeatable-read"><strong>REPEATABLE READ</strong></h4>
 <p>可重复读：该级别下也支持 MVCC，此时读取操作读取事务开始时的版本数据。</p>
-<h3 id="serializable">SERIALIZABLE</h3>
+<h4 id="serializable"><strong>SERIALIZABLE</strong></h4>
 <p>可串行化：该级别下给读加了共享锁。所以事务都是串行化的执行，此时隔离级别最严苛。</p>
 <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-sql" data-lang="sql"><span class="w">
 </span><span class="w"></span><span class="c1">-- 设置隔离级别
@@ -379,32 +379,32 @@
 </span><span class="w"></span><span class="c1">-- 查看当前锁信息
 </span><span class="c1"></span><span class="k">SELECT</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="k">FROM</span><span class="w"> </span><span class="n">information_schema</span><span class="p">.</span><span class="n">innodb_locks</span><span class="p">;</span><span class="w">
 </span><span class="w">
-</span></code></pre></div><h2 id="锁">锁</h2>
+</span></code></pre></div><h3 id="锁">锁</h3>
 <p>锁机制用于管理对共享资源的并发访问，用来实现事务的隔离级别。</p>
-<h3 id="粒度"><strong>粒度</strong></h3>
+<h4 id="粒度"><strong>粒度</strong></h4>
 <p>共享锁和排他锁都是行级锁。MySQL当中事务采用的是粒度锁。针对表（B+树）、页（B+树叶子节点）、行（B+树叶子节点当中某一段记录行）三种粒度加锁。</p>
 <p>意向共享锁和意向排他锁都是表级别的锁。</p>
-<h3 id="共享锁s"><strong>共享锁（S）</strong></h3>
+<h4 id="共享锁s"><strong>共享锁（S）</strong></h4>
 <p>事务读操作加的锁，对某一行加锁。</p>
 <p>在 SERIALIZABLE 隔离级别下，默认帮读操作加共享锁。</p>
 <p>在 REPEATABLE READ 隔离级别下，需手动加共享锁，可解决幻读问题。</p>
 <p>在 READ COMMITTED 隔离级别下，没必要加共享锁，采用的是 MVCC。</p>
 <p>在 READ UNCOMMITTED 隔离级别下，既没有加锁也没有使用 MVCC。</p>
-<h3 id="排他锁x"><strong>排他锁（X）</strong></h3>
+<h4 id="排他锁x"><strong>排他锁（X）</strong></h4>
 <p>事务删除或更新加的锁；对某一行加锁。</p>
 <p>在4种隔离级别下，都添加了排他锁，事务提交或事务回滚后释放锁。</p>
-<h3 id="意向共享锁is"><strong>意向共享锁（IS）</strong></h3>
+<h4 id="意向共享锁is"><strong>意向共享锁（IS）</strong></h4>
 <p>对一张表中某几行加的共享锁。</p>
-<h3 id="意向排他锁ix"><strong>意向排他锁（IX）</strong></h3>
+<h4 id="意向排他锁ix"><strong>意向排他锁（IX）</strong></h4>
 <p>对一张表中某几行加的排他锁。</p>
-<h3 id="兼容性"><strong>兼容性</strong></h3>
+<h4 id="兼容性"><strong>兼容性</strong></h4>
 <p>由于innodb支持的是行级别的锁，意向锁并不会阻塞除了全表扫描以外的任何请求。</p>
 <p>意向锁之间是互相兼容的。</p>
 <p>IX 对共享锁和排他锁都不兼容。</p>
 <p>IS 只对排他锁不兼容。</p>
 <p>当想为某一行添加 S 锁，先自动为所在的页和表添加意向锁 IS，再为该行添加 S 锁。</p>
 <p>当想为某一行添加 X 锁，先自动为所在的页和表添加意向锁 IX，再为该行添加 X 锁。</p>
-<h3 id="锁算法"><strong>锁算法</strong></h3>
+<h4 id="锁算法"><strong>锁算法</strong></h4>
 <ol>
 <li><strong>Record Lock</strong>: 记录锁，单个行记录上的锁。</li>
 <li><strong>Gap Lock</strong>： 间隙锁，锁定一个范围，但不包含记录本身。全开区间。REPEATABLE READ级别及以上支持间隙锁。</li>
@@ -412,7 +412,7 @@
 <li><strong>Insert Intention Lock</strong>： 插入意向锁，insert操作的时候产生。在多事务同时写入<strong>不同数据</strong>至<strong>同一索引间隙</strong>的时候，并不需要等待其他事务完成，不会发生锁等待。</li>
 <li><strong>AUTO-INC Lock</strong>： 自增锁，是一种特殊的表级锁，发生在 AUTO_INCREMENT 约束下的插入操作。采用的一种特殊的表锁机制。完成对自增长值插入的SQL语句后立即释放。在大数据量的插入会影响插入性能，因为另一个事务中的插入会被阻塞。从MySQL 5.1.22开始提供一种轻量级互斥量的自增长实现机制，该机制提高了自增长值插入的性能。</li>
 </ol>
-<h2 id="mvcc">MVCC</h2>
+<h3 id="mvcc">MVCC</h3>
 <p>多版本并发控制，用来实现一致性的非锁定读。非锁定读是指不需要等待访问的行上X锁的释放。</p>
 <p>在 read committed 和 repeatable read下，innodb使用MVCC。</p>
 <p>对于快照数据的定义不同；</p>
@@ -420,22 +420,71 @@
 <li>在 read committed 隔离级别下，对于快照数据总是读取被锁定行的最新一份快照数据。</li>
 <li>repeatable read 隔离级别下，对于快照数据总是读取事务开始时的行数据版本。</li>
 </ol>
-<h3 id="redolog"><strong>redolog</strong></h3>
+<h4 id="redolog"><strong>redolog</strong></h4>
 <p>redo log用来实现事务的<strong>持久性</strong>。内存中包含 redo log buffer，磁盘中包含 redo log file。</p>
 <p>当事务提交时，必须先将该事务的所有日志写入到redolog进行持久化，待事务的commit操作完成才完成了事务的提交。</p>
 <p>redo log 顺序写，记录的是对每个页的修改（页、页偏移量、以及修改的内容）。在数据库运行时不需要对 redo log 的文件进行读取操作，只有发生宕机的时候，才会拿redo log进行恢复。</p>
-<h3 id="undolog"><strong>undolog</strong></h3>
+<h4 id="undolog"><strong>undolog</strong></h4>
 <p>undo log用来帮助事务回滚以及MVCC的功能。</p>
 <p>存储在共享表空间中， undo 是逻辑日志，回滚时将数据库逻辑地恢复到原来的样子，根据 undo log 的记录，做之前的逆运算。</p>
 <p>比如事务中有insert 操作，那么执行 delete 操作， 对于 update 操作执行相反的 update 操作。</p>
 <p>同时 undo 日志记录行的<strong>版本信息</strong>，用于处理 MVCC 功能。</p>
-<h1 id="主从复制">主从复制</h1>
+<h2 id="主从复制">主从复制</h2>
 <ol>
 <li>主库更新事件(update、insert、delete)通过io-thread写到binlog。</li>
 <li>从库请求读取binlog，通过io-thread写⼊（write）从库本地 relay log（中继⽇志）。</li>
 <li>从库通过sql-thread读取（read） relay log，并把更新事件在从库中执⾏（replay）⼀遍。</li>
 </ol>
-<h2 id="读写分离">读写分离</h2>
+<h3 id="读写分离">读写分离</h3>
+<p>写主（mysql）读从（内存式数据库）</p>
+<h4 id="缓冲层">缓冲层</h4>
+<p>使用redis或memcached作为缓冲层，保存一些mysql的热点数据，用于应对高频的读操作。</p>
+<p>缓冲策略主要是优化的lru。</p>
+<p>但用户无法控制具体缓存哪些东西（与业务无关）</p>
+<h3 id="一致性问题">一致性问题</h3>
+<p>主从之间存在数据一致性问题</p>
+<p>简单的读写策略可以解决大部分问题：（感觉可以参考CPU cache的策略）</p>
+<ol>
+<li>
+<p><strong>写</strong>：写mysql，mysql写完成后同步给redis（有点问题的，因为redis里的还是旧的）</p>
+</li>
+<li>
+<p><strong>读</strong>：读redis，不可用的话再去mysql中找，mysql有就返回并把数据回写redis</p>
+</li>
+</ol>
+<h4 id="强致性"><strong>强⼀致性</strong></h4>
+<p>上面写策略还存在点漏洞，这里补齐：</p>
+<ol>
+<li><strong>写</strong>：先删除redis里的缓存，再去写到mysql中，这样就避免了读到旧数据。</li>
+</ol>
+<p>但只适用于单数据中心，如果是多数据中心，可以设置强一致性需求忽略缓存层，或转化为单数据中心后操作。</p>
+<h4 id="最终致性"><strong>最终⼀致性</strong></h4>
+<p>只确保最终的一致性，那就使用一开始的方案就行</p>
+<p>但还有一个替代方案：</p>
+<p>先写redis，设置key的过期时间为200ms（经验值），等待mysql回写redis，覆盖key，设置更⻓的过期时间。</p>
+<p>200ms 默认的是 写mysql到mysql同步到redis的时⻓；这个需要根据实际环境进⾏设置。</p>
+<h3 id="缓存穿透">缓存穿透</h3>
+<p>假设某个数据redis不存在，mysql也不存在，⽽且⼀直尝试读就会发生缓存穿透，数据最终压⼒依然堆积在mysql，可能造成mysql不堪重负⽽崩溃。</p>
+<p><strong>方案</strong></p>
+<ol>
+<li>发现mysql不存在，将redis设置为 &lt;key, nil&gt; 设置过期时间 下次访问key的时候 不再访问mysql 容易造成redis缓存很多⽆效数据。</li>
+<li>布隆过滤器，将mysql当中已经存在的key，写⼊布隆过滤器，不存在的直接pass掉；</li>
+</ol>
+<h3 id="缓存击穿">缓存击穿</h3>
+<p>某些数据redis没有，但是mysql有。此时当⼤量这类数据的并发请求，同样造成mysql压力过⼤。</p>
+<p><strong>方案</strong></p>
+<ol>
+<li>加锁：请求数据的时候获取锁，如果获取成功，则操作完后释放锁。获取失败，则休眠⼀段时间（200ms）再去获取。</li>
+<li>增加redis中的存活时间：将很热的key，设置不过期（redis中）</li>
+</ol>
+<h3 id="缓存雪崩">缓存雪崩</h3>
+<p>表示⼀段时间内，缓存集中失效(redis⽆ mysql有)，导致请求全部⾛mysql，有可能搞垮数据库，使整个服务失效。</p>
+<p><strong>方案</strong></p>
+<ol>
+<li>如果因为缓存数据库宕机，造成所有数据涌向mysql：那就采⽤⾼可⽤的集群⽅案，如哨兵模式、cluster模式；</li>
+<li>如果因为设置了相同的过期时间，造成缓存集中失效：那就设置随机过期值或者其他机制错开失效。</li>
+<li>如果因为系统重启的时候，造成缓存数据消失：重启时间短，redis开启持久化（过期信息也会持久化）就⾏了。 重启时间⻓，提前将热数据导⼊redis当中。</li>
+</ol>
 
 </section>
 
@@ -685,80 +734,105 @@
                 <div class="widget--toc">
                     <nav id="TableOfContents">
   <ol>
-    <li><a href="#优点">优点</a></li>
-  </ol>
-
-  <ol>
-    <li><a href="#主键索引">主键索引</a></li>
-    <li><a href="#唯一索引">唯一索引</a></li>
-    <li><a href="#普通索引">普通索引</a></li>
-    <li><a href="#组合索引">组合索引</a></li>
-    <li><a href="#全文索引">全文索引</a></li>
-    <li><a href="#主键选择规则">主键选择规则</a></li>
-    <li><a href="#索引实现">索引实现</a>
+    <li><a href="#视图">视图</a>
       <ol>
-        <li><a href="#索引存储">索引存储</a></li>
-        <li><a href="#聚集索引与辅助索引">聚集索引与辅助索引</a></li>
-        <li><a href="#页和b树">页和B+树</a></li>
+        <li><a href="#优点">优点</a></li>
       </ol>
     </li>
-    <li><a href="#索引失效">索引失效</a></li>
-    <li><a href="#索引原则">索引原则</a></li>
-  </ol>
-
-  <ol>
-    <li>
+    <li><a href="#触发器">触发器</a></li>
+    <li><a href="#存储过程">存储过程</a>
       <ol>
-        <li><a href="#外键约束">外键约束</a></li>
+        <li><a href="#优点-1"><strong>优点</strong></a></li>
       </ol>
     </li>
-  </ol>
-
-  <ol>
-    <li><a href="#acid特性">ACID特性</a>
+    <li><a href="#游标">游标</a></li>
+    <li><a href="#索引">索引</a>
       <ol>
-        <li><a href="#原子性a">原子性（A）</a></li>
-        <li><a href="#隔离性i">隔离性（I）</a></li>
-        <li><a href="#持久性d">持久性（D）</a></li>
-        <li><a href="#一致性c">一致性（C）</a></li>
+        <li><a href="#主键索引">主键索引</a></li>
+        <li><a href="#唯一索引">唯一索引</a></li>
+        <li><a href="#普通索引">普通索引</a></li>
+        <li><a href="#组合索引">组合索引</a></li>
+        <li><a href="#全文索引">全文索引</a></li>
+        <li><a href="#主键选择规则">主键选择规则</a></li>
+        <li><a href="#索引实现">索引实现</a>
+          <ol>
+            <li><a href="#索引存储"><strong>索引存储</strong></a></li>
+            <li><a href="#聚集索引与辅助索引"><strong>聚集索引与辅助索引</strong></a></li>
+            <li><a href="#页和b树"><strong>页和B+树</strong></a></li>
+          </ol>
+        </li>
+        <li><a href="#索引失效">索引失效</a></li>
+        <li><a href="#索引原则">索引原则</a></li>
+        <li><a href="#约束">约束</a>
+          <ol>
+            <li><a href="#外键约束"><strong>外键约束</strong></a></li>
+            <li><a href="#约束于索引的区别"><strong>约束于索引的区别</strong></a></li>
+          </ol>
+        </li>
       </ol>
     </li>
-    <li><a href="#事务并发异常">事务并发异常</a>
+    <li><a href="#事务">事务</a>
       <ol>
-        <li><a href="#脏读">脏读</a></li>
-        <li><a href="#不可重复读">不可重复读</a></li>
-        <li><a href="#幻读">幻读</a></li>
+        <li><a href="#acid特性">ACID特性</a>
+          <ol>
+            <li><a href="#原子性a"><strong>原子性（A）</strong></a></li>
+            <li><a href="#隔离性i"><strong>隔离性（I）</strong></a></li>
+            <li><a href="#持久性d"><strong>持久性（D）</strong></a></li>
+            <li><a href="#一致性c"><strong>一致性（C）</strong></a></li>
+          </ol>
+        </li>
+        <li><a href="#事务并发异常">事务并发异常</a>
+          <ol>
+            <li><a href="#脏读"><strong>脏读</strong></a></li>
+            <li><a href="#不可重复读"><strong>不可重复读</strong></a></li>
+            <li><a href="#幻读"><strong>幻读</strong></a></li>
+          </ol>
+        </li>
+        <li><a href="#隔离级别">隔离级别</a>
+          <ol>
+            <li><a href="#read-uncommitted"><strong>READ UNCOMMITTED</strong></a></li>
+            <li><a href="#read-committed"><strong>READ COMMITTED</strong></a></li>
+            <li><a href="#repeatable-read"><strong>REPEATABLE READ</strong></a></li>
+            <li><a href="#serializable"><strong>SERIALIZABLE</strong></a></li>
+          </ol>
+        </li>
+        <li><a href="#锁">锁</a>
+          <ol>
+            <li><a href="#粒度"><strong>粒度</strong></a></li>
+            <li><a href="#共享锁s"><strong>共享锁（S）</strong></a></li>
+            <li><a href="#排他锁x"><strong>排他锁（X）</strong></a></li>
+            <li><a href="#意向共享锁is"><strong>意向共享锁（IS）</strong></a></li>
+            <li><a href="#意向排他锁ix"><strong>意向排他锁（IX）</strong></a></li>
+            <li><a href="#兼容性"><strong>兼容性</strong></a></li>
+            <li><a href="#锁算法"><strong>锁算法</strong></a></li>
+          </ol>
+        </li>
+        <li><a href="#mvcc">MVCC</a>
+          <ol>
+            <li><a href="#redolog"><strong>redolog</strong></a></li>
+            <li><a href="#undolog"><strong>undolog</strong></a></li>
+          </ol>
+        </li>
       </ol>
     </li>
-    <li><a href="#隔离级别">隔离级别</a>
+    <li><a href="#主从复制">主从复制</a>
       <ol>
-        <li><a href="#read-uncommitted">READ UNCOMMITTED</a></li>
-        <li><a href="#read-committed">READ COMMITTED</a></li>
-        <li><a href="#repeatable-read">REPEATABLE READ</a></li>
-        <li><a href="#serializable">SERIALIZABLE</a></li>
+        <li><a href="#读写分离">读写分离</a>
+          <ol>
+            <li><a href="#缓冲层">缓冲层</a></li>
+          </ol>
+        </li>
+        <li><a href="#一致性问题">一致性问题</a>
+          <ol>
+            <li><a href="#强致性"><strong>强⼀致性</strong></a></li>
+            <li><a href="#最终致性"><strong>最终⼀致性</strong></a></li>
+          </ol>
+        </li>
+        <li><a href="#缓存穿透">缓存穿透</a></li>
+        <li><a href="#缓存击穿">缓存击穿</a></li>
+        <li><a href="#缓存雪崩">缓存雪崩</a></li>
       </ol>
     </li>
-    <li><a href="#锁">锁</a>
-      <ol>
-        <li><a href="#粒度"><strong>粒度</strong></a></li>
-        <li><a href="#共享锁s"><strong>共享锁（S）</strong></a></li>
-        <li><a href="#排他锁x"><strong>排他锁（X）</strong></a></li>
-        <li><a href="#意向共享锁is"><strong>意向共享锁（IS）</strong></a></li>
-        <li><a href="#意向排他锁ix"><strong>意向排他锁（IX）</strong></a></li>
-        <li><a href="#兼容性"><strong>兼容性</strong></a></li>
-        <li><a href="#锁算法"><strong>锁算法</strong></a></li>
-      </ol>
-    </li>
-    <li><a href="#mvcc">MVCC</a>
-      <ol>
-        <li><a href="#redolog"><strong>redolog</strong></a></li>
-        <li><a href="#undolog"><strong>undolog</strong></a></li>
-      </ol>
-    </li>
-  </ol>
-
-  <ol>
-    <li><a href="#读写分离">读写分离</a></li>
   </ol>
 </nav>
                 </div>
