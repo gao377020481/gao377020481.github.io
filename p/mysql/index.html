@@ -133,8 +133,7 @@
 </header>
 
     <section class="article-content">
-    <h2 id="font-size5mysqlfont"><strong><!-- raw HTML omitted -->Mysql<!-- raw HTML omitted --></strong></h2>
-<h1 id="视图">视图</h1>
+    <h1 id="视图">视图</h1>
 <p>视图（view）是一种虚拟存在的表，是一个逻辑表，本身并不包含数据。其内容由查询定义。
 基表：用来创建视图的表叫做基表。
 通过视图，可以展现基表的部分数据。
@@ -436,6 +435,7 @@
 <li>从库请求读取binlog，通过io-thread写⼊（write）从库本地 relay log（中继⽇志）。</li>
 <li>从库通过sql-thread读取（read） relay log，并把更新事件在从库中执⾏（replay）⼀遍。</li>
 </ol>
+<h2 id="读写分离">读写分离</h2>
 
 </section>
 
@@ -685,10 +685,6 @@
                 <div class="widget--toc">
                     <nav id="TableOfContents">
   <ol>
-    <li><a href="#font-size5mysqlfont"><strong><!-- raw HTML omitted -->Mysql<!-- raw HTML omitted --></strong></a></li>
-  </ol>
-
-  <ol>
     <li><a href="#优点">优点</a></li>
   </ol>
 
@@ -759,6 +755,10 @@
         <li><a href="#undolog"><strong>undolog</strong></a></li>
       </ol>
     </li>
+  </ol>
+
+  <ol>
+    <li><a href="#读写分离">读写分离</a></li>
   </ol>
 </nav>
                 </div>

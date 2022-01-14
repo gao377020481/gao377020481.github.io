@@ -116,8 +116,7 @@ mpirun -np &lt;span class=&#34;m&#34;&gt;4&lt;/span&gt; hello_c
         <pubDate>Sat, 06 Jun 2020 00:00:00 +0000</pubDate>
         
         <guid>https://gao377020481.github.io/p/mysql/</guid>
-        <description>&lt;img src="https://gao377020481.github.io/p/mysql/537.jpg" alt="Featured image of post Mysql" /&gt;&lt;h2 id=&#34;font-size5mysqlfont&#34;&gt;&lt;strong&gt;&lt;!-- raw HTML omitted --&gt;Mysql&lt;!-- raw HTML omitted --&gt;&lt;/strong&gt;&lt;/h2&gt;
-&lt;h1 id=&#34;视图&#34;&gt;视图&lt;/h1&gt;
+        <description>&lt;img src="https://gao377020481.github.io/p/mysql/537.jpg" alt="Featured image of post Mysql" /&gt;&lt;h1 id=&#34;视图&#34;&gt;视图&lt;/h1&gt;
 &lt;p&gt;视图（view）是一种虚拟存在的表，是一个逻辑表，本身并不包含数据。其内容由查询定义。
 基表：用来创建视图的表叫做基表。
 通过视图，可以展现基表的部分数据。
@@ -419,6 +418,7 @@ mpirun -np &lt;span class=&#34;m&#34;&gt;4&lt;/span&gt; hello_c
 &lt;li&gt;从库请求读取binlog，通过io-thread写⼊（write）从库本地 relay log（中继⽇志）。&lt;/li&gt;
 &lt;li&gt;从库通过sql-thread读取（read） relay log，并把更新事件在从库中执⾏（replay）⼀遍。&lt;/li&gt;
 &lt;/ol&gt;
+&lt;h2 id=&#34;读写分离&#34;&gt;读写分离&lt;/h2&gt;
 </description>
         </item>
         <item>
@@ -427,7 +427,7 @@ mpirun -np &lt;span class=&#34;m&#34;&gt;4&lt;/span&gt; hello_c
         <pubDate>Fri, 22 May 2020 00:00:00 +0000</pubDate>
         
         <guid>https://gao377020481.github.io/p/redis/</guid>
-        <description>&lt;img src="https://gao377020481.github.io/p/redis/353.jpg" alt="Featured image of post Redis" /&gt;&lt;h2 id=&#34;redis&#34;&gt;&lt;strong&gt;Redis&lt;/strong&gt;&lt;/h2&gt;
+        <description>&lt;img src="https://gao377020481.github.io/p/redis/353.jpg" alt="Featured image of post Redis" /&gt;&lt;p&gt;&lt;strong&gt;Redis&lt;/strong&gt;&lt;/p&gt;
 &lt;p&gt;Remote Dictionary Service， 远程字典服务，内存式数据库，非关系型，KV结构&lt;/p&gt;
 &lt;p&gt;三张网图描述redis基本数据结构：
 &lt;figure 
