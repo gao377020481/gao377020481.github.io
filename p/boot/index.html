@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="en-us">
+    <head><meta charset='utf-8'>
+<meta name='viewport' content='width=device-width, initial-scale=1'><meta name='description' content='基础知识'><title>Boot</title>
+
+<link rel='canonical' href='https://gao377020481.github.io/p/boot/'>
+
+<link rel="stylesheet" href="/scss/style.min.css"><meta property='og:title' content='Boot'>
+<meta property='og:description' content='基础知识'>
+<meta property='og:url' content='https://gao377020481.github.io/p/boot/'>
+<meta property='og:site_name' content='Gao&#39;s Happy Day'>
+<meta property='og:type' content='article'><meta property='article:section' content='Post' /><meta property='article:tag' content='OS' /><meta property='article:published_time' content='2020-09-20T00:00:00&#43;00:00'/><meta property='article:modified_time' content='2020-09-20T00:00:00&#43;00:00'/><meta property='og:image' content='https://gao377020481.github.io/p/boot/365.jpg' />
+<meta name="twitter:title" content="Boot">
+<meta name="twitter:description" content="基础知识"><meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:image" content='https://gao377020481.github.io/p/boot/365.jpg' />
+    </head>
+    <body class="
+    article-page has-toc
+">
+    <script>
+        (function() {
+            const colorSchemeKey = 'StackColorScheme';
+            if(!localStorage.getItem(colorSchemeKey)){
+                localStorage.setItem(colorSchemeKey, "auto");
+            }
+        })();
+    </script><script>
+    (function() {
+        const colorSchemeKey = 'StackColorScheme';
+        const colorSchemeItem = localStorage.getItem(colorSchemeKey);
+        const supportDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches === true;
+
+        if (colorSchemeItem == 'dark' || colorSchemeItem === 'auto' && supportDarkMode) {
+            
+
+            document.documentElement.dataset.scheme = 'dark';
+        } else {
+            document.documentElement.dataset.scheme = 'light';
+        }
+    })();
+</script>
+<div class="container main-container flex 
+    
+        extended
+    
+">
+    
+        <div id="article-toolbar">
+            <a href="https://gao377020481.github.io" class="back-home">
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-chevron-left" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <polyline points="15 6 9 12 15 18" />
+</svg>
+
+
+
+                <span>Back</span>
+            </a>
+        </div>
+    
+<main class="main full-width">
+    <article class="has-image main-article">
+    <header class="article-header">
+        <div class="article-image">
+            <a href="/p/boot/">
+                <img src="/p/boot/365_hu00b5f61c23d3e384386ac3998acfa3c7_4845036_800x0_resize_q75_box.jpg"
+                        srcset="/p/boot/365_hu00b5f61c23d3e384386ac3998acfa3c7_4845036_800x0_resize_q75_box.jpg 800w, /p/boot/365_hu00b5f61c23d3e384386ac3998acfa3c7_4845036_1600x0_resize_q75_box.jpg 1600w"
+                        width="800" 
+                        height="500" 
+                        loading="lazy"
+                        alt="Featured image of post Boot" />
+                
+            </a>
+        </div>
+    
+
+    <div class="article-details">
+    
+    <header class="article-category">
+        
+            <a href="/categories/os/" style="background-color: #2a9d8f; color: #fff;">
+                OS
+            </a>
+        
+    </header>
+    
+
+    <h2 class="article-title">
+        <a href="/p/boot/">Boot</a>
+    </h2>
+
+    
+    <h3 class="article-subtitle">
+        基础知识
+    </h3>
+    
+
+    
+    <footer class="article-time">
+        
+            <div>
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-calendar-time" width="56" height="56" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <path d="M11.795 21h-6.795a2 2 0 0 1 -2 -2v-12a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v4" />
+  <circle cx="18" cy="18" r="4" />
+  <path d="M15 3v4" />
+  <path d="M7 3v4" />
+  <path d="M3 11h16" />
+  <path d="M18 16.496v1.504l1 1" />
+</svg>
+                <time class="article-time--published">Sep 20, 2020</time>
+            </div>
+        
+
+        
+            <div>
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="12" r="9" />
+  <polyline points="12 7 12 12 15 15" />
+</svg>
+
+
+
+                <time class="article-time--reading">
+                    1 minute read
+                </time>
+            </div>
+        
+    </footer>
+    
+</div>
+</header>
+
+    <section class="article-content">
+    <p>以MIT6.828的分节方式来记录操作系统的笔记。</p>
+<p>所以第一章： Boot 启动</p>
+<h2 id="jos">JOS</h2>
+<p>在JOS里，Boot作为Lab1存在。</p>
+<p>实模式下运行BIOS，BIOS设置eip以启动bootloader，boot loader检查系统状态，开启保护模式，将磁盘上的kernel加载入物理内存，设置eip启动kernel。Kernel开启分页。</p>
+<h3 id="bios">BIOS</h3>
+<p>BIOS的启动依赖于硬件的电信号，在qemu虚拟机里模拟了这样一个信号来启动BIOS。</p>
+<h3 id="bootloader">Bootloader</h3>
+<p>Bootloader：</p>
+<ol>
+<li>从实模式进入保护模式，加载全局描述符表（虚拟地址到线性（物理地址）的映射开启）</li>
+<li>从磁盘加载kernel到内存（通过读取ELF文件的方式）</li>
+</ol>
+<h3 id="kernel">Kernel</h3>
+<p>进入Kernel后：</p>
+<ol>
+<li>开启分页（就是在物理内存的特定位置创建内核页目录和页表数组，实现线性地址到物理地址的映射关系）</li>
+<li>这里还基于内存映射的关系，实现了向IO HOLE区域（VGA显存）写值的功能，得以在终端上输出了字符</li>
+</ol>
+<h2 id="linux-kernel">Linux kernel</h2>
+<p>在linux kernel中，这一环节的基本流程很相似，参考深入理解Linux内核附录1记录一个很简要的流程：</p>
+<h3 id="bios-1">BIOS</h3>
+<p>硬件电信号拉起ROM上的BIOS程序，BIOS启动后简单检查和初始化一下硬件，随后在磁盘扇区上搜索操作系统来启动，找到磁盘第一个扇区（引导扇区）后将其拷贝到物理内存的0X00007C00处。</p>
+<h3 id="bootloader-1">Bootloader</h3>
+<p>物理内存上有bootloader的第一部分了，第一部分可能会移动他的位置并将第二部分再装入物理内存的特定位置，第二部分会从磁盘中读取OS的映射表，提供给用户选项，选择启动哪一个操作系统，选中后bootloader就会调用BIOS过程来不停的装载内核映像，其中setup()函数在0X00090200处，下一步会跳转到这里</p>
+<h3 id="setup">setup()</h3>
+<p>初始化硬件、和一些寄存器等，并跳转到startup_32()</p>
+<h3 id="startup_32">startup_32()</h3>
+<p>初始化临时堆栈，段寄存器并解压内核映像放置到物理内存上，然后跳转到内核映像上启动</p>
+<p>解压的内核映像启动点仍是一个叫做startup_32()的函数，它会再检查一下硬件软件信息然后的跳转到start_kernel()函数</p>
+<h3 id="start_kernel">start_kernel()</h3>
+<p>完成linux内核初始化工作，具体工作过多，这里不说</p>
+
+</section>
+
+
+    <footer class="article-footer">
+    
+    <section class="article-tags">
+        
+            <a href="/tags/os/">OS</a>
+        
+    </section>
+
+
+    
+    <section class="article-copyright">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-copyright" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="12" r="9" />
+  <path d="M14.5 9a3.5 4 0 1 0 0 6" />
+</svg>
+
+
+
+        <span>Licensed under CC BY-NC-SA 4.0</span>
+    </section>
+    </footer>
+
+
+    
+</article>
+
+    <aside class="related-contents--wrapper">
+    
+    
+        <h2 class="section-title">Related contents</h2>
+        <div class="related-contents">
+            <div class="flex article-list--tile">
+                
+                    
+<article class="has-image">
+    <a href="/p/preemptive-multitasking/">
+        
+        
+            <div class="article-image">
+                <img src="/p/preemptive-multitasking/421.182428a0724f0bf7a842fecfed4eb4d0_hu0aeeb71c7e367c906246b475dc53a127_3637554_250x150_fill_q75_box_smart1.jpg" 
+                        width="250" 
+                        height="150" 
+                        loading="lazy" 
+                        data-key="Preemptive Multitasking" 
+                        data-hash="md5-GCQooHJPC/eoQv7P7U600A==">
+                
+            </div>
+        
+
+        <div class="article-details">
+            <h2 class="article-title">Preemptive Multitasking</h2>
+        </div>
+    </a>
+</article>
+                
+                    
+<article class="has-image">
+    <a href="/p/user-environments/">
+        
+        
+            <div class="article-image">
+                <img src="/p/user-environments/644.7a35d15a6dfd20d03632922659277f9d_huaedcef13087ef596fe24c2fe63226878_25333423_250x150_fill_q75_box_smart1.jpg" 
+                        width="250" 
+                        height="150" 
+                        loading="lazy" 
+                        data-key="User Environments" 
+                        data-hash="md5-ejXRWm39INA2MpImWSd/nQ==">
+                
+            </div>
+        
+
+        <div class="article-details">
+            <h2 class="article-title">User Environments</h2>
+        </div>
+    </a>
+</article>
+                
+                    
+<article class="has-image">
+    <a href="/p/memory-management/">
+        
+        
+            <div class="article-image">
+                <img src="/p/memory-management/317.4746d12bceb11154128cb28d2bd2db72_hu87877ffe51e03f01d65ea0778bc1cc62_4684892_250x150_fill_q75_box_smart1.jpg" 
+                        width="250" 
+                        height="150" 
+                        loading="lazy" 
+                        data-key="Memory Management" 
+                        data-hash="md5-R0bRK86xEVQSjLKNK9Lbcg==">
+                
+            </div>
+        
+
+        <div class="article-details">
+            <h2 class="article-title">Memory Management</h2>
+        </div>
+    </a>
+</article>
+                
+            </div>
+        </div>
+    
+</aside>
+
+     
+     
+        
+    <div class="disqus-container">
+    <div id="disqus_thread"></div>
+<script type="application/javascript">
+    var disqus_config = function () {
+    
+    
+    
+    };
+    (function() {
+        if (["localhost", "127.0.0.1"].indexOf(window.location.hostname) != -1) {
+            document.getElementById('disqus_thread').innerHTML = 'Disqus comments not available by default when the website is previewed locally.';
+            return;
+        }
+        var d = document, s = d.createElement('script'); s.async = true;
+        s.src = '//' + "hugo-theme-stack" + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="https://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+</div>
+
+<style>
+    .disqus-container {
+        background-color: var(--card-background);
+        border-radius: var(--card-border-radius);
+        box-shadow: var(--shadow-l1);
+        padding: var(--card-padding);
+    }
+</style>
+
+<script>
+    window.addEventListener('onColorSchemeChange', (e) => {
+        if (DISQUS) {
+            DISQUS.reset({
+                reload: true
+            });
+        }
+    })
+</script>
+
+    
+
+    <footer class="site-footer">
+    <section class="copyright">
+        &copy; 
+        
+            2020 - 
+        
+        2022 Gao&#39;s Happy Day
+    </section>
+    
+    <section class="powerby">
+        Built with <a href="https://gohugo.io/" target="_blank" rel="noopener">Hugo</a> <br />
+        Theme <b><a href="https://github.com/CaiJimmy/hugo-theme-stack" target="_blank" rel="noopener" data-version="3.2.0">Stack</a></b> designed by <a href="https://jimmycai.com" target="_blank" rel="noopener">Jimmy</a>
+    </section>
+</footer>
+
+
+    
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+    
+    <div class="pswp__bg"></div>
+
+    
+    <div class="pswp__scroll-wrap">
+
+        
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+
+        
+        <div class="pswp__ui pswp__ui--hidden">
+
+            <div class="pswp__top-bar">
+
+                
+
+                <div class="pswp__counter"></div>
+
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+
+                <button class="pswp__button pswp__button--share" title="Share"></button>
+
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+
+                
+                
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                        <div class="pswp__preloader__cut">
+                            <div class="pswp__preloader__donut"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div>
+            </div>
+
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div><script 
+                src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js"integrity="sha256-ePwmChbbvXbsO02lbM3HoHbSHTHFAeChekF1xKJdleo="crossorigin="anonymous"
+                defer="true"
+                >
+            </script><script 
+                src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js"integrity="sha256-UKkzOn/w1mBxRmLLGrSeyB4e1xbrp4xylgAWb3M42pU="crossorigin="anonymous"
+                defer="true"
+                >
+            </script><link 
+                rel="stylesheet" 
+                href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.css"integrity="sha256-c0uckgykQ9v5k&#43;IqViZOZKc47Jn7KQil4/MP3ySA3F8="crossorigin="anonymous"
+            ><link 
+                rel="stylesheet" 
+                href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.css"integrity="sha256-SBLU4vv6CA6lHsZ1XyTdhyjJxCjPif/TRkjnsyGAGnE="crossorigin="anonymous"
+            >
+
+            </main>
+    
+        <aside class="sidebar right-sidebar sticky">
+            <section class="widget archives">
+                <div class="widget-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-hash" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <line x1="5" y1="9" x2="19" y2="9" />
+  <line x1="5" y1="15" x2="19" y2="15" />
+  <line x1="11" y1="4" x2="7" y2="20" />
+  <line x1="17" y1="4" x2="13" y2="20" />
+</svg>
+
+
+
+                </div>
+                <h2 class="widget-title section-title">Table of contents</h2>
+                
+                <div class="widget--toc">
+                    <nav id="TableOfContents">
+  <ol>
+    <li><a href="#jos">JOS</a>
+      <ol>
+        <li><a href="#bios">BIOS</a></li>
+        <li><a href="#bootloader">Bootloader</a></li>
+        <li><a href="#kernel">Kernel</a></li>
+      </ol>
+    </li>
+    <li><a href="#linux-kernel">Linux kernel</a>
+      <ol>
+        <li><a href="#bios-1">BIOS</a></li>
+        <li><a href="#bootloader-1">Bootloader</a></li>
+        <li><a href="#setup">setup()</a></li>
+        <li><a href="#startup_32">startup_32()</a></li>
+        <li><a href="#start_kernel">start_kernel()</a></li>
+      </ol>
+    </li>
+  </ol>
+</nav>
+                </div>
+            </section>
+        </aside>
+    
+
+        </div>
+        <script 
+                src="https://cdn.jsdelivr.net/npm/node-vibrant@3.1.5/dist/vibrant.min.js"integrity="sha256-5NovOZc4iwiAWTYIFiIM7DxKUXKWvpVEuMEPLzcm5/g="crossorigin="anonymous"
+                defer="false"
+                >
+            </script><script type="text/javascript" src="/ts/main.js" defer></script>
+<script>
+    (function () {
+        const customFont = document.createElement('link');
+        customFont.href = "https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap";
+
+        customFont.type = "text/css";
+        customFont.rel = "stylesheet";
+
+        document.head.appendChild(customFont);
+    }());
+</script>
+
+    </body>
+</html>

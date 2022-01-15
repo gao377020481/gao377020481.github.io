@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="en-us">
+    <head><meta charset='utf-8'>
+<meta name='viewport' content='width=device-width, initial-scale=1'><meta name='description' content='基础知识'><title>Memory Management</title>
+
+<link rel='canonical' href='https://gao377020481.github.io/p/memory-management/'>
+
+<link rel="stylesheet" href="/scss/style.min.css"><meta property='og:title' content='Memory Management'>
+<meta property='og:description' content='基础知识'>
+<meta property='og:url' content='https://gao377020481.github.io/p/memory-management/'>
+<meta property='og:site_name' content='Gao&#39;s Happy Day'>
+<meta property='og:type' content='article'><meta property='article:section' content='Post' /><meta property='article:tag' content='OS' /><meta property='article:published_time' content='2020-10-04T00:00:00&#43;00:00'/><meta property='article:modified_time' content='2020-10-04T00:00:00&#43;00:00'/><meta property='og:image' content='https://gao377020481.github.io/p/memory-management/317.jpg' />
+<meta name="twitter:title" content="Memory Management">
+<meta name="twitter:description" content="基础知识"><meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:image" content='https://gao377020481.github.io/p/memory-management/317.jpg' />
+    </head>
+    <body class="
+    article-page has-toc
+">
+    <script>
+        (function() {
+            const colorSchemeKey = 'StackColorScheme';
+            if(!localStorage.getItem(colorSchemeKey)){
+                localStorage.setItem(colorSchemeKey, "auto");
+            }
+        })();
+    </script><script>
+    (function() {
+        const colorSchemeKey = 'StackColorScheme';
+        const colorSchemeItem = localStorage.getItem(colorSchemeKey);
+        const supportDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches === true;
+
+        if (colorSchemeItem == 'dark' || colorSchemeItem === 'auto' && supportDarkMode) {
+            
+
+            document.documentElement.dataset.scheme = 'dark';
+        } else {
+            document.documentElement.dataset.scheme = 'light';
+        }
+    })();
+</script>
+<div class="container main-container flex 
+    
+        extended
+    
+">
+    
+        <div id="article-toolbar">
+            <a href="https://gao377020481.github.io" class="back-home">
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-chevron-left" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <polyline points="15 6 9 12 15 18" />
+</svg>
+
+
+
+                <span>Back</span>
+            </a>
+        </div>
+    
+<main class="main full-width">
+    <article class="has-image main-article">
+    <header class="article-header">
+        <div class="article-image">
+            <a href="/p/memory-management/">
+                <img src="/p/memory-management/317_hu87877ffe51e03f01d65ea0778bc1cc62_4684892_800x0_resize_q75_box.jpg"
+                        srcset="/p/memory-management/317_hu87877ffe51e03f01d65ea0778bc1cc62_4684892_800x0_resize_q75_box.jpg 800w, /p/memory-management/317_hu87877ffe51e03f01d65ea0778bc1cc62_4684892_1600x0_resize_q75_box.jpg 1600w"
+                        width="800" 
+                        height="500" 
+                        loading="lazy"
+                        alt="Featured image of post Memory Management" />
+                
+            </a>
+        </div>
+    
+
+    <div class="article-details">
+    
+    <header class="article-category">
+        
+            <a href="/categories/os/" style="background-color: #2a9d8f; color: #fff;">
+                OS
+            </a>
+        
+    </header>
+    
+
+    <h2 class="article-title">
+        <a href="/p/memory-management/">Memory Management</a>
+    </h2>
+
+    
+    <h3 class="article-subtitle">
+        基础知识
+    </h3>
+    
+
+    
+    <footer class="article-time">
+        
+            <div>
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-calendar-time" width="56" height="56" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <path d="M11.795 21h-6.795a2 2 0 0 1 -2 -2v-12a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v4" />
+  <circle cx="18" cy="18" r="4" />
+  <path d="M15 3v4" />
+  <path d="M7 3v4" />
+  <path d="M3 11h16" />
+  <path d="M18 16.496v1.504l1 1" />
+</svg>
+                <time class="article-time--published">Oct 04, 2020</time>
+            </div>
+        
+
+        
+            <div>
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="12" r="9" />
+  <polyline points="12 7 12 12 15 15" />
+</svg>
+
+
+
+                <time class="article-time--reading">
+                    1 minute read
+                </time>
+            </div>
+        
+    </footer>
+    
+</div>
+</header>
+
+    <section class="article-content">
+    <p>内存管理</p>
+<h2 id="jos">JOS</h2>
+<p>JOS中主要是在做：</p>
+<ol>
+<li>线性地址到物理地址的映射（通过操作修改页表项实现）</li>
+<li>在物理内存上划分出内核的页目录和页表存储区域并完成映射</li>
+<li>保护模式的映射关系与段寄存器相关，32位的JOS通过段选择子找到段描述符，再解析段描述符的基地址，检查权限位后加上虚拟地址来实现</li>
+<li>物理内存的分配在JOS内目前还无相应算法，只是单纯的连续分配</li>
+</ol>
+<h2 id="linux-kernel">Linux kernel</h2>
+<p>自顶向下来看：</p>
+<p>从glibc的malloc到mmap/brk/sbrk再到物理页的分配（buddy算法,内核中的slab，非连续页分配器）</p>
+<p>当然拿C++来说，其STL用于容器的alloc分配器的实现，又是基于malloc的，使用开链数组来存放多个线性增长大小的空闲内存块，当有分配需要时一次申请多块（应该是20块）该大小内存。且找不到对应块时还具有相应的回收，拼接，查找功能。对于大块内存的分配使用单独的路径来分配和存储。分层分级分区的思路是各级内存分配器的惯用思路。</p>
+<h3 id="glibc">glibc</h3>
+<p>以ptmalloc为例：</p>
+<p>malloc时，如果内存分配区（主，非主）真的无空间，调用mmap或brk/sbrk来在虚拟内存上取一块作为新的空间，mmap取得内存在mmap区域，brk/sbrk在heap上（在进程的描述符task_struct中的mm_struct里可以找到）。主分配区可以使用sbrk和mmap向os申请内存，而非分配区只能通过mmap向os申请内存。接下来os可能（因为mmap只是给一块虚拟地址，真实数据还未拷贝到物理内存上）要去物理内存上找可用区块然后将真实数据拷贝上去（用户触发缺页syscall），这里再涉及物理页的分配。</p>
+<p>ptmalloc的内存管理方法就可以很好的解决每次要内存都要去向OS要的问题。它回收管理分配出的内存而不是每次都还给操作系统而是放入bin中留待下次使用，bin的整理等一些其他操作会在特定时候触发。</p>
+<p>首先每个进程都有一个主分配区和几个非主分配区，分配区在多线程间共享，对分配区的操作需要加线程互斥锁。主分配区由一号或主线程拥有。</p>
+<p>最小的内存管理单位为chunk，一段连续的内存被分成多个chunk，chunk内记录当前和前一个chunk的大小，用于合并。</p>
+<p>下一层级是分配区中的bins，bins分为:</p>
+<ol>
+<li>fast bin: 保存小块的chunk</li>
+<li>bins:
+2.1 unsorted bin： 是一个chunk缓冲区，这里的chunk都是在等待整理的chunk（释放或合并出来的），同时也有可能是即将被用得到的chunk，因为很多程序会频繁的分配释放相同大小的内存，它在fastbin里找不到就会直接来这里找，速度快。chunk的size 没有限制。
+2.2 small bin： 类似alloc分配器的开链数组实现，大小小于512字节的chunk被称为small chunk，分级每个相差8KB放入small bin对应槽位。共62个不同大小的bin
+2.3 large bin： 与small bin类似，只是其中存的是大chunk，且不单纯线性增长，共63个不同大小的bin</li>
+</ol>
+<p>chunk的分配与释放是一个很复杂的管理流程，这里只说管理层级，不谈细致流程。</p>
+<h3 id="物理页分配">物理页分配</h3>
+<h4 id="buddy">buddy</h4>
+<p>用户空间使用的最简单的物理页分配算法，直接分配连续的物理内存，然后回收能称为伙伴的空闲内存。
+连续的物理页称为页块（page block），阶（order）是页的数量单位，2的n次方个连续页称为n阶页块。
+如下条件的两个n阶页块称为伙伴（buddy）：</p>
+<ol>
+<li>两个页块是相邻的，即物理地址是连续的；</li>
+<li>页块的第一页的物理面页号必须是2的n次方的整数倍；</li>
+<li>如果合并（n+1）阶页块，第一页的物理页号必须是2的括号(n+1)次方的整数倍。</li>
+</ol>
+<p>分配的基本单位是n阶页块，不存在的话就去更高阶找，找到后拆开，都找不到就要使用非连续页分配机制，多次调用更低阶的页块分配</p>
+<p>物理内存首先被分为不同zone，并对zone维护一个使用率，根据区域水线来决定是否从其他区域借用物理页。</p>
+<p>a. 高水线（HIGH）：如果内存区域的空闲页数大于高水线，说明该内存区域的内存充足。</p>
+<p>b. 低水线（LOW）：如果内存区域的空闲页数小于低水线，说明该内存区域的内存轻微不足。</p>
+<p>c. 最低水线（MIN）：如果内存区域空闲页数小于最低水线，说明该内存区域的内存严重不足。</p>
+<p><strong>通用页分配入口</strong></p>
+<p>__alloc_pages_nodemask</p>
+<h4 id="slab内核使用">slab（内核使用）</h4>
+<p>slab分配器的作用不仅仅是分配小块内存，更重要的作用是针对经常分配和释放的对象充当缓存。slab分配器的
+核心思路是：为每种对象类型创建一个内存缓存，每个内存缓存由多个大块组成，一个大块是由一个或多个连
+续的物理页，每个大块包含多个对象。slab采用面向对象的思想，基于对象类型管理内存，每种对象被划分为一
+类，比如进程描述符task_struct是一个类，每个进程描述符实例是一个对象。</p>
+<p>由于内核中各对象大小固定，所以该分配器给内核的物理内存分配提供了高效率。</p>
+<p>管理的对象缓存在slab cache中。</p>
+<p><strong>多处理器情况：</strong></p>
+<p>内存缓存为每个处理器创建一个数组缓存（结构体array_cahce）。释放对象时，把对象存放到当前处理器对应
+的数组缓存中；分配对象的时候，先从当前处理器的数组缓存分配对象，采用后进先出（Last In First Out，
+LIFO）的原则，这种做可以提高性能。</p>
+<p><strong>编程接口：</strong></p>
+<p>分配内存kmalloc、重新分配内存krealloc、释放内存kfree</p>
+<h4 id="非连续页">非连续页</h4>
+<p>就是：</p>
+<ol>
+<li>分配虚拟内存区域</li>
+<li>分配不连续的物理内存区域并映射到连续的虚拟内存上（多次的低阶页块分配，基于buddy算法）</li>
+</ol>
+<p><strong>编程接口：</strong></p>
+<p>vmalloc:分配不连续的物理页并且把物理页映射到连续的虚拟地址空间</p>
+<p>vfree:释放vmalloc分配的物理页和虚拟地址空间</p>
+<p>vmap:把已经分配的不连续物理页映射到连续的虚拟地址空间</p>
+<p>vunmap:释放使用vmap分配的虚拟地址空间</p>
+<p>供内核使用：</p>
+<p>kvmalloc：首先尝试使用kmalloc分配内存块，如果失败，那么使用vmalloc函数分配不连续的物理页</p>
+<p>kvfree：如果内存块是使用vmalloc分配的，那么使用vfree释放，否则使用kfree释放</p>
+
+</section>
+
+
+    <footer class="article-footer">
+    
+    <section class="article-tags">
+        
+            <a href="/tags/os/">OS</a>
+        
+    </section>
+
+
+    
+    <section class="article-copyright">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-copyright" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="12" r="9" />
+  <path d="M14.5 9a3.5 4 0 1 0 0 6" />
+</svg>
+
+
+
+        <span>Licensed under CC BY-NC-SA 4.0</span>
+    </section>
+    </footer>
+
+
+    
+</article>
+
+    <aside class="related-contents--wrapper">
+    
+    
+        <h2 class="section-title">Related contents</h2>
+        <div class="related-contents">
+            <div class="flex article-list--tile">
+                
+                    
+<article class="has-image">
+    <a href="/p/preemptive-multitasking/">
+        
+        
+            <div class="article-image">
+                <img src="/p/preemptive-multitasking/421.182428a0724f0bf7a842fecfed4eb4d0_hu0aeeb71c7e367c906246b475dc53a127_3637554_250x150_fill_q75_box_smart1.jpg" 
+                        width="250" 
+                        height="150" 
+                        loading="lazy" 
+                        data-key="Preemptive Multitasking" 
+                        data-hash="md5-GCQooHJPC/eoQv7P7U600A==">
+                
+            </div>
+        
+
+        <div class="article-details">
+            <h2 class="article-title">Preemptive Multitasking</h2>
+        </div>
+    </a>
+</article>
+                
+                    
+<article class="has-image">
+    <a href="/p/user-environments/">
+        
+        
+            <div class="article-image">
+                <img src="/p/user-environments/644.7a35d15a6dfd20d03632922659277f9d_huaedcef13087ef596fe24c2fe63226878_25333423_250x150_fill_q75_box_smart1.jpg" 
+                        width="250" 
+                        height="150" 
+                        loading="lazy" 
+                        data-key="User Environments" 
+                        data-hash="md5-ejXRWm39INA2MpImWSd/nQ==">
+                
+            </div>
+        
+
+        <div class="article-details">
+            <h2 class="article-title">User Environments</h2>
+        </div>
+    </a>
+</article>
+                
+                    
+<article class="has-image">
+    <a href="/p/boot/">
+        
+        
+            <div class="article-image">
+                <img src="/p/boot/365.0485e3e5739555aa0c5878ab5cb57a8e_hu00b5f61c23d3e384386ac3998acfa3c7_4845036_250x150_fill_q75_box_smart1.jpg" 
+                        width="250" 
+                        height="150" 
+                        loading="lazy" 
+                        data-key="Boot" 
+                        data-hash="md5-BIXj5XOVVaoMWHirXLV6jg==">
+                
+            </div>
+        
+
+        <div class="article-details">
+            <h2 class="article-title">Boot</h2>
+        </div>
+    </a>
+</article>
+                
+            </div>
+        </div>
+    
+</aside>
+
+     
+     
+        
+    <div class="disqus-container">
+    <div id="disqus_thread"></div>
+<script type="application/javascript">
+    var disqus_config = function () {
+    
+    
+    
+    };
+    (function() {
+        if (["localhost", "127.0.0.1"].indexOf(window.location.hostname) != -1) {
+            document.getElementById('disqus_thread').innerHTML = 'Disqus comments not available by default when the website is previewed locally.';
+            return;
+        }
+        var d = document, s = d.createElement('script'); s.async = true;
+        s.src = '//' + "hugo-theme-stack" + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="https://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+</div>
+
+<style>
+    .disqus-container {
+        background-color: var(--card-background);
+        border-radius: var(--card-border-radius);
+        box-shadow: var(--shadow-l1);
+        padding: var(--card-padding);
+    }
+</style>
+
+<script>
+    window.addEventListener('onColorSchemeChange', (e) => {
+        if (DISQUS) {
+            DISQUS.reset({
+                reload: true
+            });
+        }
+    })
+</script>
+
+    
+
+    <footer class="site-footer">
+    <section class="copyright">
+        &copy; 
+        
+            2020 - 
+        
+        2022 Gao&#39;s Happy Day
+    </section>
+    
+    <section class="powerby">
+        Built with <a href="https://gohugo.io/" target="_blank" rel="noopener">Hugo</a> <br />
+        Theme <b><a href="https://github.com/CaiJimmy/hugo-theme-stack" target="_blank" rel="noopener" data-version="3.2.0">Stack</a></b> designed by <a href="https://jimmycai.com" target="_blank" rel="noopener">Jimmy</a>
+    </section>
+</footer>
+
+
+    
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+    
+    <div class="pswp__bg"></div>
+
+    
+    <div class="pswp__scroll-wrap">
+
+        
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+
+        
+        <div class="pswp__ui pswp__ui--hidden">
+
+            <div class="pswp__top-bar">
+
+                
+
+                <div class="pswp__counter"></div>
+
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+
+                <button class="pswp__button pswp__button--share" title="Share"></button>
+
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+
+                
+                
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                        <div class="pswp__preloader__cut">
+                            <div class="pswp__preloader__donut"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div>
+            </div>
+
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div><script 
+                src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js"integrity="sha256-ePwmChbbvXbsO02lbM3HoHbSHTHFAeChekF1xKJdleo="crossorigin="anonymous"
+                defer="true"
+                >
+            </script><script 
+                src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js"integrity="sha256-UKkzOn/w1mBxRmLLGrSeyB4e1xbrp4xylgAWb3M42pU="crossorigin="anonymous"
+                defer="true"
+                >
+            </script><link 
+                rel="stylesheet" 
+                href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.css"integrity="sha256-c0uckgykQ9v5k&#43;IqViZOZKc47Jn7KQil4/MP3ySA3F8="crossorigin="anonymous"
+            ><link 
+                rel="stylesheet" 
+                href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.css"integrity="sha256-SBLU4vv6CA6lHsZ1XyTdhyjJxCjPif/TRkjnsyGAGnE="crossorigin="anonymous"
+            >
+
+            </main>
+    
+        <aside class="sidebar right-sidebar sticky">
+            <section class="widget archives">
+                <div class="widget-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-hash" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <line x1="5" y1="9" x2="19" y2="9" />
+  <line x1="5" y1="15" x2="19" y2="15" />
+  <line x1="11" y1="4" x2="7" y2="20" />
+  <line x1="17" y1="4" x2="13" y2="20" />
+</svg>
+
+
+
+                </div>
+                <h2 class="widget-title section-title">Table of contents</h2>
+                
+                <div class="widget--toc">
+                    <nav id="TableOfContents">
+  <ol>
+    <li><a href="#jos">JOS</a></li>
+    <li><a href="#linux-kernel">Linux kernel</a>
+      <ol>
+        <li><a href="#glibc">glibc</a></li>
+        <li><a href="#物理页分配">物理页分配</a>
+          <ol>
+            <li><a href="#buddy">buddy</a></li>
+            <li><a href="#slab内核使用">slab（内核使用）</a></li>
+            <li><a href="#非连续页">非连续页</a></li>
+          </ol>
+        </li>
+      </ol>
+    </li>
+  </ol>
+</nav>
+                </div>
+            </section>
+        </aside>
+    
+
+        </div>
+        <script 
+                src="https://cdn.jsdelivr.net/npm/node-vibrant@3.1.5/dist/vibrant.min.js"integrity="sha256-5NovOZc4iwiAWTYIFiIM7DxKUXKWvpVEuMEPLzcm5/g="crossorigin="anonymous"
+                defer="false"
+                >
+            </script><script type="text/javascript" src="/ts/main.js" defer></script>
+<script>
+    (function () {
+        const customFont = document.createElement('link');
+        customFont.href = "https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap";
+
+        customFont.type = "text/css";
+        customFont.rel = "stylesheet";
+
+        document.head.appendChild(customFont);
+    }());
+</script>
+
+    </body>
+</html>

@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="en-us">
+    <head><meta charset='utf-8'>
+<meta name='viewport' content='width=device-width, initial-scale=1'><meta name='description' content='基础知识'><title>Preemptive Multitasking</title>
+
+<link rel='canonical' href='https://gao377020481.github.io/p/preemptive-multitasking/'>
+
+<link rel="stylesheet" href="/scss/style.min.css"><meta property='og:title' content='Preemptive Multitasking'>
+<meta property='og:description' content='基础知识'>
+<meta property='og:url' content='https://gao377020481.github.io/p/preemptive-multitasking/'>
+<meta property='og:site_name' content='Gao&#39;s Happy Day'>
+<meta property='og:type' content='article'><meta property='article:section' content='Post' /><meta property='article:tag' content='OS' /><meta property='article:published_time' content='2020-11-16T00:00:00&#43;00:00'/><meta property='article:modified_time' content='2020-11-16T00:00:00&#43;00:00'/><meta property='og:image' content='https://gao377020481.github.io/p/preemptive-multitasking/421.jpg' />
+<meta name="twitter:title" content="Preemptive Multitasking">
+<meta name="twitter:description" content="基础知识"><meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:image" content='https://gao377020481.github.io/p/preemptive-multitasking/421.jpg' />
+    </head>
+    <body class="
+    article-page has-toc
+">
+    <script>
+        (function() {
+            const colorSchemeKey = 'StackColorScheme';
+            if(!localStorage.getItem(colorSchemeKey)){
+                localStorage.setItem(colorSchemeKey, "auto");
+            }
+        })();
+    </script><script>
+    (function() {
+        const colorSchemeKey = 'StackColorScheme';
+        const colorSchemeItem = localStorage.getItem(colorSchemeKey);
+        const supportDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches === true;
+
+        if (colorSchemeItem == 'dark' || colorSchemeItem === 'auto' && supportDarkMode) {
+            
+
+            document.documentElement.dataset.scheme = 'dark';
+        } else {
+            document.documentElement.dataset.scheme = 'light';
+        }
+    })();
+</script>
+<div class="container main-container flex 
+    
+        extended
+    
+">
+    
+        <div id="article-toolbar">
+            <a href="https://gao377020481.github.io" class="back-home">
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-chevron-left" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <polyline points="15 6 9 12 15 18" />
+</svg>
+
+
+
+                <span>Back</span>
+            </a>
+        </div>
+    
+<main class="main full-width">
+    <article class="has-image main-article">
+    <header class="article-header">
+        <div class="article-image">
+            <a href="/p/preemptive-multitasking/">
+                <img src="/p/preemptive-multitasking/421_hu0aeeb71c7e367c906246b475dc53a127_3637554_800x0_resize_q75_box.jpg"
+                        srcset="/p/preemptive-multitasking/421_hu0aeeb71c7e367c906246b475dc53a127_3637554_800x0_resize_q75_box.jpg 800w, /p/preemptive-multitasking/421_hu0aeeb71c7e367c906246b475dc53a127_3637554_1600x0_resize_q75_box.jpg 1600w"
+                        width="800" 
+                        height="568" 
+                        loading="lazy"
+                        alt="Featured image of post Preemptive Multitasking" />
+                
+            </a>
+        </div>
+    
+
+    <div class="article-details">
+    
+    <header class="article-category">
+        
+            <a href="/categories/os/" style="background-color: #2a9d8f; color: #fff;">
+                OS
+            </a>
+        
+    </header>
+    
+
+    <h2 class="article-title">
+        <a href="/p/preemptive-multitasking/">Preemptive Multitasking</a>
+    </h2>
+
+    
+    <h3 class="article-subtitle">
+        基础知识
+    </h3>
+    
+
+    
+    <footer class="article-time">
+        
+            <div>
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-calendar-time" width="56" height="56" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <path d="M11.795 21h-6.795a2 2 0 0 1 -2 -2v-12a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v4" />
+  <circle cx="18" cy="18" r="4" />
+  <path d="M15 3v4" />
+  <path d="M7 3v4" />
+  <path d="M3 11h16" />
+  <path d="M18 16.496v1.504l1 1" />
+</svg>
+                <time class="article-time--published">Nov 16, 2020</time>
+            </div>
+        
+
+        
+            <div>
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="12" r="9" />
+  <polyline points="12 7 12 12 15 15" />
+</svg>
+
+
+
+                <time class="article-time--reading">
+                    1 minute read
+                </time>
+            </div>
+        
+    </footer>
+    
+</div>
+</header>
+
+    <section class="article-content">
+    <h2 id="jos">JOS</h2>
+<h3 id="多cpu支持">多CPU支持</h3>
+<p>支持&quot;symmetric multiprocessing&quot; (SMP)， 启动阶段CPU分为BSP和AP，BSP负责初始化系统和启动操作系统，AP由BSP激活。哪一个CPU是BSP由硬件和BISO决定，到目前位置所有JOS代码都运行在BSP上。在SMP系统中，每个CPU都有一个对应的local APIC（LAPIC），负责传递中断。CPU通过内存映射IO(MMIO)访问它对应的APIC，这样就能通过访问内存达到访问设备寄存器的目的。BSP读取mp configuration table中保存的CPU信息，初始化cpus数组，ncpu（总共多少可用CPU），bootcpu指针（指向BSP对应的CpuInfo结构）。然后BSP通过在内存上写值向AP传递中断来启动其他cpu（为他们设置寄存器值等操作）。</p>
+<p>CPU私有数据：1.内核栈 2.TSS 3.env 4.寄存器</p>
+<p>显然以上私有数据都需要创建新的一份。</p>
+<p>多CPU执行内核代码，需要锁来避免竞争，使用CAS机制实现一个内核锁就可以。当然这个粒度太大，在linux内核中有各种粒度的实现。</p>
+<h3 id="协作调度">协作调度</h3>
+<p>实现yield函数由进程调用主动让出cpu，显然需要将yield注册为一项系统调用，由内核来真正的做切换进程的工作。这里的调度也就是最简单的FIFO。</p>
+<h3 id="fork">fork</h3>
+<p>提供系统调用fork给用户创建进程的能力，fork()拷贝父进程的地址空间和寄存器状态到子进程。父进程从fork()返回的是子进程的进程ID，而子进程从fork()返回的是0。父进程和子进程有独立的地址空间，任何一方修改了内存，不会影响到另一方。</p>
+<p>基于写时复制的原理，子进程只需要在一开始拷贝父进程的页目录就可以，当真正触发写操作的时候再在缺页处理函数里做真正的拷贝。因为用户进程中已经有拷贝需要的所有信息（物理页位置等），所以只需要在用户进程中调用用户进程自己的缺页处理函数就可以。所以：</p>
+<ol>
+<li>需要在进程fork的时候就设置新进程的缺页处理函数</li>
+<li>同时fork的时候也要对页复制做对应处理（共享，写时复制，只读三种情况不同）</li>
+<li>因为要在用户进程中处理异常，所以需要新建一个用户异常栈保存用于异常处理的函数需要的参数。</li>
+<li>缺页中断发生时：trap()-&gt;trap_dispatch()-&gt;page_fault_handler() 这个page_fault_handler会进入汇编代码然后给用户异常栈赋好值再切换到用户栈，基于刚赋好的值，用户进程会直接执行真正的用户缺页处理函数，在这个却也处理函数里会判断是否因为写时复制导致的触发，是的话就拷贝这个物理页到新的地方然后建立虚拟地址到物理页的映射关系。</li>
+<li>还有一点需要注意的是内核代码组织十分严格，所以默认内核态不会出现缺页异常，一旦出现可能内核被攻击了，所以在一开始page_fault_handler里需要判断由内核进程触发的话就要panic整个系统。</li>
+</ol>
+<h3 id="定时">定时</h3>
+<p>外部时钟中断强制进入内核，内核判断当前周期到了没，可以将中断号+偏移量来控制时钟周期，到了就触发对应的处理函数。拿时间片轮转调度进程举例：在SMP上首先通过LAPIC来通知各个cpu然后让出进程。</p>
+<h3 id="ipc">IPC</h3>
+<p>Inter-Process communication</p>
+<p>进程间通信，这里进程间通信使用使两个进程的虚拟地址指向同一块物理页的机制来完成。调用recv的进程阻塞（让出cpu），调用send的进程陷入内核查找对应的recv进程，和其要接受到的虚拟地址，首先将要发送的物理地址找到，然后修改recv进程的要接受到的虚拟地址对应的页表项，将其映射到那个要发送的物理地址处。然后设置接收进程为就绪态等待内核调度。</p>
+<h2 id="linux-kernel">Linux Kernel</h2>
+<p>涉及进程调度、锁、进程通信</p>
+<h3 id="进程调度">进程调度</h3>
+<h4 id="调度器"><strong>调度器</strong></h4>
+<p><strong>核心调度器</strong></p>
+<p>调度器的实现基于两个函数：周期性调度器函数和主调度器函数。这些函数根据现有进程的优先级分配CPU时间。这也是为什么整个方法称之为优先调度的原因。</p>
+<p>a.主调度器函数
+在内核中的许多地方，如果要将CPU分配给与当前活动进程不同的另一个进程，都会直接调用主调度器函数（schedule）。
+主调度器负责将CPU的使用权从一个进程切换到另一个进程。周期性调度器只是定时更新调度相关的统计信息。cfs队列实际上是用红黑树组织的，rt队列是用链表组织的。</p>
+<p>b.周期性调度器函数</p>
+<p>周期性调度器在scheduler_tick中实现，如果系统正在活动中，内核会按照频率HZ自动调用该函数。该函数主要有两个任务如下：</p>
+<ol>
+<li>更新相关统计量：管理内核中与整个系统和各个进程的调度相关的统计量。其间执行的主要操作是对各种计数器加1。比如运行时间。</li>
+<li>激活负责当前进程的调度类的周期性调度方法。</li>
+</ol>
+<p><strong>调度类</strong></p>
+<p>为方便添加新的调度策略，Linux内核抽象一个调度类sched_class，允许不同进程有针对性的选择调度算法。</p>
+<p><strong>运行队列</strong></p>
+<p>每个处理器有一个运行队列，结构体是rq。rq是描述就绪队列，其设计是为每一个CPU就绪队列，本地进程在本地队列上排序。cfs和rt。</p>
+<p><strong>调度进程</strong></p>
+<p>主动调度进程的函数是schedule() ，它会把主要工作委托给__schedule()去处理。</p>
+<p>函数__shcedule的主要处理过程如下：</p>
+<ol>
+<li>
+<p>调用pick_next_task()以选择下一个进程。</p>
+</li>
+<li>
+<p>调用context_switch()以切换进程。
+调用context_switch：</p>
+</li>
+<li>
+<p>切换用户虚拟地址空间</p>
+</li>
+<li>
+<p>切换寄存器</p>
+</li>
+</ol>
+<p><strong>主动调度</strong></p>
+<p>即JOS中的主动让出，依赖系统调用</p>
+<p><strong>周期调度</strong></p>
+<p>内核依赖时钟来调度，JOS中也有</p>
+<h4 id="smp调度"><strong>SMP调度</strong></h4>
+<p>这个调度旨在</p>
+<ol>
+<li>均衡多处理器的负载</li>
+<li>可以设置进程的处理器亲和性，即允许进程在哪些处理器上执行。</li>
+<li>可以把进程从一个处理器迁移到另一个处理器。</li>
+</ol>
+<p>进程的迁移只能发生在同一调度域内，调度域由若干个CPU组成</p>
+<h3 id="锁">锁</h3>
+<p>用于保护内核数据</p>
+<ol>
+<li>原子操作：这些是最简单的锁操作。它们保证简单的操作，诸如计数器加1之类，可以不中断地原子执行。即使操作由几个汇编语句组成，也可以保证。</li>
+<li>自旋锁：这些是最常用的锁选项。它们用于短期保护某段代码，以防止其他处理器的访问。在内核等待自旋锁释放时，会重复检查是否能获取锁，而不会进入睡眠状态（忙等待）。当然，如果等待时间较长，则效率显然不高。</li>
+<li>信号量：这些是用经典方法实现的。在等待信号量释放时，内核进入睡眠状态，直至被唤醒。唤醒后，内核才重新尝试获取信号量。互斥量是信号量的特例，互斥量保护的临界区，每次只能有一个用户进入。</li>
+<li>读者/写者锁：这些锁会区分对数据结构的两种不同类型的访问。任意数目的处理器都可以对数据结构进行并发读访问，但只有一个处理器能进行写访问。事实上，在进行写访问时，读访问是无法进行的。</li>
+</ol>
+<h3 id="ipc-1">IPC</h3>
+<p><strong>管道</strong></p>
+<p>管道可以看为文件，有文件描述符，但是在系统目录树上无法找到，因为它存在于一个特殊的vfs：pipefs（因为是vfs对象，所以无磁盘映像）中。所以在已安装的文件系统中没有相应的映像，可以使用pipe系统调用创建新管道，他返回一对文件描述符，然后进程通过fork将文件描述符传递给它的子进程，由此与进程共享管道。进程使用read读第一个fd，write写第二个fd，一个fd用来读一个用来写。</p>
+<p><strong>FIFO</strong></p>
+<p>FIFO在文件系统中有磁盘索引节点，虽然不占用数据块但是与内核的一个缓冲区关联，数据就在这个缓冲区里。而且FIFO的fd只有一个，可以read和write使用一个fd。</p>
+<p><strong>System V IPC</strong></p>
+<p>三种：</p>
+<ol>
+<li>操作信号量同步其他进程</li>
+<li>发送消息或接收消息（存放在消息队列中）</li>
+<li>与其他进程share一段内存（JOS相似）</li>
+</ol>
+<p><strong>POSIX消息队列</strong></p>
+<p>相比于System V IPC消息队列，POSIX消息队列：</p>
+<ol>
+<li>基于文件的应用接口</li>
+<li>支持消息优先级</li>
+<li>用于阻塞接收发送的超时机制</li>
+<li>支持消息到达的异步通知（信号或线程创建来实现）</li>
+</ol>
+
+</section>
+
+
+    <footer class="article-footer">
+    
+    <section class="article-tags">
+        
+            <a href="/tags/os/">OS</a>
+        
+    </section>
+
+
+    
+    <section class="article-copyright">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-copyright" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="12" r="9" />
+  <path d="M14.5 9a3.5 4 0 1 0 0 6" />
+</svg>
+
+
+
+        <span>Licensed under CC BY-NC-SA 4.0</span>
+    </section>
+    </footer>
+
+
+    
+</article>
+
+    <aside class="related-contents--wrapper">
+    
+    
+        <h2 class="section-title">Related contents</h2>
+        <div class="related-contents">
+            <div class="flex article-list--tile">
+                
+                    
+<article class="has-image">
+    <a href="/p/user-environments/">
+        
+        
+            <div class="article-image">
+                <img src="/p/user-environments/644.7a35d15a6dfd20d03632922659277f9d_huaedcef13087ef596fe24c2fe63226878_25333423_250x150_fill_q75_box_smart1.jpg" 
+                        width="250" 
+                        height="150" 
+                        loading="lazy" 
+                        data-key="User Environments" 
+                        data-hash="md5-ejXRWm39INA2MpImWSd/nQ==">
+                
+            </div>
+        
+
+        <div class="article-details">
+            <h2 class="article-title">User Environments</h2>
+        </div>
+    </a>
+</article>
+                
+                    
+<article class="has-image">
+    <a href="/p/memory-management/">
+        
+        
+            <div class="article-image">
+                <img src="/p/memory-management/317.4746d12bceb11154128cb28d2bd2db72_hu87877ffe51e03f01d65ea0778bc1cc62_4684892_250x150_fill_q75_box_smart1.jpg" 
+                        width="250" 
+                        height="150" 
+                        loading="lazy" 
+                        data-key="Memory Management" 
+                        data-hash="md5-R0bRK86xEVQSjLKNK9Lbcg==">
+                
+            </div>
+        
+
+        <div class="article-details">
+            <h2 class="article-title">Memory Management</h2>
+        </div>
+    </a>
+</article>
+                
+                    
+<article class="has-image">
+    <a href="/p/boot/">
+        
+        
+            <div class="article-image">
+                <img src="/p/boot/365.0485e3e5739555aa0c5878ab5cb57a8e_hu00b5f61c23d3e384386ac3998acfa3c7_4845036_250x150_fill_q75_box_smart1.jpg" 
+                        width="250" 
+                        height="150" 
+                        loading="lazy" 
+                        data-key="Boot" 
+                        data-hash="md5-BIXj5XOVVaoMWHirXLV6jg==">
+                
+            </div>
+        
+
+        <div class="article-details">
+            <h2 class="article-title">Boot</h2>
+        </div>
+    </a>
+</article>
+                
+            </div>
+        </div>
+    
+</aside>
+
+     
+     
+        
+    <div class="disqus-container">
+    <div id="disqus_thread"></div>
+<script type="application/javascript">
+    var disqus_config = function () {
+    
+    
+    
+    };
+    (function() {
+        if (["localhost", "127.0.0.1"].indexOf(window.location.hostname) != -1) {
+            document.getElementById('disqus_thread').innerHTML = 'Disqus comments not available by default when the website is previewed locally.';
+            return;
+        }
+        var d = document, s = d.createElement('script'); s.async = true;
+        s.src = '//' + "hugo-theme-stack" + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="https://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+</div>
+
+<style>
+    .disqus-container {
+        background-color: var(--card-background);
+        border-radius: var(--card-border-radius);
+        box-shadow: var(--shadow-l1);
+        padding: var(--card-padding);
+    }
+</style>
+
+<script>
+    window.addEventListener('onColorSchemeChange', (e) => {
+        if (DISQUS) {
+            DISQUS.reset({
+                reload: true
+            });
+        }
+    })
+</script>
+
+    
+
+    <footer class="site-footer">
+    <section class="copyright">
+        &copy; 
+        
+            2020 - 
+        
+        2022 Gao&#39;s Happy Day
+    </section>
+    
+    <section class="powerby">
+        Built with <a href="https://gohugo.io/" target="_blank" rel="noopener">Hugo</a> <br />
+        Theme <b><a href="https://github.com/CaiJimmy/hugo-theme-stack" target="_blank" rel="noopener" data-version="3.2.0">Stack</a></b> designed by <a href="https://jimmycai.com" target="_blank" rel="noopener">Jimmy</a>
+    </section>
+</footer>
+
+
+    
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+    
+    <div class="pswp__bg"></div>
+
+    
+    <div class="pswp__scroll-wrap">
+
+        
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+
+        
+        <div class="pswp__ui pswp__ui--hidden">
+
+            <div class="pswp__top-bar">
+
+                
+
+                <div class="pswp__counter"></div>
+
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+
+                <button class="pswp__button pswp__button--share" title="Share"></button>
+
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+
+                
+                
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                        <div class="pswp__preloader__cut">
+                            <div class="pswp__preloader__donut"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div>
+            </div>
+
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div><script 
+                src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js"integrity="sha256-ePwmChbbvXbsO02lbM3HoHbSHTHFAeChekF1xKJdleo="crossorigin="anonymous"
+                defer="true"
+                >
+            </script><script 
+                src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js"integrity="sha256-UKkzOn/w1mBxRmLLGrSeyB4e1xbrp4xylgAWb3M42pU="crossorigin="anonymous"
+                defer="true"
+                >
+            </script><link 
+                rel="stylesheet" 
+                href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.css"integrity="sha256-c0uckgykQ9v5k&#43;IqViZOZKc47Jn7KQil4/MP3ySA3F8="crossorigin="anonymous"
+            ><link 
+                rel="stylesheet" 
+                href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.css"integrity="sha256-SBLU4vv6CA6lHsZ1XyTdhyjJxCjPif/TRkjnsyGAGnE="crossorigin="anonymous"
+            >
+
+            </main>
+    
+        <aside class="sidebar right-sidebar sticky">
+            <section class="widget archives">
+                <div class="widget-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-hash" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <line x1="5" y1="9" x2="19" y2="9" />
+  <line x1="5" y1="15" x2="19" y2="15" />
+  <line x1="11" y1="4" x2="7" y2="20" />
+  <line x1="17" y1="4" x2="13" y2="20" />
+</svg>
+
+
+
+                </div>
+                <h2 class="widget-title section-title">Table of contents</h2>
+                
+                <div class="widget--toc">
+                    <nav id="TableOfContents">
+  <ol>
+    <li><a href="#jos">JOS</a>
+      <ol>
+        <li><a href="#多cpu支持">多CPU支持</a></li>
+        <li><a href="#协作调度">协作调度</a></li>
+        <li><a href="#fork">fork</a></li>
+        <li><a href="#定时">定时</a></li>
+        <li><a href="#ipc">IPC</a></li>
+      </ol>
+    </li>
+    <li><a href="#linux-kernel">Linux Kernel</a>
+      <ol>
+        <li><a href="#进程调度">进程调度</a>
+          <ol>
+            <li><a href="#调度器"><strong>调度器</strong></a></li>
+            <li><a href="#smp调度"><strong>SMP调度</strong></a></li>
+          </ol>
+        </li>
+        <li><a href="#锁">锁</a></li>
+        <li><a href="#ipc-1">IPC</a></li>
+      </ol>
+    </li>
+  </ol>
+</nav>
+                </div>
+            </section>
+        </aside>
+    
+
+        </div>
+        <script 
+                src="https://cdn.jsdelivr.net/npm/node-vibrant@3.1.5/dist/vibrant.min.js"integrity="sha256-5NovOZc4iwiAWTYIFiIM7DxKUXKWvpVEuMEPLzcm5/g="crossorigin="anonymous"
+                defer="false"
+                >
+            </script><script type="text/javascript" src="/ts/main.js" defer></script>
+<script>
+    (function () {
+        const customFont = document.createElement('link');
+        customFont.href = "https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap";
+
+        customFont.type = "text/css";
+        customFont.rel = "stylesheet";
+
+        document.head.appendChild(customFont);
+    }());
+</script>
+
+    </body>
+</html>
