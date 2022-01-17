@@ -6,7 +6,28 @@
     <description>Recent content in OS on Gao&#39;s Happy Day</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Mon, 16 Nov 2020 00:00:00 +0000</lastBuildDate><atom:link href="https://gao377020481.github.io/tags/os/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Mon, 07 Dec 2020 00:00:00 +0000</lastBuildDate><atom:link href="https://gao377020481.github.io/tags/os/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>File System</title>
+      <link>https://gao377020481.github.io/p/file-system/</link>
+      <pubDate>Mon, 07 Dec 2020 00:00:00 +0000</pubDate>
+      
+      <guid>https://gao377020481.github.io/p/file-system/</guid>
+      <description>JOS JOS不像其他操作系统一样在内核添加磁盘驱动，然后提供系统调用。我们实现一个文件系统进程来作为磁盘驱动。
+ 引入一个文件系统进程（FS进程）的特殊进程，该进程提供文件操作的接口,并被赋予io权限。（x86处理器使用EFLAGS寄存器的IOPL为来控制保护模式下代码是否能执行设备IO指令，比如in和out。） 建立RPC机制，客户端进程向FS进程发送请求，FS进程真正执行文件操作，并将数据返回给客户端进程。 更高级的抽象，引入文件描述符。通过文件描述符这一层抽象就可以将控制台，pipe，普通文件，统统按照文件来对待。（文件描述符和pipe实现原理） 支持从磁盘加载程序并运行。  结构 superblock
+依然使用超级块来记录文件系统的元数据
+file
+File struct用来描述文件：文件名，大小，类型，保存文件内容的block号
+tips: Directories与file结构相同，只是内容是一些file
+Block Cache 在FS进程的虚拟内存空间中映射一段磁盘区域。
+FS进程在创建时，set特殊的缺页处理函数。
+当发生缺页中断时call那个缺页处理函数，从磁盘上把数据读入物理内存。
+根据FS进程内存地址空间的映射关系，FS可以很方便的通过虚拟内存找到刚读入的数据在物理内存中的位置。
+The Block Bitmap 磁盘块的是否使用的bitmap
+The file system interface 文件系统建立好后，还需要通过ipc来构建供用户进程操作文件的API栈，课程的图拿来用一下：
+ Regular env FS env+---------------+ +---------------+| read | | file_read || (lib/fd.c) | | (fs/fs.c) |...|.......|.......|...|.......^.......|...............| v | | | | RPC mechanism| devfile_read | | serve_read || (lib/file.c) | | (fs/serv.c) || | | | ^ || v | | | || fsipc | | serve || (lib/file.</description>
+    </item>
+    
     <item>
       <title>Preemptive Multitasking</title>
       <link>https://gao377020481.github.io/p/preemptive-multitasking/</link>

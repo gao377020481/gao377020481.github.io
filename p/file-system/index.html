@@ -1,0 +1,542 @@
+<!DOCTYPE html>
+<html lang="en-us">
+    <head><meta charset='utf-8'>
+<meta name='viewport' content='width=device-width, initial-scale=1'><meta name='description' content='基础知识'><title>File System</title>
+
+<link rel='canonical' href='https://gao377020481.github.io/p/file-system/'>
+
+<link rel="stylesheet" href="/scss/style.min.css"><meta property='og:title' content='File System'>
+<meta property='og:description' content='基础知识'>
+<meta property='og:url' content='https://gao377020481.github.io/p/file-system/'>
+<meta property='og:site_name' content='Gao&#39;s Happy Day'>
+<meta property='og:type' content='article'><meta property='article:section' content='Post' /><meta property='article:tag' content='OS' /><meta property='article:published_time' content='2020-12-07T00:00:00&#43;00:00'/><meta property='article:modified_time' content='2020-12-07T00:00:00&#43;00:00'/><meta property='og:image' content='https://gao377020481.github.io/p/file-system/382.jpg' />
+<meta name="twitter:title" content="File System">
+<meta name="twitter:description" content="基础知识"><meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:image" content='https://gao377020481.github.io/p/file-system/382.jpg' />
+    </head>
+    <body class="
+    article-page has-toc
+">
+    <script>
+        (function() {
+            const colorSchemeKey = 'StackColorScheme';
+            if(!localStorage.getItem(colorSchemeKey)){
+                localStorage.setItem(colorSchemeKey, "auto");
+            }
+        })();
+    </script><script>
+    (function() {
+        const colorSchemeKey = 'StackColorScheme';
+        const colorSchemeItem = localStorage.getItem(colorSchemeKey);
+        const supportDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches === true;
+
+        if (colorSchemeItem == 'dark' || colorSchemeItem === 'auto' && supportDarkMode) {
+            
+
+            document.documentElement.dataset.scheme = 'dark';
+        } else {
+            document.documentElement.dataset.scheme = 'light';
+        }
+    })();
+</script>
+<div class="container main-container flex 
+    
+        extended
+    
+">
+    
+        <div id="article-toolbar">
+            <a href="https://gao377020481.github.io" class="back-home">
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-chevron-left" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <polyline points="15 6 9 12 15 18" />
+</svg>
+
+
+
+                <span>Back</span>
+            </a>
+        </div>
+    
+<main class="main full-width">
+    <article class="has-image main-article">
+    <header class="article-header">
+        <div class="article-image">
+            <a href="/p/file-system/">
+                <img src="/p/file-system/382_hu17f43c03682a00a7ede4cbea93286be4_8146359_800x0_resize_q75_box.jpg"
+                        srcset="/p/file-system/382_hu17f43c03682a00a7ede4cbea93286be4_8146359_800x0_resize_q75_box.jpg 800w, /p/file-system/382_hu17f43c03682a00a7ede4cbea93286be4_8146359_1600x0_resize_q75_box.jpg 1600w"
+                        width="800" 
+                        height="600" 
+                        loading="lazy"
+                        alt="Featured image of post File System" />
+                
+            </a>
+        </div>
+    
+
+    <div class="article-details">
+    
+    <header class="article-category">
+        
+            <a href="/categories/os/" style="background-color: #2a9d8f; color: #fff;">
+                OS
+            </a>
+        
+    </header>
+    
+
+    <h2 class="article-title">
+        <a href="/p/file-system/">File System</a>
+    </h2>
+
+    
+    <h3 class="article-subtitle">
+        基础知识
+    </h3>
+    
+
+    
+    <footer class="article-time">
+        
+            <div>
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-calendar-time" width="56" height="56" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <path d="M11.795 21h-6.795a2 2 0 0 1 -2 -2v-12a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v4" />
+  <circle cx="18" cy="18" r="4" />
+  <path d="M15 3v4" />
+  <path d="M7 3v4" />
+  <path d="M3 11h16" />
+  <path d="M18 16.496v1.504l1 1" />
+</svg>
+                <time class="article-time--published">Dec 07, 2020</time>
+            </div>
+        
+
+        
+            <div>
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="12" r="9" />
+  <polyline points="12 7 12 12 15 15" />
+</svg>
+
+
+
+                <time class="article-time--reading">
+                    1 minute read
+                </time>
+            </div>
+        
+    </footer>
+    
+</div>
+</header>
+
+    <section class="article-content">
+    <h2 id="jos">JOS</h2>
+<p>JOS不像其他操作系统一样在内核添加磁盘驱动，然后提供系统调用。我们实现一个文件系统进程来作为磁盘驱动。</p>
+<ol>
+<li>引入一个文件系统进程（FS进程）的特殊进程，该进程提供文件操作的接口,并被赋予io权限。（x86处理器使用EFLAGS寄存器的IOPL为来控制保护模式下代码是否能执行设备IO指令，比如in和out。）</li>
+<li>建立RPC机制，客户端进程向FS进程发送请求，FS进程真正执行文件操作，并将数据返回给客户端进程。</li>
+<li>更高级的抽象，引入文件描述符。通过文件描述符这一层抽象就可以将控制台，pipe，普通文件，统统按照文件来对待。（文件描述符和pipe实现原理）</li>
+<li>支持从磁盘加载程序并运行。</li>
+</ol>
+<h3 id="结构">结构</h3>
+<p><strong>superblock</strong></p>
+<p>依然使用超级块来记录文件系统的元数据</p>
+<p><strong>file</strong></p>
+<p>File struct用来描述文件：文件名，大小，类型，保存文件内容的block号</p>
+<p>tips: Directories与file结构相同，只是内容是一些file</p>
+<h3 id="block-cache">Block Cache</h3>
+<p>在FS进程的虚拟内存空间中映射一段磁盘区域。</p>
+<p>FS进程在创建时，set特殊的缺页处理函数。</p>
+<p>当发生缺页中断时call那个缺页处理函数，从磁盘上把数据读入物理内存。</p>
+<p>根据FS进程内存地址空间的映射关系，FS可以很方便的通过虚拟内存找到刚读入的数据在物理内存中的位置。</p>
+<h3 id="the-block-bitmap">The Block Bitmap</h3>
+<p>磁盘块的是否使用的bitmap</p>
+<h3 id="the-file-system-interface">The file system interface</h3>
+<p>文件系统建立好后，还需要通过ipc来构建供用户进程操作文件的API栈，课程的图拿来用一下：</p>
+<pre><code>   Regular env           FS env
+   +---------------+   +---------------+
+   |      read     |   |   file_read   |
+   |   (lib/fd.c)  |   |   (fs/fs.c)   |
+...|.......|.......|...|.......^.......|...............
+   |       v       |   |       |       | RPC mechanism
+   |  devfile_read |   |  serve_read   |
+   |  (lib/file.c) |   |  (fs/serv.c)  |
+   |       |       |   |       ^       |
+   |       v       |   |       |       |
+   |     fsipc     |   |     serve     |
+   |  (lib/file.c) |   |  (fs/serv.c)  |
+   |       |       |   |       ^       |
+   |       v       |   |       |       |
+   |   ipc_send    |   |   ipc_recv    |
+   |       |       |   |       ^       |
+   +-------|-------+   +-------|-------+
+           |                   |
+           +-------------------+
+
+</code></pre><h3 id="spawning-processes">Spawning Processes</h3>
+<p>spawn()创建一个新的进程，从文件系统加载用户程序，然后启动该进程来运行这个程序。spawn()就像UNIX中的fork()后面马上跟着exec():</p>
+<ol>
+<li>从文件系统打开prog程序文件</li>
+<li>调用系统调用sys_exofork()创建一个新的Env结构</li>
+<li>调用系统调用sys_env_set_trapframe()，设置新的Env结构的Trapframe字段（该字段包含寄存器信息）。</li>
+<li>根据ELF文件中program herder，将用户程序以Segment读入内存，并映射到指定的线性地址处。</li>
+<li>调用系统调用sys_env_set_status()设置新的Env结构状态为ENV_RUNNABLE。</li>
+</ol>
+<h2 id="linux-kernel">Linux Kernel</h2>
+<h3 id="vfs">VFS</h3>
+<p>虚拟文件系统，是一个中间层，向上给用户提供一致性的文件系统接口，向下兼容各类文件系统。</p>
+<p>规定了<strong>通用文件模型</strong>：</p>
+<h4 id="结构-1"><strong>结构</strong></h4>
+<ol>
+<li>超级块对象： 存放已安装文件系统的元数据</li>
+<li>索引节点对象（inode）：关于具体文件的一般信息，索引节点号唯一标识文件，记录文件操作函数指针。</li>
+<li>文件对象file：打开文件会在内核生成的文件对象，通过fd可以找到</li>
+<li>目录项对象dentry：存放目录项与对应文件进行链接的信息。</li>
+</ol>
+<p>例子： 三个进程打开同一个文件，生成三个文件对象，其中两个进程用一个硬链接，所以使用两个目录对象，同一个文件所以使用一个inode，通过inode能找到超级块对象，然后来调用对应文件系统的方法IO，除此之外，尝试用的目录项对象还会被缓存在一个叫做目录cache里，方便下次直接取用。</p>
+<p>索引节点对象（inode）由链表组织。</p>
+<p>file和dentry都没有磁盘映像，属于内核结构，显然slab里有对应的结构。</p>
+<p>对于进程查找路径上的每一个分量，都为其创建目录项对象，只是属于不同级：/var/init -&gt; 第一级目录项对象：/ 第二级: var 第三级：init</p>
+<p><strong>文件描述符：</strong> 文件描述符是进程对象task_struct里的files_struct这个记录进程的文件信息的结构内的一个成员：struct file*[] fd_array的索引。也就是说, 假如我们有一个文件描述符fd, 进程通过fd要操作文件，只需要去task_struct-&gt;files_struct-&gt;fd_array[fd]处查找，看有无对应的struct file*，找到那个指向内核缓存中的文件对象的指针。然后通过file找到对应的dentry再通过dentry找到inode再通过inode找到superblock，基于superblock解析inode数据找到磁盘上真正的存储位置。 fd_array的第一二项一般是标准输入输出文件，第三项一般是标准错误文件，其他一般指向打开文件</p>
+<p>所以进程可打开文件的数量，由这个数组限制。</p>
+
+</section>
+
+
+    <footer class="article-footer">
+    
+    <section class="article-tags">
+        
+            <a href="/tags/os/">OS</a>
+        
+    </section>
+
+
+    
+    <section class="article-copyright">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-copyright" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="12" r="9" />
+  <path d="M14.5 9a3.5 4 0 1 0 0 6" />
+</svg>
+
+
+
+        <span>Licensed under CC BY-NC-SA 4.0</span>
+    </section>
+    </footer>
+
+
+    
+</article>
+
+    <aside class="related-contents--wrapper">
+    
+    
+        <h2 class="section-title">Related contents</h2>
+        <div class="related-contents">
+            <div class="flex article-list--tile">
+                
+                    
+<article class="has-image">
+    <a href="/p/preemptive-multitasking/">
+        
+        
+            <div class="article-image">
+                <img src="/p/preemptive-multitasking/421.182428a0724f0bf7a842fecfed4eb4d0_hu0aeeb71c7e367c906246b475dc53a127_3637554_250x150_fill_q75_box_smart1.jpg" 
+                        width="250" 
+                        height="150" 
+                        loading="lazy" 
+                        data-key="Preemptive Multitasking" 
+                        data-hash="md5-GCQooHJPC/eoQv7P7U600A==">
+                
+            </div>
+        
+
+        <div class="article-details">
+            <h2 class="article-title">Preemptive Multitasking</h2>
+        </div>
+    </a>
+</article>
+                
+                    
+<article class="has-image">
+    <a href="/p/user-environments/">
+        
+        
+            <div class="article-image">
+                <img src="/p/user-environments/644.7a35d15a6dfd20d03632922659277f9d_huaedcef13087ef596fe24c2fe63226878_25333423_250x150_fill_q75_box_smart1.jpg" 
+                        width="250" 
+                        height="150" 
+                        loading="lazy" 
+                        data-key="User Environments" 
+                        data-hash="md5-ejXRWm39INA2MpImWSd/nQ==">
+                
+            </div>
+        
+
+        <div class="article-details">
+            <h2 class="article-title">User Environments</h2>
+        </div>
+    </a>
+</article>
+                
+                    
+<article class="has-image">
+    <a href="/p/memory-management/">
+        
+        
+            <div class="article-image">
+                <img src="/p/memory-management/317.4746d12bceb11154128cb28d2bd2db72_hu87877ffe51e03f01d65ea0778bc1cc62_4684892_250x150_fill_q75_box_smart1.jpg" 
+                        width="250" 
+                        height="150" 
+                        loading="lazy" 
+                        data-key="Memory Management" 
+                        data-hash="md5-R0bRK86xEVQSjLKNK9Lbcg==">
+                
+            </div>
+        
+
+        <div class="article-details">
+            <h2 class="article-title">Memory Management</h2>
+        </div>
+    </a>
+</article>
+                
+                    
+<article class="has-image">
+    <a href="/p/boot/">
+        
+        
+            <div class="article-image">
+                <img src="/p/boot/365.0485e3e5739555aa0c5878ab5cb57a8e_hu00b5f61c23d3e384386ac3998acfa3c7_4845036_250x150_fill_q75_box_smart1.jpg" 
+                        width="250" 
+                        height="150" 
+                        loading="lazy" 
+                        data-key="Boot" 
+                        data-hash="md5-BIXj5XOVVaoMWHirXLV6jg==">
+                
+            </div>
+        
+
+        <div class="article-details">
+            <h2 class="article-title">Boot</h2>
+        </div>
+    </a>
+</article>
+                
+            </div>
+        </div>
+    
+</aside>
+
+     
+     
+        
+    <div class="disqus-container">
+    <div id="disqus_thread"></div>
+<script type="application/javascript">
+    var disqus_config = function () {
+    
+    
+    
+    };
+    (function() {
+        if (["localhost", "127.0.0.1"].indexOf(window.location.hostname) != -1) {
+            document.getElementById('disqus_thread').innerHTML = 'Disqus comments not available by default when the website is previewed locally.';
+            return;
+        }
+        var d = document, s = d.createElement('script'); s.async = true;
+        s.src = '//' + "hugo-theme-stack" + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="https://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+</div>
+
+<style>
+    .disqus-container {
+        background-color: var(--card-background);
+        border-radius: var(--card-border-radius);
+        box-shadow: var(--shadow-l1);
+        padding: var(--card-padding);
+    }
+</style>
+
+<script>
+    window.addEventListener('onColorSchemeChange', (e) => {
+        if (DISQUS) {
+            DISQUS.reset({
+                reload: true
+            });
+        }
+    })
+</script>
+
+    
+
+    <footer class="site-footer">
+    <section class="copyright">
+        &copy; 
+        
+            2020 - 
+        
+        2022 Gao&#39;s Happy Day
+    </section>
+    
+    <section class="powerby">
+        Built with <a href="https://gohugo.io/" target="_blank" rel="noopener">Hugo</a> <br />
+        Theme <b><a href="https://github.com/CaiJimmy/hugo-theme-stack" target="_blank" rel="noopener" data-version="3.2.0">Stack</a></b> designed by <a href="https://jimmycai.com" target="_blank" rel="noopener">Jimmy</a>
+    </section>
+</footer>
+
+
+    
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+    
+    <div class="pswp__bg"></div>
+
+    
+    <div class="pswp__scroll-wrap">
+
+        
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+
+        
+        <div class="pswp__ui pswp__ui--hidden">
+
+            <div class="pswp__top-bar">
+
+                
+
+                <div class="pswp__counter"></div>
+
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+
+                <button class="pswp__button pswp__button--share" title="Share"></button>
+
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+
+                
+                
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                        <div class="pswp__preloader__cut">
+                            <div class="pswp__preloader__donut"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div>
+            </div>
+
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div><script 
+                src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js"integrity="sha256-ePwmChbbvXbsO02lbM3HoHbSHTHFAeChekF1xKJdleo="crossorigin="anonymous"
+                defer="true"
+                >
+            </script><script 
+                src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js"integrity="sha256-UKkzOn/w1mBxRmLLGrSeyB4e1xbrp4xylgAWb3M42pU="crossorigin="anonymous"
+                defer="true"
+                >
+            </script><link 
+                rel="stylesheet" 
+                href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.css"integrity="sha256-c0uckgykQ9v5k&#43;IqViZOZKc47Jn7KQil4/MP3ySA3F8="crossorigin="anonymous"
+            ><link 
+                rel="stylesheet" 
+                href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.css"integrity="sha256-SBLU4vv6CA6lHsZ1XyTdhyjJxCjPif/TRkjnsyGAGnE="crossorigin="anonymous"
+            >
+
+            </main>
+    
+        <aside class="sidebar right-sidebar sticky">
+            <section class="widget archives">
+                <div class="widget-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-hash" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <line x1="5" y1="9" x2="19" y2="9" />
+  <line x1="5" y1="15" x2="19" y2="15" />
+  <line x1="11" y1="4" x2="7" y2="20" />
+  <line x1="17" y1="4" x2="13" y2="20" />
+</svg>
+
+
+
+                </div>
+                <h2 class="widget-title section-title">Table of contents</h2>
+                
+                <div class="widget--toc">
+                    <nav id="TableOfContents">
+  <ol>
+    <li><a href="#jos">JOS</a>
+      <ol>
+        <li><a href="#结构">结构</a></li>
+        <li><a href="#block-cache">Block Cache</a></li>
+        <li><a href="#the-block-bitmap">The Block Bitmap</a></li>
+        <li><a href="#the-file-system-interface">The file system interface</a></li>
+        <li><a href="#spawning-processes">Spawning Processes</a></li>
+      </ol>
+    </li>
+    <li><a href="#linux-kernel">Linux Kernel</a>
+      <ol>
+        <li><a href="#vfs">VFS</a>
+          <ol>
+            <li><a href="#结构-1"><strong>结构</strong></a></li>
+          </ol>
+        </li>
+      </ol>
+    </li>
+  </ol>
+</nav>
+                </div>
+            </section>
+        </aside>
+    
+
+        </div>
+        <script 
+                src="https://cdn.jsdelivr.net/npm/node-vibrant@3.1.5/dist/vibrant.min.js"integrity="sha256-5NovOZc4iwiAWTYIFiIM7DxKUXKWvpVEuMEPLzcm5/g="crossorigin="anonymous"
+                defer="false"
+                >
+            </script><script type="text/javascript" src="/ts/main.js" defer></script>
+<script>
+    (function () {
+        const customFont = document.createElement('link');
+        customFont.href = "https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap";
+
+        customFont.type = "text/css";
+        customFont.rel = "stylesheet";
+
+        document.head.appendChild(customFont);
+    }());
+</script>
+
+    </body>
+</html>
