@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>C&#43;&#43; on Gao&#39;s Happy Day</title>
+    <link>https://gao377020481.github.io/categories/c&#43;&#43;/</link>
+    <description>Recent content in C&#43;&#43; on Gao&#39;s Happy Day</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Wed, 10 Feb 2021 00:00:00 +0000</lastBuildDate><atom:link href="https://gao377020481.github.io/categories/c++/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>STL</title>
+      <link>https://gao377020481.github.io/p/stl/</link>
+      <pubDate>Wed, 10 Feb 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://gao377020481.github.io/p/stl/</guid>
+      <description>Alloc c++内存空间管理模块， 包含于:
+&amp;lt;memory&amp;gt;:
+ &amp;lt;stl_construct.h&amp;gt;: 定义全局函数construct(),destory()，负责对象析构与构造 &amp;lt;stl_alloc.h&amp;gt;: 定义一二级配置器，名为alloc &amp;lt;stl_uninitialized.h&amp;gt;: 一些全局函数用来操作大块内存数据  construct&amp;amp;destory construct类似C++的placement new。
+destory存在两版本：
+ 版本一接收一指针参数，析构掉指针处的对象 版本二接收两指针参数，析构掉两指针之间的所有对象  alloc alloc空间配置器分一级配置器和二级配置器：
+ 一级配置器就是直接封装malloc和free 二级配置器：  维护16个自由链表组成内存池，分别负责十六种小型区块配置，填充内存池调用malloc 出现内存不足，或要求区块大于128Bytes转一级配置器    二级配置器：
+ 对于所需求区块无空闲块的情况直接去更大区块处查找，找到后出现的碎片会挂到与它大小匹配的区块链表上 都没有就分配40块需求区块，20块挂在链表上，20块作为后备  free free是如何知道对象的大小呢，这是因为malloc在分配内存时，会在对象的内存块的上下区域添加内存大小的cookie，VC6中malloc添加的是对象大小+1.不管怎么样，这都足够free去get到需要归还给操作系统的内存空间大小了，当然所谓归还也只是还给CRTL的内存池，只有空闲内存到达某种条件（例如整整几页的空间都空闲，他们可能还连续），那就使用系统调用来让内核释放掉这一块虚拟内存（其实也就是进task_struct里找到mm_sturct然后操作里面的bitmap，将要释放的内存对应的块设置为再次可用）。
+Iterator  迭代器的根本还是一个指针，当然它是一种智能指针 通过指针萃取到指针所指对象的类型或一些其他信息很重要，这就是traits技法  分类上个侯捷老师的图：
+
+traits 利用template自动推导和偏特化实现普遍可用的萃取特性方法，直接记录代码：
+template &amp;lt;class T&amp;gt; struct MyIter { typedef T value_type; // 内嵌型别声明  T* ptr; MyIter(T* p = 0) : ptr(p) {} T&amp;amp; operator*() const { return *ptr; } }; // class type泛化版本 template &amp;lt;class T&amp;gt; struct iterator_traits { typedef typename T::value_type value_type; }; // 原生指针偏特化版本 template &amp;lt;class T&amp;gt; struct iterator_traits&amp;lt;T*&amp;gt; { typedef T value_type; }; // const对象指针偏特化版本 template &amp;lt;class T&amp;gt; struct iterator_traits&amp;lt;const T*&amp;gt; { typedef T value_type; }; template &amp;lt;class I&amp;gt; typename iterator_traits&amp;lt;I&amp;gt;::value_type //typename 告诉编译器这是一个type func(I ite) { std::cout &amp;lt;&amp;lt; &amp;#34;normal version&amp;#34; &amp;lt;&amp;lt; std::endl; return *ite; } 当然value_type只是常用的一种，STL还有其他几种，就不写了。</description>
+    </item>
+    
+    <item>
+      <title>C&#43;&#43;对象</title>
+      <link>https://gao377020481.github.io/p/c-%E5%AF%B9%E8%B1%A1/</link>
+      <pubDate>Mon, 18 Jan 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://gao377020481.github.io/p/c-%E5%AF%B9%E8%B1%A1/</guid>
+      <description>C++ 对象模型 可用的对象模型有很多种，C++对象模型派生于简单对象模型，这里直接说C++对象模型：
+ Non-static data member 存在于每一个object内 Static data member 存在于每一个object外 Static 与 Non-static function members 也被存放在所有object外 virtual function members：object内存在指向虚表vtb的指针（一般用于支持RTTI的type_info object的指针置于vtb第一个slot）  继承 虚继承 base class不管被继承多少次，永远只存在一个实体，虚继承产生的派生类只是有路径指向对应的base class实体。
+这里的“路径”可以是类似虚表的指针（bptr）也可以是一系列指针，视存取效率而定。
+然而，这样的话object的布局和大小会随着继承体系的改变而改变，所以这一部分的内容应被存放于对象模型的特殊部分。这个特殊部分就是“共享局部”，其他的固定不变的部分就是“不变局部”。所以为了实现虚继承，引入了两个局部的概念，虽然实现方式各编译器有所不同，但两个局部的概念一致。
+Layout Costs for Adding Encapsulation(封装成本) </description>
+    </item>
+    
+  </channel>
+</rss>

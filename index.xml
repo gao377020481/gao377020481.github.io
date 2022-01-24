@@ -111,6 +111,235 @@ mpirun -np &lt;span class=&#34;m&#34;&gt;4&lt;/span&gt; hello_c
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;</description>
         </item>
         <item>
+        <title>QUIC</title>
+        <link>https://gao377020481.github.io/p/quic/</link>
+        <pubDate>Tue, 09 Mar 2021 00:00:00 +0000</pubDate>
+        
+        <guid>https://gao377020481.github.io/p/quic/</guid>
+        <description>&lt;img src="https://gao377020481.github.io/p/quic/348.jpg" alt="Featured image of post QUIC" /&gt;</description>
+        </item>
+        <item>
+        <title>HTTP 1 to 2</title>
+        <link>https://gao377020481.github.io/p/http-1-to-2/</link>
+        <pubDate>Fri, 26 Feb 2021 00:00:00 +0000</pubDate>
+        
+        <guid>https://gao377020481.github.io/p/http-1-to-2/</guid>
+        <description>&lt;img src="https://gao377020481.github.io/p/http-1-to-2/297.jpg" alt="Featured image of post HTTP 1 to 2" /&gt;</description>
+        </item>
+        <item>
+        <title>STL</title>
+        <link>https://gao377020481.github.io/p/stl/</link>
+        <pubDate>Wed, 10 Feb 2021 00:00:00 +0000</pubDate>
+        
+        <guid>https://gao377020481.github.io/p/stl/</guid>
+        <description>&lt;img src="https://gao377020481.github.io/p/stl/276.jpg" alt="Featured image of post STL" /&gt;&lt;h2 id=&#34;alloc&#34;&gt;Alloc&lt;/h2&gt;
+&lt;p&gt;c++内存空间管理模块， 包含于:&lt;/p&gt;
+&lt;p&gt;&amp;lt;memory&amp;gt;:&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;&amp;lt;stl_construct.h&amp;gt;: 定义全局函数construct(),destory()，负责对象析构与构造&lt;/li&gt;
+&lt;li&gt;&amp;lt;stl_alloc.h&amp;gt;: 定义一二级配置器，名为alloc&lt;/li&gt;
+&lt;li&gt;&amp;lt;stl_uninitialized.h&amp;gt;: 一些全局函数用来操作大块内存数据&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h3 id=&#34;constructdestory&#34;&gt;construct&amp;amp;destory&lt;/h3&gt;
+&lt;p&gt;construct类似C++的placement new。&lt;/p&gt;
+&lt;p&gt;destory存在两版本：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;版本一接收一指针参数，析构掉指针处的对象&lt;/li&gt;
+&lt;li&gt;版本二接收两指针参数，析构掉两指针之间的所有对象&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h3 id=&#34;alloc-1&#34;&gt;alloc&lt;/h3&gt;
+&lt;p&gt;alloc空间配置器分一级配置器和二级配置器：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;一级配置器就是直接封装malloc和free&lt;/li&gt;
+&lt;li&gt;二级配置器：
+&lt;ol&gt;
+&lt;li&gt;维护16个自由链表组成内存池，分别负责十六种小型区块配置，填充内存池调用malloc&lt;/li&gt;
+&lt;li&gt;出现内存不足，或要求区块大于128Bytes转一级配置器&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;二级配置器：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;对于所需求区块无空闲块的情况直接去更大区块处查找，找到后出现的碎片会挂到与它大小匹配的区块链表上&lt;/li&gt;
+&lt;li&gt;都没有就分配40块需求区块，20块挂在链表上，20块作为后备&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h3 id=&#34;free&#34;&gt;free&lt;/h3&gt;
+&lt;p&gt;free是如何知道对象的大小呢，这是因为malloc在分配内存时，会在对象的内存块的上下区域添加内存大小的cookie，VC6中malloc添加的是对象大小+1.不管怎么样，这都足够free去get到需要归还给操作系统的内存空间大小了，当然所谓归还也只是还给CRTL的内存池，只有空闲内存到达某种条件（例如整整几页的空间都空闲，他们可能还连续），那就使用系统调用来让内核释放掉这一块虚拟内存（其实也就是进task_struct里找到mm_sturct然后操作里面的bitmap，将要释放的内存对应的块设置为再次可用）。&lt;/p&gt;
+&lt;h2 id=&#34;iterator&#34;&gt;Iterator&lt;/h2&gt;
+&lt;ol&gt;
+&lt;li&gt;迭代器的根本还是一个指针，当然它是一种智能指针&lt;/li&gt;
+&lt;li&gt;通过指针萃取到指针所指对象的类型或一些其他信息很重要，这就是traits技法&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;分类上个侯捷老师的图：&lt;/p&gt;
+&lt;p&gt;&lt;figure 
+	&gt;
+	&lt;a href=&#34;https://gao377020481.github.io/post/stl/iterator.jpg&#34; &gt;
+		&lt;img src=&#34;https://gao377020481.github.io/post/stl/iterator.jpg&#34;
+			
+			
+			
+			loading=&#34;lazy&#34;
+			&gt;
+	&lt;/a&gt;
+	
+&lt;/figure&gt;&lt;/p&gt;
+&lt;h3 id=&#34;traits&#34;&gt;traits&lt;/h3&gt;
+&lt;p&gt;利用template自动推导和偏特化实现普遍可用的萃取特性方法，直接记录代码：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-c++&#34; data-lang=&#34;c++&#34;&gt;&lt;span class=&#34;k&#34;&gt;template&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&#34;k&#34;&gt;class&lt;/span&gt; &lt;span class=&#34;nc&#34;&gt;T&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;&amp;gt;&lt;/span&gt;
+&lt;span class=&#34;k&#34;&gt;struct&lt;/span&gt; &lt;span class=&#34;nc&#34;&gt;MyIter&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;{&lt;/span&gt;
+    &lt;span class=&#34;k&#34;&gt;typedef&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;T&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;value_type&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt; &lt;span class=&#34;c1&#34;&gt;// 内嵌型别声明
+&lt;/span&gt;&lt;span class=&#34;c1&#34;&gt;&lt;/span&gt;    &lt;span class=&#34;n&#34;&gt;T&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;*&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;ptr&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
+    &lt;span class=&#34;n&#34;&gt;MyIter&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;T&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;*&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;p&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;0&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;:&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;ptr&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;p&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;{}&lt;/span&gt;
+    &lt;span class=&#34;n&#34;&gt;T&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;&amp;amp;&lt;/span&gt; &lt;span class=&#34;k&#34;&gt;operator&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;*&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;()&lt;/span&gt; &lt;span class=&#34;k&#34;&gt;const&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;{&lt;/span&gt; &lt;span class=&#34;k&#34;&gt;return&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;*&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;ptr&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;}&lt;/span&gt;
+&lt;span class=&#34;p&#34;&gt;};&lt;/span&gt;
+&lt;span class=&#34;c1&#34;&gt;// class type泛化版本
+&lt;/span&gt;&lt;span class=&#34;c1&#34;&gt;&lt;/span&gt;&lt;span class=&#34;k&#34;&gt;template&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&#34;k&#34;&gt;class&lt;/span&gt; &lt;span class=&#34;nc&#34;&gt;T&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;&amp;gt;&lt;/span&gt;
+&lt;span class=&#34;k&#34;&gt;struct&lt;/span&gt; &lt;span class=&#34;nc&#34;&gt;iterator_traits&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;{&lt;/span&gt;
+    &lt;span class=&#34;k&#34;&gt;typedef&lt;/span&gt; &lt;span class=&#34;k&#34;&gt;typename&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;T&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;::&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;value_type&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;value_type&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
+&lt;span class=&#34;p&#34;&gt;};&lt;/span&gt;
+&lt;span class=&#34;c1&#34;&gt;// 原生指针偏特化版本
+&lt;/span&gt;&lt;span class=&#34;c1&#34;&gt;&lt;/span&gt;&lt;span class=&#34;k&#34;&gt;template&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&#34;k&#34;&gt;class&lt;/span&gt; &lt;span class=&#34;nc&#34;&gt;T&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;&amp;gt;&lt;/span&gt;
+&lt;span class=&#34;k&#34;&gt;struct&lt;/span&gt; &lt;span class=&#34;nc&#34;&gt;iterator_traits&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;T&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;*&amp;gt;&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;{&lt;/span&gt;
+    &lt;span class=&#34;k&#34;&gt;typedef&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;T&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;value_type&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
+&lt;span class=&#34;p&#34;&gt;};&lt;/span&gt;
+&lt;span class=&#34;c1&#34;&gt;// const对象指针偏特化版本
+&lt;/span&gt;&lt;span class=&#34;c1&#34;&gt;&lt;/span&gt;&lt;span class=&#34;k&#34;&gt;template&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&#34;k&#34;&gt;class&lt;/span&gt; &lt;span class=&#34;nc&#34;&gt;T&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;&amp;gt;&lt;/span&gt;
+&lt;span class=&#34;k&#34;&gt;struct&lt;/span&gt; &lt;span class=&#34;nc&#34;&gt;iterator_traits&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&#34;k&#34;&gt;const&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;T&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;*&amp;gt;&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;{&lt;/span&gt;
+    &lt;span class=&#34;k&#34;&gt;typedef&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;T&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;value_type&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
+&lt;span class=&#34;p&#34;&gt;};&lt;/span&gt;
+
+&lt;span class=&#34;k&#34;&gt;template&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&#34;k&#34;&gt;class&lt;/span&gt; &lt;span class=&#34;nc&#34;&gt;I&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;&amp;gt;&lt;/span&gt;
+&lt;span class=&#34;k&#34;&gt;typename&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;iterator_traits&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;I&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;&amp;gt;::&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;value_type&lt;/span&gt; &lt;span class=&#34;c1&#34;&gt;//typename 告诉编译器这是一个type
+&lt;/span&gt;&lt;span class=&#34;c1&#34;&gt;&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;func&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;I&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;ite&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;{&lt;/span&gt;
+    &lt;span class=&#34;n&#34;&gt;std&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;::&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;cout&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;&amp;lt;&amp;lt;&lt;/span&gt; &lt;span class=&#34;s&#34;&gt;&amp;#34;normal version&amp;#34;&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;&amp;lt;&amp;lt;&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;std&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;::&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;endl&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
+    &lt;span class=&#34;k&#34;&gt;return&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;*&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;ite&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
+&lt;span class=&#34;p&#34;&gt;}&lt;/span&gt;
+
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;当然value_type只是常用的一种，STL还有其他几种，就不写了。&lt;/p&gt;
+&lt;h2 id=&#34;datastruct&#34;&gt;DataStruct&lt;/h2&gt;
+&lt;h3 id=&#34;list&#34;&gt;List&lt;/h3&gt;
+&lt;p&gt;链表，而且是双向链表，需要注意的是该双向链表的实现使用了一个无名节点，使得这个双向链表形成了环。这也就是end指向的结尾得“未知值”。
+侯捷老师的图拿来参考一下：&lt;/p&gt;
+&lt;p&gt;&lt;figure 
+	&gt;
+	&lt;a href=&#34;https://gao377020481.github.io/post/stl/list.jpg&#34; &gt;
+		&lt;img src=&#34;https://gao377020481.github.io/post/stl/list.jpg&#34;
+			
+			
+			
+			loading=&#34;lazy&#34;
+			&gt;
+	&lt;/a&gt;
+	
+&lt;/figure&gt;&lt;/p&gt;
+&lt;h3 id=&#34;vector&#34;&gt;Vector&lt;/h3&gt;
+&lt;p&gt;贴个侯捷老师的图：&lt;/p&gt;
+&lt;p&gt;&lt;figure 
+	&gt;
+	&lt;a href=&#34;https://gao377020481.github.io/post/stl/vector.jpg&#34; &gt;
+		&lt;img src=&#34;https://gao377020481.github.io/post/stl/vector.jpg&#34;
+			
+			
+			
+			loading=&#34;lazy&#34;
+			&gt;
+	&lt;/a&gt;
+	
+&lt;/figure&gt;&lt;/p&gt;
+&lt;h3 id=&#34;array&#34;&gt;Array&lt;/h3&gt;
+&lt;p&gt;贴个侯捷老师的图：
+&lt;figure 
+	&gt;
+	&lt;a href=&#34;https://gao377020481.github.io/post/stl/array.jpg&#34; &gt;
+		&lt;img src=&#34;https://gao377020481.github.io/post/stl/array.jpg&#34;
+			
+			
+			
+			loading=&#34;lazy&#34;
+			&gt;
+	&lt;/a&gt;
+	
+&lt;/figure&gt;&lt;/p&gt;
+&lt;h3 id=&#34;forward-list&#34;&gt;Forward List&lt;/h3&gt;
+&lt;p&gt;&lt;figure 
+	&gt;
+	&lt;a href=&#34;https://gao377020481.github.io/post/stl/forward_list.jpg&#34; &gt;
+		&lt;img src=&#34;https://gao377020481.github.io/post/stl/forward_list.jpg&#34;
+			
+			
+			
+			loading=&#34;lazy&#34;
+			&gt;
+	&lt;/a&gt;
+	
+&lt;/figure&gt;&lt;/p&gt;
+&lt;h3 id=&#34;deque&#34;&gt;Deque&lt;/h3&gt;
+&lt;p&gt;侯捷老师的图实在是太经典了，一看就懂&lt;/p&gt;
+&lt;p&gt;&lt;figure 
+	&gt;
+	&lt;a href=&#34;https://gao377020481.github.io/post/stl/deque.jpg&#34; &gt;
+		&lt;img src=&#34;https://gao377020481.github.io/post/stl/deque.jpg&#34;
+			
+			
+			
+			loading=&#34;lazy&#34;
+			&gt;
+	&lt;/a&gt;
+	
+&lt;/figure&gt;&lt;/p&gt;
+&lt;p&gt;具体实现的图中的map是一个原生数组，每一个元素中存有一个指向buffer得指针&lt;/p&gt;
+&lt;p&gt;buffersize现在是没法调整的，有一套较为复杂的计算方式，需要的话可以查一下&lt;/p&gt;
+&lt;p&gt;从他的实现可以看到，这个设计可以模拟数组的随机访问，思路很简单就不说了&lt;/p&gt;
+&lt;p&gt;还有一点需要注意是这个容器可以进行insert操作,在指定位置插入值时需要根据当前元素处于前半段还是后半段选择推前面还是推后面，推移操作直接循环搬就行。&lt;/p&gt;
+&lt;h3 id=&#34;queue&#34;&gt;Queue&lt;/h3&gt;
+&lt;p&gt;封装了deque的部分函数实现的，没啥好说的&lt;/p&gt;
+&lt;h3 id=&#34;stack&#34;&gt;Stack&lt;/h3&gt;
+&lt;p&gt;封装了deque的部分函数实现的，没啥好说的&lt;/p&gt;
+&lt;h3 id=&#34;rb-tree&#34;&gt;RB-tree&lt;/h3&gt;
+&lt;p&gt;stl实现了红黑树，需要注意的是其类定义：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-c++&#34; data-lang=&#34;c++&#34;&gt;&lt;span class=&#34;n&#34;&gt;_Rb_tree&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&#34;kt&#34;&gt;int&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;int&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;_Identity&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&#34;kt&#34;&gt;int&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;&amp;gt;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;less&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&#34;kt&#34;&gt;int&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;&amp;gt;&amp;gt;&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;itree&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;其中前两个是K和V，&lt;/p&gt;
+&lt;p&gt;_Identity&lt;!-- raw HTML omitted --&gt;是一个从V中得到K的函数，为什么需要这个呢，举例：&lt;/p&gt;
+&lt;p&gt;key: int   Value:pair&amp;lt;int, vector&lt;!-- raw HTML omitted --&gt;&amp;gt;, 看出来了吧，这个Value其实是data和key的结合体，所以需要告诉怎么从结合体中取出这个data，逻辑意义上的key和value就对应这里的key和data了。&lt;/p&gt;
+&lt;p&gt;less&lt;!-- raw HTML omitted --&gt;是一个重载了operator()的比较函数。&lt;/p&gt;
+&lt;p&gt;有两种插入：
+insert_equal和insert_unique，看字面意思就知道是啥&lt;/p&gt;
+&lt;p&gt;一般来讲rbtree的这个Value是不能修改的，但编译器不阻止&lt;/p&gt;
+&lt;h3 id=&#34;setmulti_set&#34;&gt;Set&amp;amp;multi_set&lt;/h3&gt;
+&lt;p&gt;Set就是value为Key的rbtree&lt;/p&gt;
+&lt;p&gt;其Value不能修改&lt;/p&gt;
+&lt;h3 id=&#34;mapmulti_map&#34;&gt;Map&amp;amp;Multi_map&lt;/h3&gt;
+&lt;p&gt;map的key不能改，但是data可以改&lt;/p&gt;
+&lt;h3 id=&#34;hashtable&#34;&gt;Hashtable&lt;/h3&gt;
+&lt;p&gt;使用vector作为buckets，使用一个hash算法来将对象映射到不同bucket上。&lt;/p&gt;
+&lt;p&gt;使用开链法解决冲突，负载因子大于1就触发扩容，直接扩为原来二倍左右。&lt;/p&gt;
+&lt;h3 id=&#34;unordered_mapunorderd_set&#34;&gt;Unordered_map&amp;amp;Unorderd_set&lt;/h3&gt;
+&lt;p&gt;底层为hashtable,封装个别方法实现&lt;/p&gt;
+</description>
+        </item>
+        <item>
+        <title>C&#43;&#43;对象</title>
+        <link>https://gao377020481.github.io/p/c-%E5%AF%B9%E8%B1%A1/</link>
+        <pubDate>Mon, 18 Jan 2021 00:00:00 +0000</pubDate>
+        
+        <guid>https://gao377020481.github.io/p/c-%E5%AF%B9%E8%B1%A1/</guid>
+        <description>&lt;img src="https://gao377020481.github.io/p/c-%E5%AF%B9%E8%B1%A1/380.jpg" alt="Featured image of post C&#43;&#43;对象" /&gt;&lt;h2 id=&#34;c-对象模型&#34;&gt;C++ 对象模型&lt;/h2&gt;
+&lt;p&gt;可用的对象模型有很多种，C++对象模型派生于简单对象模型，这里直接说C++对象模型：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;Non-static data member 存在于每一个object内&lt;/li&gt;
+&lt;li&gt;Static data member 存在于每一个object外&lt;/li&gt;
+&lt;li&gt;Static 与 Non-static function members 也被存放在所有object外&lt;/li&gt;
+&lt;li&gt;virtual function members：object内存在指向虚表vtb的指针（一般用于支持RTTI的type_info object的指针置于vtb第一个slot）&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h2 id=&#34;继承&#34;&gt;继承&lt;/h2&gt;
+&lt;h3 id=&#34;虚继承&#34;&gt;虚继承&lt;/h3&gt;
+&lt;p&gt;base class不管被继承多少次，永远只存在一个实体，虚继承产生的派生类只是有路径指向对应的base class实体。&lt;/p&gt;
+&lt;p&gt;这里的“路径”可以是类似虚表的指针（bptr）也可以是一系列指针，视存取效率而定。&lt;/p&gt;
+&lt;p&gt;然而，这样的话object的布局和大小会随着继承体系的改变而改变，所以这一部分的内容应被存放于对象模型的特殊部分。这个特殊部分就是“共享局部”，其他的固定不变的部分就是“不变局部”。所以为了实现虚继承，引入了两个局部的概念，虽然实现方式各编译器有所不同，但两个局部的概念一致。&lt;/p&gt;
+&lt;h2 id=&#34;layout-costs-for-adding-encapsulation封装成本&#34;&gt;Layout Costs for Adding Encapsulation(封装成本)&lt;/h2&gt;
+</description>
+        </item>
+        <item>
         <title>File System</title>
         <link>https://gao377020481.github.io/p/file-system/</link>
         <pubDate>Mon, 07 Dec 2020 00:00:00 +0000</pubDate>
