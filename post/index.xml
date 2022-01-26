@@ -31,7 +31,20 @@ mpicc --version 写代码测试：hello.c
       <pubDate>Tue, 09 Mar 2021 00:00:00 +0000</pubDate>
       
       <guid>https://gao377020481.github.io/p/quic/</guid>
-      <description></description>
+      <description>QUIC
+quick udp internet connection
+是由 google 提出的使用 udp 进行多路并发传输的协议
+优势 Quic 相比现在广泛应用的 http2+tcp+tls 协议有如下优势
+ 减少了 TCP 三次握手及 TLS 握手时间。 改进的拥塞控制。 避免队头阻塞的多路复用。 连接迁移。 前向冗余纠错。  0RTT建连 传输层和加密层总共只需要0RTT就可以建立连接。
+因为其握手数据和HTTP数据一同发送，建连过程可以认为是0RTT的。
+灵活的拥塞控制 QUIC默认使用了 TCP 协议的 Cubic 拥塞控制算法，同时也支持 CubicBytes, Reno, RenoBytes, BBR, PCC 等拥塞控制算法。
+但其：
+可插拔  该拥塞控制算法实现于应用层，不需要修改内核就可以对其快速迭代 同一程序的不同连接使用不同拥塞控制算法，针对不同用户做适配 变更算法只需要修改配置再重新加载，不需要停机  递增的packet number和维持顺序的stream offset 使用严格递增的packet number，即使是相同包的重发也递增。接收端就可以区分开这个包是重发的还是之前的。
+避免了在计算RTT的时候引发的歧义问题，因为发送方RTT计算需要计算的边界是包发出和包收到两处，如果使用重发包的时刻作为左边界，收到ack的时刻作为右边界，万一这个ack是初始发出的包的而不是重发的那就统计小了。
+SACK选项空间更大 QUIC的SACK选项空间256Bytes 对比TCP的30Bytes很大，能够提供更多已经收到segment的信息，方便发送端进行精度更高的选择重传
+Ack Delay Ack Delay是在接收端进行处理的时间，该时间也需要记录并发送，TCP的timestamp区域并不记录这个，计算的RTT理论上就更大不够准确。
+QUIC在计算RTT时会减去Ack Delay
+基于 stream 和 connecton 级别的流量控制 connection: TCP连接 ，复用：一个connection上可能有多个stream</description>
     </item>
     
     <item>
@@ -40,7 +53,30 @@ mpicc --version 写代码测试：hello.c
       <pubDate>Fri, 26 Feb 2021 00:00:00 +0000</pubDate>
       
       <guid>https://gao377020481.github.io/p/http-1-to-2/</guid>
-      <description></description>
+      <description>HTTP/1.1 建连 输入网址
+ 有网址，无IP。所以先生成DNS查询报文，置于目的端口53的UDP报文中。目的地址就是建网时通过DHCP获得的DNS服务器IP。但是还无网关的MAC，所以使用ARP查询报文，其目的IP为网关IP，MAC地址为全1（广播）。网关收到后就通过ARP回答返回给客户机他自己的MAC地址。客户机拿到网关MAC就继续组装好DNS查询报文，发送给网关路由器。 DNS查询被网关转发到了最终DNS服务器，服务器查询到网址对应ip并返回给客户机。 客户机拿到IP就生成TCP套接字然后向IP所处机器发起连接请求，三次握手建立连接后向其发送HTTP GET报文。 网址服务器返回一个HTTP相应报文。 客户机拿到后浏览器渲染一下显示出来。  缺点   队头阻塞
+  低效的 TCP 利用
+  臃肿的消息首部
+  受限的优先级设置
+  HTTP2 </description>
+    </item>
+    
+    <item>
+      <title>Spectre&amp;Meltdown</title>
+      <link>https://gao377020481.github.io/p/spectremeltdown/</link>
+      <pubDate>Wed, 10 Feb 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://gao377020481.github.io/p/spectremeltdown/</guid>
+      <description>Spectre&amp;amp;Meltdown
+这是一种利用现代处理器特性来“窃取”内存中重要信息的漏洞。
+Meltdown  诱使CPU在乱序执行的基础上将高权限的data信息放置于cache中  首先有一个数组，直接访问它的第data*4096个index处的元素 这样这个index处的元素会被放进cache中   循环遍历这个数组，当遍历到第data*4096个index处元素时，载入速度明显变快，这就说明这里是当时载入cache的元素 取到data*4096这个index就取到了data  假设data是一个内核内存空间内的数据，我们就get到了机密的内核数据，这都依赖于cpu的乱序执行：
+exception(dont have priority to access))access(array[data*4096])乱序执行使得在指令生效前，access运行在了exception之前，虽然指令未生效（寄存器状态等未变），但cache内却有了array[data*4096]这个元素
+Spectre Spectre基本原理与Meltdown类似，但他更强
+Meltdown一旦被从根本上避免就无法使用，比如内核和用户使用不同的页目录寄存器等
+Spectre并非依赖于乱序执行，而是依赖于分支预测。
+分支预测也会使cpu提前跑一下cpu认为正确的分支，尽管他不一定真的是接下来要执行的，同样会在cache里留下痕迹。
+但他要求代码有如下形式：
+if(index1&amp;lt;array_a_size) {index2=array_a[index1];if(index2 &amp;lt; array_b_size);value = array_b[index2];}通过控制index1的长度，让array_b的特定下标的数据Cacheline被点亮，如果有办法访问一次array_b的全部内容，我们就可以窃取到index1这个值。</description>
     </item>
     
     <item>
@@ -68,11 +104,19 @@ template &amp;lt;class T&amp;gt; struct MyIter { typedef T value_type; // 内嵌
       <pubDate>Mon, 18 Jan 2021 00:00:00 +0000</pubDate>
       
       <guid>https://gao377020481.github.io/p/c-%E5%AF%B9%E8%B1%A1/</guid>
-      <description>C++ 对象模型 可用的对象模型有很多种，C++对象模型派生于简单对象模型，这里直接说C++对象模型：
+      <description>读书笔记：深度探索c++对象模型
+C++ 对象模型 可用的对象模型有很多种，C++对象模型派生于简单对象模型，这里直接说C++对象模型：
  Non-static data member 存在于每一个object内 Static data member 存在于每一个object外 Static 与 Non-static function members 也被存放在所有object外 virtual function members：object内存在指向虚表vtb的指针（一般用于支持RTTI的type_info object的指针置于vtb第一个slot）  继承 虚继承 base class不管被继承多少次，永远只存在一个实体，虚继承产生的派生类只是有路径指向对应的base class实体。
 这里的“路径”可以是类似虚表的指针（bptr）也可以是一系列指针，视存取效率而定。
 然而，这样的话object的布局和大小会随着继承体系的改变而改变，所以这一部分的内容应被存放于对象模型的特殊部分。这个特殊部分就是“共享局部”，其他的固定不变的部分就是“不变局部”。所以为了实现虚继承，引入了两个局部的概念，虽然实现方式各编译器有所不同，但两个局部的概念一致。
-Layout Costs for Adding Encapsulation(封装成本) </description>
+构造 默认构造函数 如果没有user-declared constructor, 一个trivial 的constructor可能被生成， 但他啥都不干。
+  只有编译器需要时，non-trivial 的constructor才会被编译器合成，但他也只干编译器需要的事情，比如A内有一个B类的成员（组合），B有一个构造函数，那么A也就需要一个non-trivial 的constructor，这个构造函数只会构造B，而不会管A内可能存在的其他成员。
+  如果A内有B,C,D三个类的成员，这三个类都有自己的构造函数，显然编译器会为A生成一个构造函数，他会依次调用B,C,D的构造函数，顺序取决于三成员在A内的排列顺序。
+  回到1，如果A内其他成员比如一个int值在user-declared constructor里初始化但是user-declared constructor内未初始化B，那编译器怎么办呢，编译器会扩写user-declared constructor，给里面加上个B的构造函数的调用。
+  类内有虚函数存在，编译器需要扩张已有构造函数或生成一个构造函数来完成虚表的初始化操作
+  虚继承的使用也会给构造函数增加工作量，编译器需要让构造函数给类添加执行期判断的能力，比如在派生类中添加一个bptr提供指向唯一基类实体的路径。
+  默认拷贝构造函数 三种调用情况：
+ X x1 = x2 变量赋值 f(x1) 函数传参 return x1 返回值  不需要默认拷贝构造函数：</description>
     </item>
     
     <item>

@@ -116,7 +116,62 @@ mpirun -np &lt;span class=&#34;m&#34;&gt;4&lt;/span&gt; hello_c
         <pubDate>Tue, 09 Mar 2021 00:00:00 +0000</pubDate>
         
         <guid>https://gao377020481.github.io/p/quic/</guid>
-        <description>&lt;img src="https://gao377020481.github.io/p/quic/348.jpg" alt="Featured image of post QUIC" /&gt;</description>
+        <description>&lt;img src="https://gao377020481.github.io/p/quic/348.jpg" alt="Featured image of post QUIC" /&gt;&lt;p&gt;QUIC&lt;/p&gt;
+&lt;p&gt;quick udp internet connection&lt;/p&gt;
+&lt;p&gt;是由 google 提出的使用 udp 进行多路并发传输的协议&lt;/p&gt;
+&lt;h2 id=&#34;优势&#34;&gt;优势&lt;/h2&gt;
+&lt;p&gt;Quic 相比现在广泛应用的 http2+tcp+tls 协议有如下优势&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;减少了 TCP 三次握手及 TLS 握手时间。&lt;/li&gt;
+&lt;li&gt;改进的拥塞控制。&lt;/li&gt;
+&lt;li&gt;避免队头阻塞的多路复用。&lt;/li&gt;
+&lt;li&gt;连接迁移。&lt;/li&gt;
+&lt;li&gt;前向冗余纠错。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h3 id=&#34;0rtt建连&#34;&gt;&lt;strong&gt;0RTT建连&lt;/strong&gt;&lt;/h3&gt;
+&lt;p&gt;传输层和加密层总共只需要0RTT就可以建立连接。&lt;/p&gt;
+&lt;p&gt;因为其握手数据和HTTP数据一同发送，建连过程可以认为是0RTT的。&lt;/p&gt;
+&lt;h3 id=&#34;灵活的拥塞控制&#34;&gt;&lt;strong&gt;灵活的拥塞控制&lt;/strong&gt;&lt;/h3&gt;
+&lt;p&gt;QUIC默认使用了 TCP 协议的 Cubic 拥塞控制算法，同时也支持 CubicBytes, Reno, RenoBytes, BBR, PCC 等拥塞控制算法。&lt;/p&gt;
+&lt;p&gt;但其：&lt;/p&gt;
+&lt;h4 id=&#34;可插拔&#34;&gt;&lt;strong&gt;可插拔&lt;/strong&gt;&lt;/h4&gt;
+&lt;ol&gt;
+&lt;li&gt;该拥塞控制算法实现于应用层，不需要修改内核就可以对其快速迭代&lt;/li&gt;
+&lt;li&gt;同一程序的不同连接使用不同拥塞控制算法，针对不同用户做适配&lt;/li&gt;
+&lt;li&gt;变更算法只需要修改配置再重新加载，不需要停机&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h3 id=&#34;递增的packet-number和维持顺序的stream-offset&#34;&gt;&lt;strong&gt;递增的packet number和维持顺序的stream offset&lt;/strong&gt;&lt;/h3&gt;
+&lt;p&gt;使用严格递增的packet number，即使是相同包的重发也递增。接收端就可以区分开这个包是重发的还是之前的。&lt;/p&gt;
+&lt;p&gt;避免了在计算RTT的时候引发的歧义问题，因为发送方RTT计算需要计算的边界是包发出和包收到两处，如果使用重发包的时刻作为左边界，收到ack的时刻作为右边界，万一这个ack是初始发出的包的而不是重发的那就统计小了。&lt;/p&gt;
+&lt;h3 id=&#34;sack选项空间更大&#34;&gt;&lt;strong&gt;SACK选项空间更大&lt;/strong&gt;&lt;/h3&gt;
+&lt;p&gt;QUIC的SACK选项空间256Bytes 对比TCP的30Bytes很大，能够提供更多已经收到segment的信息，方便发送端进行精度更高的选择重传&lt;/p&gt;
+&lt;h3 id=&#34;ack-delay&#34;&gt;&lt;strong&gt;Ack Delay&lt;/strong&gt;&lt;/h3&gt;
+&lt;p&gt;Ack Delay是在接收端进行处理的时间，该时间也需要记录并发送，TCP的timestamp区域并不记录这个，计算的RTT理论上就更大不够准确。&lt;/p&gt;
+&lt;p&gt;QUIC在计算RTT时会减去Ack Delay&lt;/p&gt;
+&lt;h3 id=&#34;基于-stream-和-connecton-级别的流量控制&#34;&gt;&lt;strong&gt;基于 stream 和 connecton 级别的流量控制&lt;/strong&gt;&lt;/h3&gt;
+&lt;p&gt;connection: TCP连接 ，复用：一个connection上可能有多个stream&lt;/p&gt;
+&lt;p&gt;stream: HTTP请求&lt;/p&gt;
+&lt;p&gt;QUIC 实现流量控制：&lt;/p&gt;
+&lt;p&gt;通过 window_update 帧告诉对端自己可以接收的字节数，这样发送方就不会发送超过这个数量的数据。&lt;/p&gt;
+&lt;p&gt;通过 BlockFrame 告诉对端由于流量控制被阻塞了，无法发送数据。&lt;/p&gt;
+&lt;p&gt;QUIC 的流量控制和 TCP 有点区别，TCP 为了保证可靠性，窗口左边沿向右滑动时的长度取决于已经确认的字节数。如果中间出现丢包，就算接收到了更大序号的 Segment，窗口也无法超过这个序列号。&lt;/p&gt;
+&lt;p&gt;但 QUIC 不同，就算此前有些 packet 没有接收到，它的滑动只取决于接收到的最大偏移字节数。&lt;/p&gt;
+&lt;p&gt;当读取端读取到未到达的包时，可以采取发特殊包的方法向发送端要。&lt;/p&gt;
+&lt;h3 id=&#34;没有队头阻塞的多路复用&#34;&gt;&lt;strong&gt;没有队头阻塞的多路复用&lt;/strong&gt;&lt;/h3&gt;
+&lt;p&gt;QUIC 的多路复用和 HTTP2 类似。在一条 QUIC 连接上可以并发发送多个 HTTP 请求 (stream)。但是 QUIC 的多路复用相比 HTTP2 有一个很大的优势。&lt;/p&gt;
+&lt;p&gt;QUIC 一个连接上的多个 stream 之间没有依赖。这样假如 stream2 丢了一个 udp packet，也只会影响 stream2 的处理。不会影响 stream2 之前及之后的 stream 的处理。&lt;/p&gt;
+&lt;p&gt;HTTP2的多个stream即使后面stream已经全部到达，前面stream出现丢包也需要后面stream跟着一起等待才能读取。&lt;/p&gt;
+&lt;p&gt;HTTP2使用的TLS协议中最小单位是Record，最大不能超过 16K，由于一个 record 必须经过数据一致性校验才能进行加解密，所以一个 16K 的 record，就算丢了一个字节，也会导致已经接收到的 15.99K 数据无法处理，因为它不完整。&lt;/p&gt;
+&lt;p&gt;QUIC 最基本的传输单元是 Packet，不会超过 MTU 的大小，整个加密和认证过程都是基于 Packet 的，不会跨越多个 Packet。这样就能避免 TLS 协议存在的队头阻塞。&lt;/p&gt;
+&lt;p&gt;Stream 之间相互独立，比如 Stream2 丢了一个 Pakcet，不会影响 Stream3 和 Stream4。不存在 TCP 队头阻塞。&lt;/p&gt;
+&lt;h3 id=&#34;加密认证的报文&#34;&gt;&lt;strong&gt;加密认证的报文&lt;/strong&gt;&lt;/h3&gt;
+&lt;p&gt;QUIC除了个别报文比如 PUBLIC_RESET 和 CHLO，所有报文头部都是经过认证的，报文 Body 都是经过加密的。&lt;/p&gt;
+&lt;p&gt;而TCP报文头部完全裸露。&lt;/p&gt;
+&lt;h3 id=&#34;连接迁移&#34;&gt;&lt;strong&gt;连接迁移&lt;/strong&gt;&lt;/h3&gt;
+&lt;p&gt;TCP连接以四元组标识（俩IP和端口），任意一个或多个变化就发生断连。针对 TCP 的连接变化，MPTCP其实已经有了解决方案，但是由于 MPTCP 需要操作系统及网络协议栈支持，部署阻力非常大，目前并不适用。&lt;/p&gt;
+&lt;p&gt;任何一条 QUIC 连接不再以四元组标识，而是以一个 64 位的随机数作为 ID 来标识，这样就算 IP 或者端口发生变化时，只要 ID 不变，这条连接依然维持着，上层业务逻辑感知不到变化，不会中断，也就不需要重连。&lt;/p&gt;
+&lt;p&gt;由于这个 ID 是客户端随机产生的，并且长度有 64 位，所以冲突概率非常低。&lt;/p&gt;
+</description>
         </item>
         <item>
         <title>HTTP 1 to 2</title>
@@ -124,7 +179,70 @@ mpirun -np &lt;span class=&#34;m&#34;&gt;4&lt;/span&gt; hello_c
         <pubDate>Fri, 26 Feb 2021 00:00:00 +0000</pubDate>
         
         <guid>https://gao377020481.github.io/p/http-1-to-2/</guid>
-        <description>&lt;img src="https://gao377020481.github.io/p/http-1-to-2/297.jpg" alt="Featured image of post HTTP 1 to 2" /&gt;</description>
+        <description>&lt;img src="https://gao377020481.github.io/p/http-1-to-2/297.jpg" alt="Featured image of post HTTP 1 to 2" /&gt;&lt;h2 id=&#34;http11&#34;&gt;HTTP/1.1&lt;/h2&gt;
+&lt;h3 id=&#34;建连&#34;&gt;建连&lt;/h3&gt;
+&lt;p&gt;输入网址&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;有网址，无IP。所以先生成DNS查询报文，置于目的端口53的UDP报文中。目的地址就是建网时通过DHCP获得的DNS服务器IP。但是还无网关的MAC，所以使用ARP查询报文，其目的IP为网关IP，MAC地址为全1（广播）。网关收到后就通过ARP回答返回给客户机他自己的MAC地址。客户机拿到网关MAC就继续组装好DNS查询报文，发送给网关路由器。&lt;/li&gt;
+&lt;li&gt;DNS查询被网关转发到了最终DNS服务器，服务器查询到网址对应ip并返回给客户机。&lt;/li&gt;
+&lt;li&gt;客户机拿到IP就生成TCP套接字然后向IP所处机器发起连接请求，三次握手建立连接后向其发送HTTP GET报文。&lt;/li&gt;
+&lt;li&gt;网址服务器返回一个HTTP相应报文。&lt;/li&gt;
+&lt;li&gt;客户机拿到后浏览器渲染一下显示出来。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h3 id=&#34;缺点&#34;&gt;缺点&lt;/h3&gt;
+&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;队头阻塞&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;低效的 TCP 利用&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;臃肿的消息首部&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;受限的优先级设置&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h2 id=&#34;http2&#34;&gt;HTTP2&lt;/h2&gt;
+</description>
+        </item>
+        <item>
+        <title>Spectre&amp;Meltdown</title>
+        <link>https://gao377020481.github.io/p/spectremeltdown/</link>
+        <pubDate>Wed, 10 Feb 2021 00:00:00 +0000</pubDate>
+        
+        <guid>https://gao377020481.github.io/p/spectremeltdown/</guid>
+        <description>&lt;img src="https://gao377020481.github.io/p/spectremeltdown/325.jpg" alt="Featured image of post Spectre&amp;Meltdown" /&gt;&lt;p&gt;Spectre&amp;amp;Meltdown&lt;/p&gt;
+&lt;p&gt;这是一种利用现代处理器特性来“窃取”内存中重要信息的漏洞。&lt;/p&gt;
+&lt;h2 id=&#34;meltdown&#34;&gt;Meltdown&lt;/h2&gt;
+&lt;ol&gt;
+&lt;li&gt;诱使CPU在乱序执行的基础上将高权限的data信息放置于cache中
+&lt;ol&gt;
+&lt;li&gt;首先有一个数组，直接访问它的第data*4096个index处的元素&lt;/li&gt;
+&lt;li&gt;这样这个index处的元素会被放进cache中&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/li&gt;
+&lt;li&gt;循环遍历这个数组，当遍历到第data*4096个index处元素时，载入速度明显变快，这就说明这里是当时载入cache的元素&lt;/li&gt;
+&lt;li&gt;取到data*4096这个index就取到了data&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;假设data是一个内核内存空间内的数据，我们就get到了机密的内核数据，这都依赖于cpu的乱序执行：&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;exception(dont have priority to access))
+access(array[data*4096])
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;乱序执行使得在指令生效前，access运行在了exception之前，虽然指令未生效（寄存器状态等未变），但cache内却有了array[data*4096]这个元素&lt;/p&gt;
+&lt;h2 id=&#34;spectre&#34;&gt;Spectre&lt;/h2&gt;
+&lt;p&gt;Spectre基本原理与Meltdown类似，但他更强&lt;/p&gt;
+&lt;p&gt;Meltdown一旦被从根本上避免就无法使用，比如内核和用户使用不同的页目录寄存器等&lt;/p&gt;
+&lt;p&gt;Spectre并非依赖于乱序执行，而是依赖于分支预测。&lt;/p&gt;
+&lt;p&gt;分支预测也会使cpu提前跑一下cpu认为正确的分支，尽管他不一定真的是接下来要执行的，同样会在cache里留下痕迹。&lt;/p&gt;
+&lt;p&gt;但他要求代码有如下形式：&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;if(index1&amp;lt;array_a_size) {
+  index2=array_a[index1];
+  if(index2 &amp;lt; array_b_size);
+     value = array_b[index2];
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;通过控制index1的长度，让array_b的特定下标的数据Cacheline被点亮，如果有办法访问一次array_b的全部内容，我们就可以窃取到index1这个值。&lt;/p&gt;
+</description>
         </item>
         <item>
         <title>STL</title>
@@ -323,7 +441,8 @@ insert_equal和insert_unique，看字面意思就知道是啥&lt;/p&gt;
         <pubDate>Mon, 18 Jan 2021 00:00:00 +0000</pubDate>
         
         <guid>https://gao377020481.github.io/p/c-%E5%AF%B9%E8%B1%A1/</guid>
-        <description>&lt;img src="https://gao377020481.github.io/p/c-%E5%AF%B9%E8%B1%A1/380.jpg" alt="Featured image of post C&#43;&#43;对象" /&gt;&lt;h2 id=&#34;c-对象模型&#34;&gt;C++ 对象模型&lt;/h2&gt;
+        <description>&lt;img src="https://gao377020481.github.io/p/c-%E5%AF%B9%E8%B1%A1/380.jpg" alt="Featured image of post C&#43;&#43;对象" /&gt;&lt;p&gt;读书笔记：深度探索c++对象模型&lt;/p&gt;
+&lt;h2 id=&#34;c-对象模型&#34;&gt;C++ 对象模型&lt;/h2&gt;
 &lt;p&gt;可用的对象模型有很多种，C++对象模型派生于简单对象模型，这里直接说C++对象模型：&lt;/p&gt;
 &lt;ol&gt;
 &lt;li&gt;Non-static data member 存在于每一个object内&lt;/li&gt;
@@ -332,11 +451,350 @@ insert_equal和insert_unique，看字面意思就知道是啥&lt;/p&gt;
 &lt;li&gt;virtual function members：object内存在指向虚表vtb的指针（一般用于支持RTTI的type_info object的指针置于vtb第一个slot）&lt;/li&gt;
 &lt;/ol&gt;
 &lt;h2 id=&#34;继承&#34;&gt;继承&lt;/h2&gt;
-&lt;h3 id=&#34;虚继承&#34;&gt;虚继承&lt;/h3&gt;
+&lt;h3 id=&#34;虚继承&#34;&gt;&lt;strong&gt;虚继承&lt;/strong&gt;&lt;/h3&gt;
 &lt;p&gt;base class不管被继承多少次，永远只存在一个实体，虚继承产生的派生类只是有路径指向对应的base class实体。&lt;/p&gt;
 &lt;p&gt;这里的“路径”可以是类似虚表的指针（bptr）也可以是一系列指针，视存取效率而定。&lt;/p&gt;
 &lt;p&gt;然而，这样的话object的布局和大小会随着继承体系的改变而改变，所以这一部分的内容应被存放于对象模型的特殊部分。这个特殊部分就是“共享局部”，其他的固定不变的部分就是“不变局部”。所以为了实现虚继承，引入了两个局部的概念，虽然实现方式各编译器有所不同，但两个局部的概念一致。&lt;/p&gt;
-&lt;h2 id=&#34;layout-costs-for-adding-encapsulation封装成本&#34;&gt;Layout Costs for Adding Encapsulation(封装成本)&lt;/h2&gt;
+&lt;h2 id=&#34;构造&#34;&gt;构造&lt;/h2&gt;
+&lt;h3 id=&#34;默认构造函数&#34;&gt;&lt;strong&gt;默认构造函数&lt;/strong&gt;&lt;/h3&gt;
+&lt;p&gt;如果没有user-declared constructor, 一个trivial 的constructor可能被生成， 但他啥都不干。&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;只有编译器需要时，non-trivial 的constructor才会被编译器合成，但他也只干编译器需要的事情，比如A内有一个B类的成员（组合），B有一个构造函数，那么A也就需要一个non-trivial 的constructor，这个构造函数只会构造B，而不会管A内可能存在的其他成员。&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;如果A内有B,C,D三个类的成员，这三个类都有自己的构造函数，显然编译器会为A生成一个构造函数，他会依次调用B,C,D的构造函数，顺序取决于三成员在A内的排列顺序。&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;回到1，如果A内其他成员比如一个int值在user-declared constructor里初始化但是user-declared constructor内未初始化B，那编译器怎么办呢，编译器会扩写user-declared constructor，给里面加上个B的构造函数的调用。&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;类内有虚函数存在，编译器需要扩张已有构造函数或生成一个构造函数来完成虚表的初始化操作&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;虚继承的使用也会给构造函数增加工作量，编译器需要让构造函数给类添加执行期判断的能力，比如在派生类中添加一个bptr提供指向唯一基类实体的路径。&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h3 id=&#34;默认拷贝构造函数&#34;&gt;&lt;strong&gt;默认拷贝构造函数&lt;/strong&gt;&lt;/h3&gt;
+&lt;p&gt;三种调用情况：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;X x1 = x2 变量赋值&lt;/li&gt;
+&lt;li&gt;f(x1) 函数传参&lt;/li&gt;
+&lt;li&gt;return x1  返回值&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;&lt;strong&gt;不需要默认拷贝构造函数：&lt;/strong&gt;&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;类内以及其子类（无限递归下去）内部全是内建类型（即全是int啥的），那么只需要简单的依次（对于子类递归的执行）将这些成员赋值。这叫做default memberwise initialization，这里编译器没有产生default 拷贝构造函数，这是一种bitwise copy semantic即bitwise的copy每一个变量值&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;&lt;strong&gt;需要默认拷贝构造函数：&lt;/strong&gt;&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;类内及其子类内存在一个explicit（即显式声明）的拷贝构造函数，那类及其子类本身也需要生成一个拷贝构造函数，其中会调用那个explicit的拷贝构造函数。&lt;/li&gt;
+&lt;li&gt;类继承的base class有一个explicit的拷贝构造函数&lt;/li&gt;
+&lt;li&gt;类存在一个或多个virtual function&lt;/li&gt;
+&lt;li&gt;继承串联下存在虚继承&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;&lt;strong&gt;情况三的类存在一个或多个virtual function&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;很容易想到的多态情况，以一个derive class A作为值赋给一个base class B，发生切割操作，并且需要使用Base class的vptr而非A的vptr，这都需要编译器在生成的拷贝构造函数中纠正&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;情况四的继承串联下存在虚继承&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;同样将derive class A作为值赋给一个base class B，同时这个base class B虚继承自一个virtual base class C。那么A的拷贝构造函数需要被编译器扩张或生成来完成bptr的指定。&lt;/p&gt;
+&lt;h3 id=&#34;传值三种情况构造&#34;&gt;&lt;strong&gt;传值三种情况构造&lt;/strong&gt;&lt;/h3&gt;
+&lt;ol&gt;
+&lt;li&gt;&lt;strong&gt;X x1 = x2 变量赋值&lt;/strong&gt;&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;转化为：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-c++&#34; data-lang=&#34;c++&#34;&gt;&lt;span class=&#34;n&#34;&gt;X&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;x1&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
+&lt;span class=&#34;n&#34;&gt;x1&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;X&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;::&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;X&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;x2&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;ol start=&#34;2&#34;&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;f(x1) 函数传参&lt;/strong&gt;&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;构造临时对象，通过引用传给函数&lt;/li&gt;
+&lt;li&gt;因为使用引用传参，所以函数也需要重写参数列表接收一个引用&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;&lt;strong&gt;return x1  返回值&lt;/strong&gt;&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;给函数参数加一个引用参数，类型为返回值类型&lt;/li&gt;
+&lt;li&gt;将函数内的局部变量通过拷贝构造给这个参数，返回值体现在添加的参数里，外部可以感知到&lt;/li&gt;
+&lt;/ol&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;&lt;strong&gt;尝试优化&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;对于返回值，可以从使用者层面优化：&lt;/p&gt;
+&lt;p&gt;函数内的局部变量不需要通过拷贝构造给这个参数，直接在函数内部不定义这个局部变量，将对于他的操作全部写在他的一个构造函数内，return X(y,z); 这样当转化为参数时也只是调用参数的构造函数，即可省去拷贝构造。&lt;/p&gt;
+&lt;h3 id=&#34;member-initialization-list&#34;&gt;&lt;strong&gt;member initialization list&lt;/strong&gt;&lt;/h3&gt;
+&lt;p&gt;即：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-c++&#34; data-lang=&#34;c++&#34;&gt;
+&lt;span class=&#34;k&#34;&gt;class&lt;/span&gt; &lt;span class=&#34;nc&#34;&gt;a&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;{&lt;/span&gt;
+    &lt;span class=&#34;kt&#34;&gt;int&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;a1&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;a2&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
+    &lt;span class=&#34;n&#34;&gt;a&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;()&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;:&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;a1&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;0&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;),&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;a2&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;0&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;{};&lt;/span&gt;
+&lt;span class=&#34;p&#34;&gt;}&lt;/span&gt;
+
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;这种初始化方式。&lt;/p&gt;
+&lt;p&gt;以下几种成员&lt;strong&gt;必须&lt;/strong&gt;如此初始化：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;reference member&lt;/li&gt;
+&lt;li&gt;const member&lt;/li&gt;
+&lt;li&gt;call case class 的 constructor&lt;/li&gt;
+&lt;li&gt;call member class 的 constructor&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;需要注意的是，变量的初始化顺序取决于成员在类内声明的顺序，而非member initialization list的顺序&lt;/p&gt;
+&lt;h3 id=&#34;虚继承下构造&#34;&gt;&lt;strong&gt;虚继承下构造&lt;/strong&gt;&lt;/h3&gt;
+&lt;p&gt;主要说钻石继承，见图：&lt;/p&gt;
+&lt;p&gt;&lt;figure 
+	&gt;
+	&lt;a href=&#34;https://gao377020481.github.io/post/c&amp;#43;&amp;#43;/object9.jpg&#34; &gt;
+		&lt;img src=&#34;https://gao377020481.github.io/post/c&amp;#43;&amp;#43;/object9.jpg&#34;
+			
+			
+			
+			loading=&#34;lazy&#34;
+			&gt;
+	&lt;/a&gt;
+	
+&lt;/figure&gt;&lt;/p&gt;
+&lt;p&gt;在构造Vertex3d或Pvertex时，Point的构造函数只应构造一次，且由最底的Vertex3d或Pvertex调用，而非递归的调用到。&lt;/p&gt;
+&lt;h3 id=&#34;构造函数中调用虚函数&#34;&gt;&lt;strong&gt;构造函数中调用虚函数&lt;/strong&gt;&lt;/h3&gt;
+&lt;p&gt;使用构造函数来调用虚函数，参考图：
+&lt;figure 
+	&gt;
+	&lt;a href=&#34;https://gao377020481.github.io/post/c&amp;#43;&amp;#43;/object9.jpg&#34; &gt;
+		&lt;img src=&#34;https://gao377020481.github.io/post/c&amp;#43;&amp;#43;/object9.jpg&#34;
+			
+			
+			
+			loading=&#34;lazy&#34;
+			&gt;
+	&lt;/a&gt;
+	
+&lt;/figure&gt;&lt;/p&gt;
+&lt;p&gt;假如所有类都有一个虚函数size(), 这个虚函数在每个构造函数中被调用，那么在Pvertex构造函数调用时应当根据目前递归调用到那一层来决定size()的调用，也就是Pvertex构造中Point3d构造时就该调Point3d的虚函数size，返回Point3d的大小。 这就对vptr的初始化有了一定要求，维持虚函数调用的规则不变（也就是编译器不插手这种情况，编译器当然可以将size使用对应的静态调用方式来调用，但不好，不够优雅），对vptr的初始化顺序做一定限制，就可以完成。&lt;/p&gt;
+&lt;p&gt;vptr在基类的构造函数调用之后但在程序员的code或member initialization初始化操作之前才初始化，这就确保了基类中调用的size依据的是基类的vptr，因为vptr要在程序员的code之前就初始化好。当然member initialization初始化操作其实还是在程序员的code之前的，在vptr初始化之后的。所以顺序是：&lt;/p&gt;
+&lt;p&gt;基类的构造函数调用 -&amp;gt; vptr初始化 -&amp;gt; member initialization初始化操作 -&amp;gt; 程序员的code&lt;/p&gt;
+&lt;h2 id=&#34;数据&#34;&gt;数据&lt;/h2&gt;
+&lt;h3 id=&#34;数据布局&#34;&gt;&lt;strong&gt;数据布局&lt;/strong&gt;&lt;/h3&gt;
+&lt;ol&gt;
+&lt;li&gt;static成员不在对象布局内，在静态存储区域&lt;/li&gt;
+&lt;li&gt;其他的同一access section内相对次序与声明次序相关，不同之间编译器可以做自己的实现，不保证顺序&lt;/li&gt;
+&lt;li&gt;编译器自己生成的vptr等成员自己放置位置，目前多防止开头或结尾。&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h3 id=&#34;数据存取&#34;&gt;&lt;strong&gt;数据存取&lt;/strong&gt;&lt;/h3&gt;
+&lt;h4 id=&#34;static-data-member&#34;&gt;&lt;strong&gt;static data member&lt;/strong&gt;&lt;/h4&gt;
+&lt;p&gt;static data member存在于data segment内，编译器将其转化为一个指针，直接去存取。且static data member并不会冲突，得益于name-mangling机制，每一个类的static data member都有其唯一的id，通过id访问&lt;/p&gt;
+&lt;h4 id=&#34;nonstatic-data-member&#34;&gt;&lt;strong&gt;nonstatic data member&lt;/strong&gt;&lt;/h4&gt;
+&lt;p&gt;&lt;strong&gt;通过implicit class object&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;对于函数的成员方法，其可以直接操作类内成员，编译器在参数列表添加一个this指针，方法是通过this指针来操作的&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;存取操作&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;通过计算成员变量的offset来存取，但是一旦存在virtual base class object，就多了一层间接性，因为虚基类的对象可能需要通过一个bptr来访问到。&lt;/p&gt;
+&lt;p&gt;显然，以下两种情况当时用指针存取，成员存在于虚基类中，其效率会低:&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-c++&#34; data-lang=&#34;c++&#34;&gt;&lt;span class=&#34;n&#34;&gt;A&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;a&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
+&lt;span class=&#34;n&#34;&gt;A&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;*&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;aptr&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;&amp;amp;&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;a&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
+&lt;span class=&#34;n&#34;&gt;a&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;x&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
+&lt;span class=&#34;n&#34;&gt;aptr&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;-&amp;gt;&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;x&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id=&#34;继承下数据布局&#34;&gt;&lt;strong&gt;继承下数据布局&lt;/strong&gt;&lt;/h3&gt;
+&lt;h4 id=&#34;无虚函数和虚基类&#34;&gt;&lt;strong&gt;无虚函数和虚基类&lt;/strong&gt;&lt;/h4&gt;
+&lt;p&gt;各基类需要保持其“原样性”：&lt;/p&gt;
+&lt;p&gt;见图可知：&lt;/p&gt;
+&lt;p&gt;&lt;figure 
+	&gt;
+	&lt;a href=&#34;https://gao377020481.github.io/post/c&amp;#43;&amp;#43;/object1.jpg&#34; &gt;
+		&lt;img src=&#34;https://gao377020481.github.io/post/c&amp;#43;&amp;#43;/object1.jpg&#34;
+			
+			
+			
+			loading=&#34;lazy&#34;
+			&gt;
+	&lt;/a&gt;
+	
+&lt;/figure&gt;&lt;/p&gt;
+&lt;h4 id=&#34;有虚函数无虚基类&#34;&gt;&lt;strong&gt;有虚函数无虚基类&lt;/strong&gt;&lt;/h4&gt;
+&lt;p&gt;见图：&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;单一继承&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;&lt;figure 
+	&gt;
+	&lt;a href=&#34;https://gao377020481.github.io/post/c&amp;#43;&amp;#43;/object2.jpg&#34; &gt;
+		&lt;img src=&#34;https://gao377020481.github.io/post/c&amp;#43;&amp;#43;/object2.jpg&#34;
+			
+			
+			
+			loading=&#34;lazy&#34;
+			&gt;
+	&lt;/a&gt;
+	
+&lt;/figure&gt;&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;多重继承，derive class添加新的virtual func&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;&lt;figure 
+	&gt;
+	&lt;a href=&#34;https://gao377020481.github.io/post/c&amp;#43;&amp;#43;/object3.jpg&#34; &gt;
+		&lt;img src=&#34;https://gao377020481.github.io/post/c&amp;#43;&amp;#43;/object3.jpg&#34;
+			
+			
+			
+			loading=&#34;lazy&#34;
+			&gt;
+	&lt;/a&gt;
+	
+&lt;/figure&gt;&lt;/p&gt;
+&lt;h4 id=&#34;有虚基类虚继承&#34;&gt;&lt;strong&gt;有虚基类（虚继承）&lt;/strong&gt;&lt;/h4&gt;
+&lt;p&gt;&lt;strong&gt;经典的钻石继承&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;&lt;figure 
+	&gt;
+	&lt;a href=&#34;https://gao377020481.github.io/post/c&amp;#43;&amp;#43;/object.jpg&#34; &gt;
+		&lt;img src=&#34;https://gao377020481.github.io/post/c&amp;#43;&amp;#43;/object.jpg&#34;
+			
+			
+			
+			loading=&#34;lazy&#34;
+			&gt;
+	&lt;/a&gt;
+	
+&lt;/figure&gt;&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;使用pointer 策略即bptr&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;&lt;figure 
+	&gt;
+	&lt;a href=&#34;https://gao377020481.github.io/post/c&amp;#43;&amp;#43;/object4.jpg&#34; &gt;
+		&lt;img src=&#34;https://gao377020481.github.io/post/c&amp;#43;&amp;#43;/object4.jpg&#34;
+			
+			
+			
+			loading=&#34;lazy&#34;
+			&gt;
+	&lt;/a&gt;
+	
+&lt;/figure&gt;&lt;/p&gt;
+&lt;p&gt;看到pPoint2d就是那个bptr&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;使用table策略即通过在vptr内添加虚基类偏移找到&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;&lt;figure 
+	&gt;
+	&lt;a href=&#34;https://gao377020481.github.io/post/c&amp;#43;&amp;#43;/object5.jpg&#34; &gt;
+		&lt;img src=&#34;https://gao377020481.github.io/post/c&amp;#43;&amp;#43;/object5.jpg&#34;
+			
+			
+			
+			loading=&#34;lazy&#34;
+			&gt;
+	&lt;/a&gt;
+	
+&lt;/figure&gt;&lt;/p&gt;
+&lt;h3 id=&#34;data-member-的地址&#34;&gt;&lt;strong&gt;Data member 的地址&lt;/strong&gt;&lt;/h3&gt;
+&lt;p&gt;对一个Data member 取地址，取到的是data member在object内的&lt;strong&gt;偏移量&lt;/strong&gt;。&lt;/p&gt;
+&lt;p&gt;通过指向data member的指针来存取目标会更加耗时&lt;/p&gt;
+&lt;h2 id=&#34;函数&#34;&gt;函数&lt;/h2&gt;
+&lt;h3 id=&#34;nonstatic-member-function&#34;&gt;&lt;strong&gt;nonstatic member function&lt;/strong&gt;&lt;/h3&gt;
+&lt;p&gt;为了获得和普通函数相同的调用效率，&lt;/p&gt;
+&lt;p&gt;进行三步处理：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;传一个对象this指针进去&lt;/li&gt;
+&lt;li&gt;内部对成员调用改为this-&amp;gt;&lt;/li&gt;
+&lt;li&gt;对函数名做mangling，起一个别的名字，一般来讲有class名称在内&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;&lt;strong&gt;nonstatic member function函数指针&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;这也是一个需要绑定于object地址上才能调用的函数指针，也就是他本身是一种不完整的offset。&lt;/p&gt;
+&lt;h3 id=&#34;virtual-member-function&#34;&gt;&lt;strong&gt;virtual member function&lt;/strong&gt;&lt;/h3&gt;
+&lt;p&gt;将虚函数调用转化为虚函数表的一项：&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;(* ptr-&amp;gt;vptr[1])(this);
+&lt;/code&gt;&lt;/pre&gt;&lt;h4 id=&#34;单一继承下虚函数表布局&#34;&gt;&lt;strong&gt;单一继承下虚函数表布局&lt;/strong&gt;&lt;/h4&gt;
+&lt;p&gt;直接看图&lt;/p&gt;
+&lt;p&gt;&lt;figure 
+	&gt;
+	&lt;a href=&#34;https://gao377020481.github.io/post/c&amp;#43;&amp;#43;/object6.jpg&#34; &gt;
+		&lt;img src=&#34;https://gao377020481.github.io/post/c&amp;#43;&amp;#43;/object6.jpg&#34;
+			
+			
+			
+			loading=&#34;lazy&#34;
+			&gt;
+	&lt;/a&gt;
+	
+&lt;/figure&gt;&lt;/p&gt;
+&lt;h4 id=&#34;多继承下虚函数表布局&#34;&gt;&lt;strong&gt;多继承下虚函数表布局&lt;/strong&gt;&lt;/h4&gt;
+&lt;p&gt;&lt;figure 
+	&gt;
+	&lt;a href=&#34;https://gao377020481.github.io/post/c&amp;#43;&amp;#43;/object7.jpg&#34; &gt;
+		&lt;img src=&#34;https://gao377020481.github.io/post/c&amp;#43;&amp;#43;/object7.jpg&#34;
+			
+			
+			
+			loading=&#34;lazy&#34;
+			&gt;
+	&lt;/a&gt;
+	
+&lt;/figure&gt;&lt;/p&gt;
+&lt;p&gt;看到base1的虚函数表里居然有base2的虚函数，这是因为base1里的的虚函数表充当了derive class的主要虚函数表，base1 class就是主要实体，所以在他这个subobject内的虚函数表就需要一个完整的derive class能掉用到的虚函数表。&lt;/p&gt;
+&lt;p&gt;那么如果将derive class object传给一个base2指针，因为是一个derive class，那么虚函数指针还是需要指向开头的主要实体的虚函数表这里，因为它可以调用所有的虚函数，这种设计给类似上面的行为提供了一种统一的做法，那就是：要访问虚函数，那就将调用指针移到开头去，从主要实体里找虚函数表。&lt;/p&gt;
+&lt;h4 id=&#34;虚继承下虚函数表布局&#34;&gt;&lt;strong&gt;虚继承下虚函数表布局&lt;/strong&gt;&lt;/h4&gt;
+&lt;p&gt;&lt;figure 
+	&gt;
+	&lt;a href=&#34;https://gao377020481.github.io/post/c&amp;#43;&amp;#43;/object8.jpg&#34; &gt;
+		&lt;img src=&#34;https://gao377020481.github.io/post/c&amp;#43;&amp;#43;/object8.jpg&#34;
+			
+			
+			
+			loading=&#34;lazy&#34;
+			&gt;
+	&lt;/a&gt;
+	
+&lt;/figure&gt;&lt;/p&gt;
+&lt;p&gt;明显虚继承下derive class的虚函数表也包含全部虚函数，虚基类的虚函数表也包含他自己有的全部虚函数，只是虚函数版本向derive class内的定义看齐&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;virtual member function函数指针&lt;/strong&gt;&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;单一继承体系下&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;虚函数的地址只是一个它在虚函数表内的索引值。&lt;/p&gt;
+&lt;ol start=&#34;2&#34;&gt;
+&lt;li&gt;多继承体系下：&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;cfront的实现使用一个结构体与这个虚函数绑定，记录了他的表内索引和他所在的表的vptr，通过这俩找到这个虚函数&lt;/p&gt;
+&lt;h3 id=&#34;static-member-function&#34;&gt;&lt;strong&gt;static member function&lt;/strong&gt;&lt;/h3&gt;
+&lt;p&gt;static member function直接被转换为非成员函数并调用&lt;/p&gt;
+&lt;p&gt;不能存取class中的nonstatic members&lt;/p&gt;
+&lt;p&gt;所以一般用于操作static member，因为static member一般不会被定义为public的，所以用一个function来操作很好，而普通成员函数又需要创建object才能用，static member function就不需要。&lt;/p&gt;
+&lt;h3 id=&#34;inline-function&#34;&gt;&lt;strong&gt;inline function&lt;/strong&gt;&lt;/h3&gt;
+&lt;p&gt;inline 函数会经历以下两步：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;分析函数，决定是否能成为inline，如果不能就转换为static函数&lt;/li&gt;
+&lt;li&gt;在调用点上触发函数拓展，拓展时存在参数求值和临时对象管理问题&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h2 id=&#34;析构&#34;&gt;析构&lt;/h2&gt;
+&lt;p&gt;&lt;strong&gt;首先最重要的一点：&lt;/strong&gt;&lt;/p&gt;
+&lt;p&gt;每一个derive class的析构函数会被编译器扩展，以静态调用的方式调用各层base class的&lt;strong&gt;虚&lt;/strong&gt;析构函数（如果有的话），base class没有&lt;strong&gt;虚&lt;/strong&gt;析构函数那就不调用了&lt;/p&gt;
+&lt;h3 id=&#34;默认destructor&#34;&gt;&lt;strong&gt;默认destructor&lt;/strong&gt;&lt;/h3&gt;
+&lt;p&gt;只有member 有一个destructor， 默认destructor才被合成，合成出来就是调用成员的destructor&lt;/p&gt;
+&lt;h3 id=&#34;析构过程&#34;&gt;&lt;strong&gt;析构过程&lt;/strong&gt;&lt;/h3&gt;
+&lt;p&gt;&lt;figure 
+	&gt;
+	&lt;a href=&#34;https://gao377020481.github.io/post/c&amp;#43;&amp;#43;/object.jpg&#34; &gt;
+		&lt;img src=&#34;https://gao377020481.github.io/post/c&amp;#43;&amp;#43;/object.jpg&#34;
+			
+			
+			
+			loading=&#34;lazy&#34;
+			&gt;
+	&lt;/a&gt;
+	
+&lt;/figure&gt;&lt;/p&gt;
+&lt;p&gt;还是这个图，Pvertex被析构时，他这个对象会依次“变成”各个基类，直到最后变成Point然后彻底消亡，vptr，object都会发生这种“蜕变”，很神奇。&lt;/p&gt;
+&lt;h2 id=&#34;对象&#34;&gt;对象&lt;/h2&gt;
+&lt;h3 id=&#34;全局对象&#34;&gt;&lt;strong&gt;全局对象&lt;/strong&gt;&lt;/h3&gt;
+&lt;p&gt;程序之始创建于data segment中，exit时销毁&lt;/p&gt;
+&lt;h3 id=&#34;局部静态对象&#34;&gt;&lt;strong&gt;局部静态对象&lt;/strong&gt;&lt;/h3&gt;
+&lt;p&gt;local static object在c++ std要求下必须在这一局部被调用到才创建和赋值。且该对象只创建一次（就在被调用时），只销毁一次（整个程序退出时）。具体怎么实现被调用才创建就略了。&lt;/p&gt;
+&lt;h3 id=&#34;对象数组&#34;&gt;&lt;strong&gt;对象数组&lt;/strong&gt;&lt;/h3&gt;
+&lt;p&gt;有一个循环的方法来依次创建和销毁数组中的每一个对象。&lt;/p&gt;
+&lt;h3 id=&#34;new和delete&#34;&gt;&lt;strong&gt;new和delete&lt;/strong&gt;&lt;/h3&gt;
+&lt;p&gt;new： 配置内存malloc -&amp;gt; 构造&lt;/p&gt;
+&lt;p&gt;placement new： 在指定位置配置内存并构造&lt;/p&gt;
+&lt;p&gt;delete： 析构 -&amp;gt; 释放内存free&lt;/p&gt;
+&lt;h2 id=&#34;rtti&#34;&gt;RTTI&lt;/h2&gt;
+&lt;p&gt;使用vtable的第一个slot装type_info这个object的地址&lt;/p&gt;
+&lt;p&gt;以上就是使用dynamic_cast时所做的操作，他相比于static_cast更为耗时但安全，因为一旦类型不匹配那就转换失败。而static_cast就是强转。&lt;/p&gt;
+&lt;p&gt;而对于非多态类或内建类型，这个type_info可能就需要单独定义，取得的时候就需要单独链接起来。&lt;/p&gt;
+&lt;h2 id=&#34;template&#34;&gt;Template&lt;/h2&gt;
+&lt;p&gt;声明 + “具现”&lt;/p&gt;
+&lt;p&gt;模板函数只声明，不使用编译器并不会“具现”他，也就是text 段中不会有这些函数。需要注意的是模板类中所有的member functions都会被具现出来，即使它们中的一些并未使用。在每个可以具现的地方具现，并在最后链接的时候只用一份，丢弃其他的，就可以缩小最终可执行文件的大小。&lt;/p&gt;
+&lt;p&gt;一旦使用，那么type就确定，这个模板函数就可以转为普通函数来进行处理。&lt;/p&gt;
+&lt;p&gt;但是模板类内部如果存在一个方法完全不依赖传入的type，也就是type不指定不影响方法的定义。那么这个方法内部很可能与当前程序文件的其他内容相关。比如那个方法调用了一个extern 函数其参数是double，虽然模板类内有个member是int（确定为int）的，方法内调用函数传的参数的也是这个int的member，但编译器还是会提前将这个extern函数链接上去，即使后面调用处有更合适的函数（一个extern 函数其参数是int），这里也不会再改变了。&lt;/p&gt;
 </description>
         </item>
         <item>

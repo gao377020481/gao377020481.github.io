@@ -32,11 +32,19 @@ template &amp;lt;class T&amp;gt; struct MyIter { typedef T value_type; // 内嵌
       <pubDate>Mon, 18 Jan 2021 00:00:00 +0000</pubDate>
       
       <guid>https://gao377020481.github.io/p/c-%E5%AF%B9%E8%B1%A1/</guid>
-      <description>C++ 对象模型 可用的对象模型有很多种，C++对象模型派生于简单对象模型，这里直接说C++对象模型：
+      <description>读书笔记：深度探索c++对象模型
+C++ 对象模型 可用的对象模型有很多种，C++对象模型派生于简单对象模型，这里直接说C++对象模型：
  Non-static data member 存在于每一个object内 Static data member 存在于每一个object外 Static 与 Non-static function members 也被存放在所有object外 virtual function members：object内存在指向虚表vtb的指针（一般用于支持RTTI的type_info object的指针置于vtb第一个slot）  继承 虚继承 base class不管被继承多少次，永远只存在一个实体，虚继承产生的派生类只是有路径指向对应的base class实体。
 这里的“路径”可以是类似虚表的指针（bptr）也可以是一系列指针，视存取效率而定。
 然而，这样的话object的布局和大小会随着继承体系的改变而改变，所以这一部分的内容应被存放于对象模型的特殊部分。这个特殊部分就是“共享局部”，其他的固定不变的部分就是“不变局部”。所以为了实现虚继承，引入了两个局部的概念，虽然实现方式各编译器有所不同，但两个局部的概念一致。
-Layout Costs for Adding Encapsulation(封装成本) </description>
+构造 默认构造函数 如果没有user-declared constructor, 一个trivial 的constructor可能被生成， 但他啥都不干。
+  只有编译器需要时，non-trivial 的constructor才会被编译器合成，但他也只干编译器需要的事情，比如A内有一个B类的成员（组合），B有一个构造函数，那么A也就需要一个non-trivial 的constructor，这个构造函数只会构造B，而不会管A内可能存在的其他成员。
+  如果A内有B,C,D三个类的成员，这三个类都有自己的构造函数，显然编译器会为A生成一个构造函数，他会依次调用B,C,D的构造函数，顺序取决于三成员在A内的排列顺序。
+  回到1，如果A内其他成员比如一个int值在user-declared constructor里初始化但是user-declared constructor内未初始化B，那编译器怎么办呢，编译器会扩写user-declared constructor，给里面加上个B的构造函数的调用。
+  类内有虚函数存在，编译器需要扩张已有构造函数或生成一个构造函数来完成虚表的初始化操作
+  虚继承的使用也会给构造函数增加工作量，编译器需要让构造函数给类添加执行期判断的能力，比如在派生类中添加一个bptr提供指向唯一基类实体的路径。
+  默认拷贝构造函数 三种调用情况：
+ X x1 = x2 变量赋值 f(x1) 函数传参 return x1 返回值  不需要默认拷贝构造函数：</description>
     </item>
     
   </channel>

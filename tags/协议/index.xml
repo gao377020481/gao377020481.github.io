@@ -13,7 +13,20 @@
       <pubDate>Tue, 09 Mar 2021 00:00:00 +0000</pubDate>
       
       <guid>https://gao377020481.github.io/p/quic/</guid>
-      <description></description>
+      <description>QUIC
+quick udp internet connection
+是由 google 提出的使用 udp 进行多路并发传输的协议
+优势 Quic 相比现在广泛应用的 http2+tcp+tls 协议有如下优势
+ 减少了 TCP 三次握手及 TLS 握手时间。 改进的拥塞控制。 避免队头阻塞的多路复用。 连接迁移。 前向冗余纠错。  0RTT建连 传输层和加密层总共只需要0RTT就可以建立连接。
+因为其握手数据和HTTP数据一同发送，建连过程可以认为是0RTT的。
+灵活的拥塞控制 QUIC默认使用了 TCP 协议的 Cubic 拥塞控制算法，同时也支持 CubicBytes, Reno, RenoBytes, BBR, PCC 等拥塞控制算法。
+但其：
+可插拔  该拥塞控制算法实现于应用层，不需要修改内核就可以对其快速迭代 同一程序的不同连接使用不同拥塞控制算法，针对不同用户做适配 变更算法只需要修改配置再重新加载，不需要停机  递增的packet number和维持顺序的stream offset 使用严格递增的packet number，即使是相同包的重发也递增。接收端就可以区分开这个包是重发的还是之前的。
+避免了在计算RTT的时候引发的歧义问题，因为发送方RTT计算需要计算的边界是包发出和包收到两处，如果使用重发包的时刻作为左边界，收到ack的时刻作为右边界，万一这个ack是初始发出的包的而不是重发的那就统计小了。
+SACK选项空间更大 QUIC的SACK选项空间256Bytes 对比TCP的30Bytes很大，能够提供更多已经收到segment的信息，方便发送端进行精度更高的选择重传
+Ack Delay Ack Delay是在接收端进行处理的时间，该时间也需要记录并发送，TCP的timestamp区域并不记录这个，计算的RTT理论上就更大不够准确。
+QUIC在计算RTT时会减去Ack Delay
+基于 stream 和 connecton 级别的流量控制 connection: TCP连接 ，复用：一个connection上可能有多个stream</description>
     </item>
     
     <item>
@@ -22,7 +35,12 @@
       <pubDate>Fri, 26 Feb 2021 00:00:00 +0000</pubDate>
       
       <guid>https://gao377020481.github.io/p/http-1-to-2/</guid>
-      <description></description>
+      <description>HTTP/1.1 建连 输入网址
+ 有网址，无IP。所以先生成DNS查询报文，置于目的端口53的UDP报文中。目的地址就是建网时通过DHCP获得的DNS服务器IP。但是还无网关的MAC，所以使用ARP查询报文，其目的IP为网关IP，MAC地址为全1（广播）。网关收到后就通过ARP回答返回给客户机他自己的MAC地址。客户机拿到网关MAC就继续组装好DNS查询报文，发送给网关路由器。 DNS查询被网关转发到了最终DNS服务器，服务器查询到网址对应ip并返回给客户机。 客户机拿到IP就生成TCP套接字然后向IP所处机器发起连接请求，三次握手建立连接后向其发送HTTP GET报文。 网址服务器返回一个HTTP相应报文。 客户机拿到后浏览器渲染一下显示出来。  缺点   队头阻塞
+  低效的 TCP 利用
+  臃肿的消息首部
+  受限的优先级设置
+  HTTP2 </description>
     </item>
     
     <item>

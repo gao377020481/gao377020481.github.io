@@ -123,7 +123,7 @@
 
 
                 <time class="article-time--reading">
-                    1 minute read
+                    2 minute read
                 </time>
             </div>
         
@@ -133,7 +133,8 @@
 </header>
 
     <section class="article-content">
-    <h2 id="c-对象模型">C++ 对象模型</h2>
+    <p>读书笔记：深度探索c++对象模型</p>
+<h2 id="c-对象模型">C++ 对象模型</h2>
 <p>可用的对象模型有很多种，C++对象模型派生于简单对象模型，这里直接说C++对象模型：</p>
 <ol>
 <li>Non-static data member 存在于每一个object内</li>
@@ -142,11 +143,350 @@
 <li>virtual function members：object内存在指向虚表vtb的指针（一般用于支持RTTI的type_info object的指针置于vtb第一个slot）</li>
 </ol>
 <h2 id="继承">继承</h2>
-<h3 id="虚继承">虚继承</h3>
+<h3 id="虚继承"><strong>虚继承</strong></h3>
 <p>base class不管被继承多少次，永远只存在一个实体，虚继承产生的派生类只是有路径指向对应的base class实体。</p>
 <p>这里的“路径”可以是类似虚表的指针（bptr）也可以是一系列指针，视存取效率而定。</p>
 <p>然而，这样的话object的布局和大小会随着继承体系的改变而改变，所以这一部分的内容应被存放于对象模型的特殊部分。这个特殊部分就是“共享局部”，其他的固定不变的部分就是“不变局部”。所以为了实现虚继承，引入了两个局部的概念，虽然实现方式各编译器有所不同，但两个局部的概念一致。</p>
-<h2 id="layout-costs-for-adding-encapsulation封装成本">Layout Costs for Adding Encapsulation(封装成本)</h2>
+<h2 id="构造">构造</h2>
+<h3 id="默认构造函数"><strong>默认构造函数</strong></h3>
+<p>如果没有user-declared constructor, 一个trivial 的constructor可能被生成， 但他啥都不干。</p>
+<ol>
+<li>
+<p>只有编译器需要时，non-trivial 的constructor才会被编译器合成，但他也只干编译器需要的事情，比如A内有一个B类的成员（组合），B有一个构造函数，那么A也就需要一个non-trivial 的constructor，这个构造函数只会构造B，而不会管A内可能存在的其他成员。</p>
+</li>
+<li>
+<p>如果A内有B,C,D三个类的成员，这三个类都有自己的构造函数，显然编译器会为A生成一个构造函数，他会依次调用B,C,D的构造函数，顺序取决于三成员在A内的排列顺序。</p>
+</li>
+<li>
+<p>回到1，如果A内其他成员比如一个int值在user-declared constructor里初始化但是user-declared constructor内未初始化B，那编译器怎么办呢，编译器会扩写user-declared constructor，给里面加上个B的构造函数的调用。</p>
+</li>
+<li>
+<p>类内有虚函数存在，编译器需要扩张已有构造函数或生成一个构造函数来完成虚表的初始化操作</p>
+</li>
+<li>
+<p>虚继承的使用也会给构造函数增加工作量，编译器需要让构造函数给类添加执行期判断的能力，比如在派生类中添加一个bptr提供指向唯一基类实体的路径。</p>
+</li>
+</ol>
+<h3 id="默认拷贝构造函数"><strong>默认拷贝构造函数</strong></h3>
+<p>三种调用情况：</p>
+<ol>
+<li>X x1 = x2 变量赋值</li>
+<li>f(x1) 函数传参</li>
+<li>return x1  返回值</li>
+</ol>
+<p><strong>不需要默认拷贝构造函数：</strong></p>
+<ol>
+<li>类内以及其子类（无限递归下去）内部全是内建类型（即全是int啥的），那么只需要简单的依次（对于子类递归的执行）将这些成员赋值。这叫做default memberwise initialization，这里编译器没有产生default 拷贝构造函数，这是一种bitwise copy semantic即bitwise的copy每一个变量值</li>
+</ol>
+<p><strong>需要默认拷贝构造函数：</strong></p>
+<ol>
+<li>类内及其子类内存在一个explicit（即显式声明）的拷贝构造函数，那类及其子类本身也需要生成一个拷贝构造函数，其中会调用那个explicit的拷贝构造函数。</li>
+<li>类继承的base class有一个explicit的拷贝构造函数</li>
+<li>类存在一个或多个virtual function</li>
+<li>继承串联下存在虚继承</li>
+</ol>
+<p><strong>情况三的类存在一个或多个virtual function</strong></p>
+<p>很容易想到的多态情况，以一个derive class A作为值赋给一个base class B，发生切割操作，并且需要使用Base class的vptr而非A的vptr，这都需要编译器在生成的拷贝构造函数中纠正</p>
+<p><strong>情况四的继承串联下存在虚继承</strong></p>
+<p>同样将derive class A作为值赋给一个base class B，同时这个base class B虚继承自一个virtual base class C。那么A的拷贝构造函数需要被编译器扩张或生成来完成bptr的指定。</p>
+<h3 id="传值三种情况构造"><strong>传值三种情况构造</strong></h3>
+<ol>
+<li><strong>X x1 = x2 变量赋值</strong></li>
+</ol>
+<p>转化为：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-c++" data-lang="c++"><span class="n">X</span> <span class="n">x1</span><span class="p">;</span>
+<span class="n">x1</span> <span class="o">=</span> <span class="n">X</span><span class="o">::</span><span class="n">X</span><span class="p">(</span><span class="n">x2</span><span class="p">);</span>
+</code></pre></div><ol start="2">
+<li>
+<p><strong>f(x1) 函数传参</strong></p>
+<ol>
+<li>构造临时对象，通过引用传给函数</li>
+<li>因为使用引用传参，所以函数也需要重写参数列表接收一个引用</li>
+</ol>
+</li>
+<li>
+<p><strong>return x1  返回值</strong></p>
+<ol>
+<li>给函数参数加一个引用参数，类型为返回值类型</li>
+<li>将函数内的局部变量通过拷贝构造给这个参数，返回值体现在添加的参数里，外部可以感知到</li>
+</ol>
+</li>
+</ol>
+<p><strong>尝试优化</strong></p>
+<p>对于返回值，可以从使用者层面优化：</p>
+<p>函数内的局部变量不需要通过拷贝构造给这个参数，直接在函数内部不定义这个局部变量，将对于他的操作全部写在他的一个构造函数内，return X(y,z); 这样当转化为参数时也只是调用参数的构造函数，即可省去拷贝构造。</p>
+<h3 id="member-initialization-list"><strong>member initialization list</strong></h3>
+<p>即：</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-c++" data-lang="c++">
+<span class="k">class</span> <span class="nc">a</span><span class="p">{</span>
+    <span class="kt">int</span> <span class="n">a1</span><span class="p">,</span><span class="n">a2</span><span class="p">;</span>
+    <span class="n">a</span><span class="p">()</span><span class="o">:</span> <span class="n">a1</span><span class="p">(</span><span class="mi">0</span><span class="p">),</span> <span class="n">a2</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span> <span class="p">{};</span>
+<span class="p">}</span>
+
+</code></pre></div><p>这种初始化方式。</p>
+<p>以下几种成员<strong>必须</strong>如此初始化：</p>
+<ol>
+<li>reference member</li>
+<li>const member</li>
+<li>call case class 的 constructor</li>
+<li>call member class 的 constructor</li>
+</ol>
+<p>需要注意的是，变量的初始化顺序取决于成员在类内声明的顺序，而非member initialization list的顺序</p>
+<h3 id="虚继承下构造"><strong>虚继承下构造</strong></h3>
+<p>主要说钻石继承，见图：</p>
+<p><figure 
+	>
+	<a href="/post/c&#43;&#43;/object9.jpg" >
+		<img src="/post/c&#43;&#43;/object9.jpg"
+			
+			
+			
+			loading="lazy"
+			>
+	</a>
+	
+</figure></p>
+<p>在构造Vertex3d或Pvertex时，Point的构造函数只应构造一次，且由最底的Vertex3d或Pvertex调用，而非递归的调用到。</p>
+<h3 id="构造函数中调用虚函数"><strong>构造函数中调用虚函数</strong></h3>
+<p>使用构造函数来调用虚函数，参考图：
+<figure 
+	>
+	<a href="/post/c&#43;&#43;/object9.jpg" >
+		<img src="/post/c&#43;&#43;/object9.jpg"
+			
+			
+			
+			loading="lazy"
+			>
+	</a>
+	
+</figure></p>
+<p>假如所有类都有一个虚函数size(), 这个虚函数在每个构造函数中被调用，那么在Pvertex构造函数调用时应当根据目前递归调用到那一层来决定size()的调用，也就是Pvertex构造中Point3d构造时就该调Point3d的虚函数size，返回Point3d的大小。 这就对vptr的初始化有了一定要求，维持虚函数调用的规则不变（也就是编译器不插手这种情况，编译器当然可以将size使用对应的静态调用方式来调用，但不好，不够优雅），对vptr的初始化顺序做一定限制，就可以完成。</p>
+<p>vptr在基类的构造函数调用之后但在程序员的code或member initialization初始化操作之前才初始化，这就确保了基类中调用的size依据的是基类的vptr，因为vptr要在程序员的code之前就初始化好。当然member initialization初始化操作其实还是在程序员的code之前的，在vptr初始化之后的。所以顺序是：</p>
+<p>基类的构造函数调用 -&gt; vptr初始化 -&gt; member initialization初始化操作 -&gt; 程序员的code</p>
+<h2 id="数据">数据</h2>
+<h3 id="数据布局"><strong>数据布局</strong></h3>
+<ol>
+<li>static成员不在对象布局内，在静态存储区域</li>
+<li>其他的同一access section内相对次序与声明次序相关，不同之间编译器可以做自己的实现，不保证顺序</li>
+<li>编译器自己生成的vptr等成员自己放置位置，目前多防止开头或结尾。</li>
+</ol>
+<h3 id="数据存取"><strong>数据存取</strong></h3>
+<h4 id="static-data-member"><strong>static data member</strong></h4>
+<p>static data member存在于data segment内，编译器将其转化为一个指针，直接去存取。且static data member并不会冲突，得益于name-mangling机制，每一个类的static data member都有其唯一的id，通过id访问</p>
+<h4 id="nonstatic-data-member"><strong>nonstatic data member</strong></h4>
+<p><strong>通过implicit class object</strong></p>
+<p>对于函数的成员方法，其可以直接操作类内成员，编译器在参数列表添加一个this指针，方法是通过this指针来操作的</p>
+<p><strong>存取操作</strong></p>
+<p>通过计算成员变量的offset来存取，但是一旦存在virtual base class object，就多了一层间接性，因为虚基类的对象可能需要通过一个bptr来访问到。</p>
+<p>显然，以下两种情况当时用指针存取，成员存在于虚基类中，其效率会低:</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-c++" data-lang="c++"><span class="n">A</span> <span class="n">a</span><span class="p">;</span>
+<span class="n">A</span> <span class="o">*</span><span class="n">aptr</span> <span class="o">=</span> <span class="o">&amp;</span><span class="n">a</span><span class="p">;</span>
+<span class="n">a</span><span class="p">.</span><span class="n">x</span><span class="p">;</span>
+<span class="n">aptr</span><span class="o">-&gt;</span><span class="n">x</span><span class="p">;</span>
+</code></pre></div><h3 id="继承下数据布局"><strong>继承下数据布局</strong></h3>
+<h4 id="无虚函数和虚基类"><strong>无虚函数和虚基类</strong></h4>
+<p>各基类需要保持其“原样性”：</p>
+<p>见图可知：</p>
+<p><figure 
+	>
+	<a href="/post/c&#43;&#43;/object1.jpg" >
+		<img src="/post/c&#43;&#43;/object1.jpg"
+			
+			
+			
+			loading="lazy"
+			>
+	</a>
+	
+</figure></p>
+<h4 id="有虚函数无虚基类"><strong>有虚函数无虚基类</strong></h4>
+<p>见图：</p>
+<p><strong>单一继承</strong></p>
+<p><figure 
+	>
+	<a href="/post/c&#43;&#43;/object2.jpg" >
+		<img src="/post/c&#43;&#43;/object2.jpg"
+			
+			
+			
+			loading="lazy"
+			>
+	</a>
+	
+</figure></p>
+<p><strong>多重继承，derive class添加新的virtual func</strong></p>
+<p><figure 
+	>
+	<a href="/post/c&#43;&#43;/object3.jpg" >
+		<img src="/post/c&#43;&#43;/object3.jpg"
+			
+			
+			
+			loading="lazy"
+			>
+	</a>
+	
+</figure></p>
+<h4 id="有虚基类虚继承"><strong>有虚基类（虚继承）</strong></h4>
+<p><strong>经典的钻石继承</strong></p>
+<p><figure 
+	>
+	<a href="/post/c&#43;&#43;/object.jpg" >
+		<img src="/post/c&#43;&#43;/object.jpg"
+			
+			
+			
+			loading="lazy"
+			>
+	</a>
+	
+</figure></p>
+<p><strong>使用pointer 策略即bptr</strong></p>
+<p><figure 
+	>
+	<a href="/post/c&#43;&#43;/object4.jpg" >
+		<img src="/post/c&#43;&#43;/object4.jpg"
+			
+			
+			
+			loading="lazy"
+			>
+	</a>
+	
+</figure></p>
+<p>看到pPoint2d就是那个bptr</p>
+<p><strong>使用table策略即通过在vptr内添加虚基类偏移找到</strong></p>
+<p><figure 
+	>
+	<a href="/post/c&#43;&#43;/object5.jpg" >
+		<img src="/post/c&#43;&#43;/object5.jpg"
+			
+			
+			
+			loading="lazy"
+			>
+	</a>
+	
+</figure></p>
+<h3 id="data-member-的地址"><strong>Data member 的地址</strong></h3>
+<p>对一个Data member 取地址，取到的是data member在object内的<strong>偏移量</strong>。</p>
+<p>通过指向data member的指针来存取目标会更加耗时</p>
+<h2 id="函数">函数</h2>
+<h3 id="nonstatic-member-function"><strong>nonstatic member function</strong></h3>
+<p>为了获得和普通函数相同的调用效率，</p>
+<p>进行三步处理：</p>
+<ol>
+<li>传一个对象this指针进去</li>
+<li>内部对成员调用改为this-&gt;</li>
+<li>对函数名做mangling，起一个别的名字，一般来讲有class名称在内</li>
+</ol>
+<p><strong>nonstatic member function函数指针</strong></p>
+<p>这也是一个需要绑定于object地址上才能调用的函数指针，也就是他本身是一种不完整的offset。</p>
+<h3 id="virtual-member-function"><strong>virtual member function</strong></h3>
+<p>将虚函数调用转化为虚函数表的一项：</p>
+<pre><code>(* ptr-&gt;vptr[1])(this);
+</code></pre><h4 id="单一继承下虚函数表布局"><strong>单一继承下虚函数表布局</strong></h4>
+<p>直接看图</p>
+<p><figure 
+	>
+	<a href="/post/c&#43;&#43;/object6.jpg" >
+		<img src="/post/c&#43;&#43;/object6.jpg"
+			
+			
+			
+			loading="lazy"
+			>
+	</a>
+	
+</figure></p>
+<h4 id="多继承下虚函数表布局"><strong>多继承下虚函数表布局</strong></h4>
+<p><figure 
+	>
+	<a href="/post/c&#43;&#43;/object7.jpg" >
+		<img src="/post/c&#43;&#43;/object7.jpg"
+			
+			
+			
+			loading="lazy"
+			>
+	</a>
+	
+</figure></p>
+<p>看到base1的虚函数表里居然有base2的虚函数，这是因为base1里的的虚函数表充当了derive class的主要虚函数表，base1 class就是主要实体，所以在他这个subobject内的虚函数表就需要一个完整的derive class能掉用到的虚函数表。</p>
+<p>那么如果将derive class object传给一个base2指针，因为是一个derive class，那么虚函数指针还是需要指向开头的主要实体的虚函数表这里，因为它可以调用所有的虚函数，这种设计给类似上面的行为提供了一种统一的做法，那就是：要访问虚函数，那就将调用指针移到开头去，从主要实体里找虚函数表。</p>
+<h4 id="虚继承下虚函数表布局"><strong>虚继承下虚函数表布局</strong></h4>
+<p><figure 
+	>
+	<a href="/post/c&#43;&#43;/object8.jpg" >
+		<img src="/post/c&#43;&#43;/object8.jpg"
+			
+			
+			
+			loading="lazy"
+			>
+	</a>
+	
+</figure></p>
+<p>明显虚继承下derive class的虚函数表也包含全部虚函数，虚基类的虚函数表也包含他自己有的全部虚函数，只是虚函数版本向derive class内的定义看齐</p>
+<p><strong>virtual member function函数指针</strong></p>
+<ol>
+<li>单一继承体系下</li>
+</ol>
+<p>虚函数的地址只是一个它在虚函数表内的索引值。</p>
+<ol start="2">
+<li>多继承体系下：</li>
+</ol>
+<p>cfront的实现使用一个结构体与这个虚函数绑定，记录了他的表内索引和他所在的表的vptr，通过这俩找到这个虚函数</p>
+<h3 id="static-member-function"><strong>static member function</strong></h3>
+<p>static member function直接被转换为非成员函数并调用</p>
+<p>不能存取class中的nonstatic members</p>
+<p>所以一般用于操作static member，因为static member一般不会被定义为public的，所以用一个function来操作很好，而普通成员函数又需要创建object才能用，static member function就不需要。</p>
+<h3 id="inline-function"><strong>inline function</strong></h3>
+<p>inline 函数会经历以下两步：</p>
+<ol>
+<li>分析函数，决定是否能成为inline，如果不能就转换为static函数</li>
+<li>在调用点上触发函数拓展，拓展时存在参数求值和临时对象管理问题</li>
+</ol>
+<h2 id="析构">析构</h2>
+<p><strong>首先最重要的一点：</strong></p>
+<p>每一个derive class的析构函数会被编译器扩展，以静态调用的方式调用各层base class的<strong>虚</strong>析构函数（如果有的话），base class没有<strong>虚</strong>析构函数那就不调用了</p>
+<h3 id="默认destructor"><strong>默认destructor</strong></h3>
+<p>只有member 有一个destructor， 默认destructor才被合成，合成出来就是调用成员的destructor</p>
+<h3 id="析构过程"><strong>析构过程</strong></h3>
+<p><figure 
+	>
+	<a href="/post/c&#43;&#43;/object.jpg" >
+		<img src="/post/c&#43;&#43;/object.jpg"
+			
+			
+			
+			loading="lazy"
+			>
+	</a>
+	
+</figure></p>
+<p>还是这个图，Pvertex被析构时，他这个对象会依次“变成”各个基类，直到最后变成Point然后彻底消亡，vptr，object都会发生这种“蜕变”，很神奇。</p>
+<h2 id="对象">对象</h2>
+<h3 id="全局对象"><strong>全局对象</strong></h3>
+<p>程序之始创建于data segment中，exit时销毁</p>
+<h3 id="局部静态对象"><strong>局部静态对象</strong></h3>
+<p>local static object在c++ std要求下必须在这一局部被调用到才创建和赋值。且该对象只创建一次（就在被调用时），只销毁一次（整个程序退出时）。具体怎么实现被调用才创建就略了。</p>
+<h3 id="对象数组"><strong>对象数组</strong></h3>
+<p>有一个循环的方法来依次创建和销毁数组中的每一个对象。</p>
+<h3 id="new和delete"><strong>new和delete</strong></h3>
+<p>new： 配置内存malloc -&gt; 构造</p>
+<p>placement new： 在指定位置配置内存并构造</p>
+<p>delete： 析构 -&gt; 释放内存free</p>
+<h2 id="rtti">RTTI</h2>
+<p>使用vtable的第一个slot装type_info这个object的地址</p>
+<p>以上就是使用dynamic_cast时所做的操作，他相比于static_cast更为耗时但安全，因为一旦类型不匹配那就转换失败。而static_cast就是强转。</p>
+<p>而对于非多态类或内建类型，这个type_info可能就需要单独定义，取得的时候就需要单独链接起来。</p>
+<h2 id="template">Template</h2>
+<p>声明 + “具现”</p>
+<p>模板函数只声明，不使用编译器并不会“具现”他，也就是text 段中不会有这些函数。需要注意的是模板类中所有的member functions都会被具现出来，即使它们中的一些并未使用。在每个可以具现的地方具现，并在最后链接的时候只用一份，丢弃其他的，就可以缩小最终可执行文件的大小。</p>
+<p>一旦使用，那么type就确定，这个模板函数就可以转为普通函数来进行处理。</p>
+<p>但是模板类内部如果存在一个方法完全不依赖传入的type，也就是type不指定不影响方法的定义。那么这个方法内部很可能与当前程序文件的其他内容相关。比如那个方法调用了一个extern 函数其参数是double，虽然模板类内有个member是int（确定为int）的，方法内调用函数传的参数的也是这个int的member，但编译器还是会提前将这个extern函数链接上去，即使后面调用处有更合适的函数（一个extern 函数其参数是int），这里也不会再改变了。</p>
 
 </section>
 
@@ -377,10 +717,68 @@
     <li><a href="#c-对象模型">C++ 对象模型</a></li>
     <li><a href="#继承">继承</a>
       <ol>
-        <li><a href="#虚继承">虚继承</a></li>
+        <li><a href="#虚继承"><strong>虚继承</strong></a></li>
       </ol>
     </li>
-    <li><a href="#layout-costs-for-adding-encapsulation封装成本">Layout Costs for Adding Encapsulation(封装成本)</a></li>
+    <li><a href="#构造">构造</a>
+      <ol>
+        <li><a href="#默认构造函数"><strong>默认构造函数</strong></a></li>
+        <li><a href="#默认拷贝构造函数"><strong>默认拷贝构造函数</strong></a></li>
+        <li><a href="#传值三种情况构造"><strong>传值三种情况构造</strong></a></li>
+        <li><a href="#member-initialization-list"><strong>member initialization list</strong></a></li>
+        <li><a href="#虚继承下构造"><strong>虚继承下构造</strong></a></li>
+        <li><a href="#构造函数中调用虚函数"><strong>构造函数中调用虚函数</strong></a></li>
+      </ol>
+    </li>
+    <li><a href="#数据">数据</a>
+      <ol>
+        <li><a href="#数据布局"><strong>数据布局</strong></a></li>
+        <li><a href="#数据存取"><strong>数据存取</strong></a>
+          <ol>
+            <li><a href="#static-data-member"><strong>static data member</strong></a></li>
+            <li><a href="#nonstatic-data-member"><strong>nonstatic data member</strong></a></li>
+          </ol>
+        </li>
+        <li><a href="#继承下数据布局"><strong>继承下数据布局</strong></a>
+          <ol>
+            <li><a href="#无虚函数和虚基类"><strong>无虚函数和虚基类</strong></a></li>
+            <li><a href="#有虚函数无虚基类"><strong>有虚函数无虚基类</strong></a></li>
+            <li><a href="#有虚基类虚继承"><strong>有虚基类（虚继承）</strong></a></li>
+          </ol>
+        </li>
+        <li><a href="#data-member-的地址"><strong>Data member 的地址</strong></a></li>
+      </ol>
+    </li>
+    <li><a href="#函数">函数</a>
+      <ol>
+        <li><a href="#nonstatic-member-function"><strong>nonstatic member function</strong></a></li>
+        <li><a href="#virtual-member-function"><strong>virtual member function</strong></a>
+          <ol>
+            <li><a href="#单一继承下虚函数表布局"><strong>单一继承下虚函数表布局</strong></a></li>
+            <li><a href="#多继承下虚函数表布局"><strong>多继承下虚函数表布局</strong></a></li>
+            <li><a href="#虚继承下虚函数表布局"><strong>虚继承下虚函数表布局</strong></a></li>
+          </ol>
+        </li>
+        <li><a href="#static-member-function"><strong>static member function</strong></a></li>
+        <li><a href="#inline-function"><strong>inline function</strong></a></li>
+      </ol>
+    </li>
+    <li><a href="#析构">析构</a>
+      <ol>
+        <li><a href="#默认destructor"><strong>默认destructor</strong></a></li>
+        <li><a href="#析构过程"><strong>析构过程</strong></a></li>
+      </ol>
+    </li>
+    <li><a href="#对象">对象</a>
+      <ol>
+        <li><a href="#全局对象"><strong>全局对象</strong></a></li>
+        <li><a href="#局部静态对象"><strong>局部静态对象</strong></a></li>
+        <li><a href="#对象数组"><strong>对象数组</strong></a></li>
+        <li><a href="#new和delete"><strong>new和delete</strong></a></li>
+      </ol>
+    </li>
+    <li><a href="#rtti">RTTI</a></li>
+    <li><a href="#template">Template</a></li>
   </ol>
 </nav>
                 </div>
