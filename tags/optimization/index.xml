@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>optimization on Gao&#39;s Happy Day</title>
+    <link>https://gao377020481.github.io/tags/optimization/</link>
+    <description>Recent content in optimization on Gao&#39;s Happy Day</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Thu, 10 Feb 2022 00:00:00 +0000</lastBuildDate><atom:link href="https://gao377020481.github.io/tags/optimization/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>向量化</title>
+      <link>https://gao377020481.github.io/p/%E5%90%91%E9%87%8F%E5%8C%96/</link>
+      <pubDate>Thu, 10 Feb 2022 00:00:00 +0000</pubDate>
+      
+      <guid>https://gao377020481.github.io/p/%E5%90%91%E9%87%8F%E5%8C%96/</guid>
+      <description>Requirements  loop得有可以（ determinable (at run time)）确定的循环次数 loop里不能包含（inline不算）过程调用 loop里不能包含分支 迭代次数也得多 迭代之间最好也没有依赖性 理论上就算有依赖性也可以向量化但是不实用  </description>
+    </item>
+    
+    <item>
+      <title>内存优化</title>
+      <link>https://gao377020481.github.io/p/%E5%86%85%E5%AD%98%E4%BC%98%E5%8C%96/</link>
+      <pubDate>Fri, 04 Feb 2022 00:00:00 +0000</pubDate>
+      
+      <guid>https://gao377020481.github.io/p/%E5%86%85%E5%AD%98%E4%BC%98%E5%8C%96/</guid>
+      <description>从内存结构的角度来优化我们的程序。
+Vector temporaries REAL V(1024,3), S(1024), U(3)DO I=1,1024S(I) = U(1)*V(I,1)END DODO I=1,1024S(I) = S(I) + U(2)*V(I,2)END DODO I=1,1024S(I) = S(I) + U(3)*V(I,3)END DODO J=1,3DO I=1,1024V(I,J) = S(I) * U(J)END DOEND DO----------------------------------------&amp;gt;REAL V(1024,3), S, U(3)DO I=1,1024S = U(1)*V(I,1) + U(2)*V(I,2) + U(3)*V(I,3)DO J=1,3V(I,J) = S * U(J)END DOEND DO将运算组织成近似向量的形式，编译器就很容易借助这种优势来将代码优化为向量的运算。</description>
+    </item>
+    
+    <item>
+      <title>编译优化</title>
+      <link>https://gao377020481.github.io/p/%E7%BC%96%E8%AF%91%E4%BC%98%E5%8C%96/</link>
+      <pubDate>Sun, 30 Jan 2022 00:00:00 +0000</pubDate>
+      
+      <guid>https://gao377020481.github.io/p/%E7%BC%96%E8%AF%91%E4%BC%98%E5%8C%96/</guid>
+      <description>讨论一些编译器会做的优化，这些优化一般不需要我们自己来做。
+但是我们讨论时从源码角度来模拟，实际上编译器是在中间代码（IR）层进行优化的。
+分四部分：
+IR optimisations Basic optimisations Constant folding 将一些变量转换为常量，这有助于减少内存的访问。 且常量相关的求值是可以在编译阶段就确定，不必等待运行阶段。
+转换前：
+integer, parameter :: n=100do i=1,n....end do转换后：
+do i=1,100....end doAlgebraic simplifications 简化算术运算，包括了运用结合，交换和分配律等：
+(i-j)+(i-j)+(i-j) &amp;mdash;&amp;mdash;&amp;gt; 3*i - 3*i
+但是要注意浮点数操作，它不遵循结合律：
+1.0 + (MF - MF) = 1.0
+(1.0 + MF) - MF = 0.0
+这个例子里MF比1.0大，1.0在和MF结合后会被舍去，所以第二个结果出来就是0.0了，这是因为浮点运算会先算出精确值然后舍去多余位，所以结合律失效。
+Copy propagation 拷贝出来的变量在后续的使用中可以被原来的变量替代，那就少用一个寄存器。
+x = yc = x + 3d = x + y--------&amp;gt;x = yc = y + 3d = y + y这里x这个变量就不需要了。</description>
+    </item>
+    
+  </channel>
+</rss>

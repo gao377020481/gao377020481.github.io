@@ -6,7 +6,557 @@
         <description>Recent content on Gao&#39;s Happy Day</description>
         <generator>Hugo -- gohugo.io</generator>
         <language>en-us</language>
-        <lastBuildDate>Fri, 17 Sep 2021 00:00:00 +0000</lastBuildDate><atom:link href="https://gao377020481.github.io/index.xml" rel="self" type="application/rss+xml" /><item>
+        <lastBuildDate>Fri, 11 Feb 2022 00:00:00 +0000</lastBuildDate><atom:link href="https://gao377020481.github.io/index.xml" rel="self" type="application/rss+xml" /><item>
+        <title>Gekkofs</title>
+        <link>https://gao377020481.github.io/p/gekkofs/</link>
+        <pubDate>Fri, 11 Feb 2022 00:00:00 +0000</pubDate>
+        
+        <guid>https://gao377020481.github.io/p/gekkofs/</guid>
+        <description>&lt;img src="https://gao377020481.github.io/p/gekkofs/309.jpg" alt="Featured image of post Gekkofs" /&gt;&lt;p&gt;最近在看GekkoFS，打算从理论到实现来试试能不能记下来这个分布式文件系统的实现。&lt;/p&gt;
+&lt;p&gt;他的亮点主要在于使用了系统调用拦截来直接在mount的目录上拦截相应的系统调用。&lt;/p&gt;
+&lt;p&gt;使用时还用到了一个比较少见的指令: LD_PRELOAD=&amp;lt;install_path&amp;gt;/lib64/libgkfs_intercept.so cp ~/some_input_data &amp;lt;pseudo_gkfs_mount_dir_path&amp;gt;/some_input_data 这个指令的意思是提前加载某个动态库（libgkfs_intercept.so），使用的时候将拦截的动态库提前加载进来，就可以在进入glibc的文件操作之前转向别的路径。&lt;/p&gt;
+&lt;h2 id=&#34;概述&#34;&gt;概述&lt;/h2&gt;
+&lt;p&gt;node-local burst buffer file system.&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;客户端GekkoFS client library&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;客户端是以库的形式提供的给HPC应用程序使用的。GekkoFS既没有实现基于fuse用户态文件系统的客户端，也没有实现VFS kernel的内核态的客户端。而是通过可以库的形式，截获所有文件系统的系统调用：如果是GekkoFS文件系统的文件，就通过网络转发给Gekkofs 服务端。如果不是GekkoFS文件系统，就调用原始的glibc库的系统调用。&lt;/p&gt;
+&lt;ol start=&#34;2&#34;&gt;
+&lt;li&gt;Server端：GekkoFS daemon&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;Sever端通过本地的rocksdb来保存文件系统的元数据。 通过本地文件系统来保存数据。数据被切成同样大小的chunk（测试用512k）。&lt;/p&gt;
+&lt;p&gt;在客户端访问文件时，通过hash的方法映射到多个Server节点上。&lt;/p&gt;
+&lt;p&gt;总的来说这个架构还是很清晰的，附上论文里的图：&lt;/p&gt;
+&lt;p&gt;&lt;figure 
+	&gt;
+	&lt;a href=&#34;https://gao377020481.github.io/post/Gekkofs/gekkofs.jpg&#34; &gt;
+		&lt;img src=&#34;https://gao377020481.github.io/post/Gekkofs/gekkofs.jpg&#34;
+			
+			
+			
+			loading=&#34;lazy&#34;
+			&gt;
+	&lt;/a&gt;
+	
+&lt;/figure&gt;&lt;/p&gt;
+&lt;p&gt;重点在于其工程实现，希望能从对它的代码分析中学到些有用的知识。&lt;/p&gt;
+</description>
+        </item>
+        <item>
+        <title>向量化</title>
+        <link>https://gao377020481.github.io/p/%E5%90%91%E9%87%8F%E5%8C%96/</link>
+        <pubDate>Thu, 10 Feb 2022 00:00:00 +0000</pubDate>
+        
+        <guid>https://gao377020481.github.io/p/%E5%90%91%E9%87%8F%E5%8C%96/</guid>
+        <description>&lt;img src="https://gao377020481.github.io/p/%E5%90%91%E9%87%8F%E5%8C%96/316.jpg" alt="Featured image of post 向量化" /&gt;&lt;h2 id=&#34;requirements&#34;&gt;Requirements&lt;/h2&gt;
+&lt;ol&gt;
+&lt;li&gt;loop得有可以（ determinable (at run time)）确定的循环次数&lt;/li&gt;
+&lt;li&gt;loop里不能包含（inline不算）过程调用&lt;/li&gt;
+&lt;li&gt;loop里不能包含分支&lt;/li&gt;
+&lt;li&gt;迭代次数也得多&lt;/li&gt;
+&lt;li&gt;迭代之间最好也没有依赖性&lt;/li&gt;
+&lt;li&gt;理论上就算有依赖性也可以向量化但是不实用&lt;/li&gt;
+&lt;/ol&gt;
+</description>
+        </item>
+        <item>
+        <title>内存优化</title>
+        <link>https://gao377020481.github.io/p/%E5%86%85%E5%AD%98%E4%BC%98%E5%8C%96/</link>
+        <pubDate>Fri, 04 Feb 2022 00:00:00 +0000</pubDate>
+        
+        <guid>https://gao377020481.github.io/p/%E5%86%85%E5%AD%98%E4%BC%98%E5%8C%96/</guid>
+        <description>&lt;img src="https://gao377020481.github.io/p/%E5%86%85%E5%AD%98%E4%BC%98%E5%8C%96/430.jpg" alt="Featured image of post 内存优化" /&gt;&lt;p&gt;从内存结构的角度来优化我们的程序。&lt;/p&gt;
+&lt;h2 id=&#34;vector-temporaries&#34;&gt;Vector temporaries&lt;/h2&gt;
+&lt;pre&gt;&lt;code&gt;REAL V(1024,3), S(1024), U(3)
+
+DO I=1,1024
+    S(I) = U(1)*V(I,1)
+END DO
+
+DO I=1,1024
+    S(I) = S(I) + U(2)*V(I,2)
+END DO
+
+DO I=1,1024
+    S(I) = S(I) + U(3)*V(I,3)
+END DO
+
+DO J=1,3
+    DO I=1,1024
+        V(I,J) = S(I) * U(J)
+    END DO
+END DO
+----------------------------------------&amp;gt;
+REAL V(1024,3), S, U(3)
+    DO I=1,1024
+        S = U(1)*V(I,1) + U(2)*V(I,2) + U(3)*V(I,3)
+        DO J=1,3
+            V(I,J) = S * U(J)
+        END DO
+END DO
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;将运算组织成近似向量的形式，编译器就很容易借助这种优势来将代码优化为向量的运算。&lt;/p&gt;
+&lt;h3 id=&#34;hybrid&#34;&gt;&lt;strong&gt;Hybrid&lt;/strong&gt;&lt;/h3&gt;
+&lt;pre&gt;&lt;code&gt;REAL V(1024,3), S(8), U(3)
+DO K=1,1024,8
+    DO I=0,7
+        S(I) = U(1)*V(I+K,1) + U(2)*V(I+K,2) + U(3)*V(I+K,3)
+        DO J=1,3
+            V(I+K,J) = S(I) * U(J)
+        END DO
+    END DO
+END DO
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;这种版本的代码可以increase locality&lt;/p&gt;
+&lt;h2 id=&#34;subroutine-merging&#34;&gt;Subroutine merging&lt;/h2&gt;
+&lt;p&gt;两个过程（可以是循环）有相似的迭代空间并且数据array只用来在他们之间传输数据，也就是他们之间这个array上没有其他操作。那就可以合并，合并的好处是很多的。&lt;/p&gt;
+&lt;p&gt;If two routines have the same iteration space and an data array only exists to pass data between them then consider merging&lt;/p&gt;
+&lt;h2 id=&#34;reduce-cache-miss&#34;&gt;reduce cache miss&lt;/h2&gt;
+&lt;p&gt;conflict code:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;REAL A(1024), B(1024), C(1024), X
+COMMON /DAT/ A,B,C ! Contiguous
+    DO I=1,1024
+        A(I) = B(I) + X*C(I)
+    END DO
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;每一个循环里A,B,C的I位置都映射到一个set里（当然是在直接映射cache下，如果multi-way那就好很多），每次都发生三次conflict&lt;/p&gt;
+&lt;h3 id=&#34;cache-padding&#34;&gt;&lt;strong&gt;Cache padding&lt;/strong&gt;&lt;/h3&gt;
+&lt;pre&gt;&lt;code&gt;REAL A(1024),B(1024),C(1024),T(8),T2(8),X
+COMMON /DAT/ A,T,B,T2,C
+    DO I=1,1024
+        A(I) = B(I) + X*C(I)
+    END DO
+
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;Padding 是常用技巧，不说了&lt;/p&gt;
+&lt;h3 id=&#34;array-extension&#34;&gt;&lt;strong&gt;Array extension&lt;/strong&gt;&lt;/h3&gt;
+&lt;pre&gt;&lt;code&gt;REAL A(1032,4), B(1024)
+DO I=1,1024
+    DO J=1,4
+        B(I) = B(I) + A(I,J)
+    END DO
+END DO
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;这个也可以叫做padding，是A自己的不同维度的vector发生coflict，把A自己padding一下就行了&lt;/p&gt;
+&lt;h3 id=&#34;loop-re-ordering&#34;&gt;&lt;strong&gt;Loop re-ordering&lt;/strong&gt;&lt;/h3&gt;
+&lt;pre&gt;&lt;code&gt;REAL A(1024,4),T(8), B(1024)
+
+DO J=1,4
+    DO I=1,1024
+        B(I) = B(I) + A(I,J)
+    END DO
+END DO
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;直接按列访问就没有A上的冲突了，B与A的冲突就依赖于T（8）的引入来消除。&lt;/p&gt;
+&lt;h3 id=&#34;index-re-ordering&#34;&gt;&lt;strong&gt;Index re-ordering&lt;/strong&gt;&lt;/h3&gt;
+&lt;pre&gt;&lt;code&gt;
+REAL A(4,1024), B(1024)
+DO I=1,1024
+    DO J=1,4
+        B(I) = B(I) + A(J,I)
+    END DO
+END DO
+
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;这样一来A和B的冲突也没了，但这种改变影响的是所有用到A的地方，一般需要在全局来修改，用脚本来改。&lt;/p&gt;
+&lt;h3 id=&#34;introduce-temporaries&#34;&gt;&lt;strong&gt;Introduce temporaries&lt;/strong&gt;&lt;/h3&gt;
+&lt;pre&gt;&lt;code&gt;REAL A(1024,4), B(1024),T1,T2,…
+DO I=1,1024,8
+    DO J=1,4
+        T1 = A(I,J)
+        T2 = A(I+1,J)
+        …
+        B(I) = B(I) + T1 +T2 …
+    END DO
+END DO
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;留一下，这里的优化感觉很有限，这句也没理解：&lt;/p&gt;
+&lt;p&gt;Only works if unroll is multiple of block size&lt;/p&gt;
+&lt;h2 id=&#34;关于写操作的优化&#34;&gt;关于写操作的优化&lt;/h2&gt;
+&lt;h3 id=&#34;cache&#34;&gt;&lt;strong&gt;cache&lt;/strong&gt;&lt;/h3&gt;
+&lt;p&gt;先说一下cache：&lt;/p&gt;
+&lt;p&gt;写回，写穿透&lt;/p&gt;
+&lt;p&gt;还有：&lt;/p&gt;
+&lt;p&gt;write allocate ：写区域不在cache，就把它搞到cache里写&lt;/p&gt;
+&lt;p&gt;No write allocate： 写区域不在cache，就直接修改cache以下的内存层级&lt;/p&gt;
+&lt;h4 id=&#34;write-stalls&#34;&gt;&lt;strong&gt;Write stalls&lt;/strong&gt;&lt;/h4&gt;
+&lt;p&gt;CPU在寄存器里的值被拷贝回去之后才能继续进行操作，这就引入了stall。&lt;/p&gt;
+&lt;p&gt;引入write buffer： 这是硬件的解决方案，写操作时直接写入write buffer，一般大小和一级缓存差不多，且如果比多个字长的话就可以合并这个write到一个单独的block write里去。&lt;/p&gt;
+&lt;h4 id=&#34;array-initialization&#34;&gt;&lt;strong&gt;Array initialization&lt;/strong&gt;&lt;/h4&gt;
+&lt;p&gt;初始化array的开销会比较大，尤其在array的size比较大的时候更明显。&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;使用特殊硬件配合编译器指令来做初始化&lt;/li&gt;
+&lt;li&gt;将初始化操作和第一次使用的loop放到一起（很明显这会导致一些错误，因为你无法保证第一次是什么时候）&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h4 id=&#34;writes-and-vectorisation&#34;&gt;&lt;strong&gt;Writes and vectorisation&lt;/strong&gt;&lt;/h4&gt;
+&lt;p&gt;SIMD/Vector store operations usually work best when writing well-aligned contiguous blocks of data&lt;/p&gt;
+&lt;p&gt;这和write buffer的使用很类似，所以只需要遵循向量化的数据访存就能顺带做到适应write buffer的优化。&lt;/p&gt;
+&lt;h4 id=&#34;prefetch&#34;&gt;&lt;strong&gt;prefetch&lt;/strong&gt;&lt;/h4&gt;
+&lt;p&gt;预取数据到cache中&lt;/p&gt;
+&lt;p&gt;很多处理器都有这个支持，编译器也可以做一些工作&lt;/p&gt;
+&lt;p&gt;最好的情况是有一些指令可以给程序员自己使用&lt;/p&gt;
+&lt;p&gt;Write-allocate caches可能有一些清零cache line的指令&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;void __builtin_prefetch (const void *addr, int rw, int locality)
+
+https://gcc.gnu.org/onlinedocs/gcc/Other-Builtins.html
+&lt;/code&gt;&lt;/pre&gt;&lt;h3 id=&#34;streams&#34;&gt;&lt;strong&gt;Streams&lt;/strong&gt;&lt;/h3&gt;
+&lt;p&gt;一般预取到cache里能优化的都是连续序列的cache miss。&lt;/p&gt;
+&lt;p&gt;处理器还有一些stream buffer：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;每一个都保存有active stream的地址&lt;/li&gt;
+&lt;li&gt;这个地址会随着data的load移动，指向未load的data&lt;/li&gt;
+&lt;li&gt;由一系列的连续地址的cache miss构建&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;如果一个loop需要比硬件支持的多的stream，那么就没有cache预取发生因为硬件流引擎将会不断地被重置到新的流上。&lt;/p&gt;
+&lt;p&gt;这个还得回来研究一下，其实没太理解它到底是啥。&lt;/p&gt;
+&lt;h3 id=&#34;non-temporal-operations&#34;&gt;&lt;strong&gt;Non-temporal operations&lt;/strong&gt;&lt;/h3&gt;
+&lt;p&gt;直接操作内存，忽视cache&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;#pragma vector nontemporal
+void __builtin_nontemporal_store(T value, T *addr);
+T __builtin_nontemporal_load(T *addr);
+&lt;/code&gt;&lt;/pre&gt;&lt;h3 id=&#34;alignment&#34;&gt;&lt;strong&gt;alignment&lt;/strong&gt;&lt;/h3&gt;
+&lt;p&gt;load/store指令的大小是不一样的，对齐做好的话可以一次load就取出整数个元素。&lt;/p&gt;
+&lt;p&gt;Compilers 做了什么？&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;内置类型和局部变量的对齐是编译器的强项。&lt;/li&gt;
+&lt;li&gt;参数指针和结构体变量编译器一般就无能为力了&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;如果编译器没办法确定对齐策略：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;不用对齐的指令（带来低效率）&lt;/li&gt;
+&lt;li&gt;通过一些动态测试，测出程序的对齐大小&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;优化：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;编译器提供对齐相关的指令&lt;/li&gt;
+&lt;li&gt;需要确保内存数据有一个良好的排列&lt;/li&gt;
+&lt;li&gt;malloc：只有最大的内置类型可以保证良好的对齐。64bit&lt;/li&gt;
+&lt;li&gt;有的话就不用malloc，换成其他提供的带对齐的内存分配api&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h3 id=&#34;pointer-aliasing&#34;&gt;&lt;strong&gt;Pointer aliasing&lt;/strong&gt;&lt;/h3&gt;
+&lt;p&gt;考虑一下，编译器需要：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;当通过指针写，重新加载所有指针指向的值&lt;/li&gt;
+&lt;li&gt;当通过指针读，需要确保这个操作前的操作都可见。&lt;/li&gt;
+&lt;li&gt;如果有类似c++的unique指针就比较好&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;C语言里指针是unrestricted的，所以严重影响了性能。&lt;/p&gt;
+&lt;p&gt;防止指针重叠，可以采用类似引用计数的方法（Explicit use of local scalar temporaries）&lt;/p&gt;
+&lt;p&gt;分配在堆上的内存，一般都是比较随机的，除非一次分配很多一样的元素。
+cache miss会少一些，但是因为缺少了局部性，TLB的miss会增多（缺页）。&lt;/p&gt;
+&lt;p&gt;一些动态类型比如双向链表，它里面指针占的内存也很多，存在浪费。且会带来更多的cache miss。&lt;/p&gt;
+</description>
+        </item>
+        <item>
+        <title>编译优化</title>
+        <link>https://gao377020481.github.io/p/%E7%BC%96%E8%AF%91%E4%BC%98%E5%8C%96/</link>
+        <pubDate>Sun, 30 Jan 2022 00:00:00 +0000</pubDate>
+        
+        <guid>https://gao377020481.github.io/p/%E7%BC%96%E8%AF%91%E4%BC%98%E5%8C%96/</guid>
+        <description>&lt;img src="https://gao377020481.github.io/p/%E7%BC%96%E8%AF%91%E4%BC%98%E5%8C%96/324.jpg" alt="Featured image of post 编译优化" /&gt;&lt;p&gt;讨论一些编译器会做的优化，这些优化一般不需要我们自己来做。&lt;/p&gt;
+&lt;p&gt;但是我们讨论时从源码角度来模拟，实际上编译器是在中间代码（IR）层进行优化的。&lt;/p&gt;
+&lt;p&gt;分四部分：&lt;/p&gt;
+&lt;h2 id=&#34;ir-optimisations&#34;&gt;IR optimisations&lt;/h2&gt;
+&lt;h3 id=&#34;basic-optimisations&#34;&gt;&lt;strong&gt;Basic optimisations&lt;/strong&gt;&lt;/h3&gt;
+&lt;h4 id=&#34;constant-folding&#34;&gt;&lt;strong&gt;Constant folding&lt;/strong&gt;&lt;/h4&gt;
+&lt;p&gt;将一些变量转换为常量，这有助于减少内存的访问。 且常量相关的求值是可以在编译阶段就确定，不必等待运行阶段。&lt;/p&gt;
+&lt;p&gt;转换前：&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;integer, parameter :: n=100
+do i=1,n
+....
+end do
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;转换后：&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;do i=1,100
+....
+end do
+&lt;/code&gt;&lt;/pre&gt;&lt;h4 id=&#34;algebraic-simplifications&#34;&gt;&lt;strong&gt;Algebraic simplifications&lt;/strong&gt;&lt;/h4&gt;
+&lt;p&gt;简化算术运算，包括了运用结合，交换和分配律等：&lt;/p&gt;
+&lt;p&gt;(i-j)+(i-j)+(i-j) &amp;mdash;&amp;mdash;&amp;gt; 3*i - 3*i&lt;/p&gt;
+&lt;p&gt;但是要注意浮点数操作，它不遵循结合律：&lt;/p&gt;
+&lt;p&gt;1.0 + (MF - MF) = 1.0&lt;/p&gt;
+&lt;p&gt;(1.0 + MF) - MF = 0.0&lt;/p&gt;
+&lt;p&gt;这个例子里MF比1.0大，1.0在和MF结合后会被舍去，所以第二个结果出来就是0.0了，这是因为浮点运算会先算出精确值然后舍去多余位，所以结合律失效。&lt;/p&gt;
+&lt;h4 id=&#34;copy-propagation&#34;&gt;&lt;strong&gt;Copy propagation&lt;/strong&gt;&lt;/h4&gt;
+&lt;p&gt;拷贝出来的变量在后续的使用中可以被原来的变量替代，那就少用一个寄存器。&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;x = y
+c = x + 3
+d = x + y
+--------&amp;gt;
+x = y
+c = y + 3
+d = y + y
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;这里x这个变量就不需要了。&lt;/p&gt;
+&lt;h4 id=&#34;constant-propagation&#34;&gt;&lt;strong&gt;Constant propagation&lt;/strong&gt;&lt;/h4&gt;
+&lt;p&gt;一个常量的值，在后续的使用中可以直接被一个常量替换掉。&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;x = 4
+c = x + 3
+d = x + y
+----------------&amp;gt;
+x = 4
+c = 4 + 3
+d = 4 + y
+&lt;/code&gt;&lt;/pre&gt;&lt;h3 id=&#34;redundancy-elimination&#34;&gt;&lt;strong&gt;Redundancy elimination&lt;/strong&gt;&lt;/h3&gt;
+&lt;h4 id=&#34;common-subexpression-elimination-cse&#34;&gt;&lt;strong&gt;Common subexpression elimination (CSE)&lt;/strong&gt;&lt;/h4&gt;
+&lt;p&gt;有重复使用的表达式可以被替换为一次表达式运算，然后存储他的结果，后续的重复表达式运算直接使用第一次得到的结果就可以。&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;a = b + (c - 2)
+d = 4 * b
+e = d + (c - 2)
+------------&amp;gt;
+t1 = c - 2
+a = b + t1
+d = 4 * b
+e = d + t1 
+&lt;/code&gt;&lt;/pre&gt;&lt;h4 id=&#34;loop-invariant-code-motion&#34;&gt;&lt;strong&gt;Loop invariant code motion&lt;/strong&gt;&lt;/h4&gt;
+&lt;p&gt;在所有循环中结果都一样的表达式直接放到循环外来计算。&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;do i = 1,n
+    do j = 1,n
+        a(j,i)=2*b(i+1)+j-(m*5)
+    end do
+end do
+-------------------&amp;gt;
+t1 = m*5
+do i = 1,n
+    t2 = 2*b(i+1)
+    do j = 1,n
+        a(j,i)=t2 + j - t1
+    end do
+end do
+&lt;/code&gt;&lt;/pre&gt;&lt;h4 id=&#34;algebraic-simplification-in-redundancy-elimination&#34;&gt;&lt;strong&gt;Algebraic simplification in redundancy elimination&lt;/strong&gt;&lt;/h4&gt;
+&lt;p&gt;再做一下算术运算的简化。&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;do i=1,n
+    a=b+i
+    c=a-i
+    d=a
+end do
+-------------&amp;gt;
+do i=1,n
+    a=b+i
+    c=b
+    d=a
+end do
+&lt;/code&gt;&lt;/pre&gt;&lt;h4 id=&#34;dead-code-elimination&#34;&gt;&lt;strong&gt;Dead code elimination&lt;/strong&gt;&lt;/h4&gt;
+&lt;p&gt;去掉结果从不使用的代码。&lt;/p&gt;
+&lt;h3 id=&#34;loop-optimisations&#34;&gt;&lt;strong&gt;loop optimisations&lt;/strong&gt;&lt;/h3&gt;
+&lt;h4 id=&#34;strength-reduction&#34;&gt;&lt;strong&gt;Strength reduction&lt;/strong&gt;&lt;/h4&gt;
+&lt;p&gt;简化计算，将每次循环的计算强度降低。尽量将基于迭代变量的运算转化为单纯的加法递增。&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;for (i=0;i&amp;lt;n;i++){
+    j = 3*i+2;
+    a[j] = b[i];
+}
+---------------&amp;gt;
+j=2;
+for (i=0;i&amp;lt;n;i++){
+    a[j] = b[i];
+    j+=3;
+}
+
+&lt;/code&gt;&lt;/pre&gt;&lt;h4 id=&#34;induction-variable-removal&#34;&gt;&lt;strong&gt;Induction variable removal&lt;/strong&gt;&lt;/h4&gt;
+&lt;p&gt;Induction variable归纳变量，指随着迭代连续变化的变量。&lt;/p&gt;
+&lt;p&gt;有可能的话，使用一个（迭代变量）来表示所有的归纳变量，减少寄存器的使用。&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;for (i=0;i&amp;lt;n;i++){
+j = 3*i+2;
+    a[j] = b[i];
+}
+----------&amp;gt;
+j=2;
+for (i=0;i&amp;lt;n;i++){
+    a[j] = b[i];
+    j+=3;
+}
+
+&lt;/code&gt;&lt;/pre&gt;&lt;h4 id=&#34;bounds-checking-elimination&#34;&gt;&lt;strong&gt;Bounds checking elimination&lt;/strong&gt;&lt;/h4&gt;
+&lt;pre&gt;&lt;code&gt;int a[n];
+for (i=lo;i&amp;lt;hi;i++){
+    a[i] = i;
+}
+
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;拿这个举例子，每次循环都需要检查i是否越界，这很耗费时间，其实只需要在一开始检查一下lo和hi是否满足：&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;lo &amp;lt; n
+hi &amp;lt; n
+lo &amp;lt; hi
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;就行。&lt;/p&gt;
+&lt;h3 id=&#34;procedure-call-optimisations&#34;&gt;&lt;strong&gt;Procedure call optimisations&lt;/strong&gt;&lt;/h3&gt;
+&lt;h4 id=&#34;inlining&#34;&gt;&lt;strong&gt;Inlining&lt;/strong&gt;&lt;/h4&gt;
+&lt;p&gt;内联，即提示编译器去将函数以类似宏定义的形式展开在调用处。&lt;/p&gt;
+&lt;p&gt;可能使代码量增大，使用寄存器的数量也会增多。&lt;/p&gt;
+&lt;h4 id=&#34;expansion&#34;&gt;&lt;strong&gt;Expansion&lt;/strong&gt;&lt;/h4&gt;
+&lt;p&gt;Inlining是编译器在IR这里做的事情，但是expansion是在汇编/机器码这里做的事情。&lt;/p&gt;
+&lt;p&gt;它是将函数调用改为一系列指令的组合，层次更低，可以利用一些特别的指令序列。&lt;/p&gt;
+&lt;h2 id=&#34;instruction-scheduling&#34;&gt;Instruction scheduling&lt;/h2&gt;
+&lt;p&gt;这是编译器应该在source level做的优化&lt;/p&gt;
+&lt;p&gt;指令可以重排序，只要维持寄存器的依赖图不变就行了。&lt;/p&gt;
+&lt;p&gt;而且有一些指令是不能pipeline的比如sqrt，那就需要在sqrt计算和结果之间插入一些指令来充分利用cpu。&lt;/p&gt;
+&lt;p&gt;目标：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;减少执行的指令&lt;/li&gt;
+&lt;li&gt;减少流水线停顿（data hazards, control hazards, structural hazards）&lt;/li&gt;
+&lt;li&gt;使用多发射(VLIW, superscalar)&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h3 id=&#34;branch-scheduling&#34;&gt;&lt;strong&gt;Branch scheduling&lt;/strong&gt;&lt;/h3&gt;
+&lt;p&gt;分支会导致流水线停顿，两种方案：&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;delayed branches（编译器来做，引入分支延迟槽，流水线中，分支指令执行时因为确定下一条指令的目标地址（紧随其后 or 跳转目标处？）一般要到第 2 级以后，在目标确定前流水线的取指级是不能工作的，即整个流水线就“浪费”（阻塞）了一个时间片，为了利用这个时间片，在体系结构的层面上规定跳转指令后 面的一个时间片为分支延迟槽（branch delay slot）。位于分支延迟槽中的指令总是被执行，与分支发生与否没有关系。这样就有效利用了一个时间片，消除了流水线的一个“气泡”。）&lt;/li&gt;
+&lt;li&gt;分支预测(依赖硬件Reorder Buffer，用于rollback结果)&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;编译器就找一些可以放到分支延迟槽的指令，把它们放进去就更有效地利用了流水线，消除了stall。当然可能还要尝试找一些可以忽视分支的指令。&lt;/p&gt;
+&lt;h3 id=&#34;loop-unrolling&#34;&gt;&lt;strong&gt;Loop unrolling&lt;/strong&gt;&lt;/h3&gt;
+&lt;p&gt;就是展开循环，因为小的循环中花费在分支上的代价太大，把他们展开，可能耗费更多寄存器但是减少了stall。&lt;/p&gt;
+&lt;p&gt;同时一些特殊指令也可以被使用进去。&lt;/p&gt;
+&lt;p&gt;有几点需要注意：&lt;/p&gt;
+&lt;p&gt;unroll factor选择很重要，大了会用完寄存器，数量的选择可以考虑cache line，提高缓存的命中&lt;/p&gt;
+&lt;p&gt;Outer loop unrolling：
+在unroll的时候对于多层循环，尽量去unroll外层的循环，这有助于提升代码的局部性&lt;/p&gt;
+&lt;p&gt;就类似内存读取时读取连续的值一样，有助于缓存命中&lt;/p&gt;
+&lt;h3 id=&#34;variable-expansion&#34;&gt;&lt;strong&gt;Variable expansion&lt;/strong&gt;&lt;/h3&gt;
+&lt;p&gt;用于解除展开循环中的数据依赖：&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;for (i=0,i&amp;lt;n,i+=2){
+    b+=a[i];
+    b+=a[i+1];
+}
+---------------------&amp;gt;
+for (i=0,i&amp;lt;n,i+=2){
+    b1+=a[i];
+    b2+=a[i+1];
+}
+b=b1+b2;
+&lt;/code&gt;&lt;/pre&gt;&lt;h3 id=&#34;register-renaming&#34;&gt;&lt;strong&gt;Register renaming&lt;/strong&gt;&lt;/h3&gt;
+&lt;p&gt;在一个block中寄存器可能被重用，这会带来不必要的依赖。&lt;/p&gt;
+&lt;p&gt;使用多个寄存器可以提供更多的scheduling flexibility、&lt;/p&gt;
+&lt;p&gt;有些CPU在硬件上实现了寄存器raname，但是这些都是对编译器不可见的。&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;add %f2,1,%f1
+st [%o1],f1
+add %f3,2,%f1
+st [%o2],f1
+----------------&amp;gt;rename
+add %f2,1,%f1
+st [%o1],f1
+add %f3,2,%f27
+st [%o2],f27
+----------------&amp;gt;reschedule
+add %f2,1,%f1
+add %f3,2,%f27
+st [%o1],f1
+st [%o2],f27
+&lt;/code&gt;&lt;/pre&gt;&lt;h3 id=&#34;software-pipelining&#34;&gt;&lt;strong&gt;Software pipelining&lt;/strong&gt;&lt;/h3&gt;
+&lt;p&gt;软件层面实现流水线来解决循环，看例子：&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;
+for (i=0;i&amp;lt;n;i++){
+    a(i) += b;
+}
+------------------------&amp;gt;
+for (i=0;i&amp;lt;n;i++){
+    t1 = a(i); //L i
+    t2 = b + t1; //A i
+    a(i) = t2; //S i
+}
+---------------------------&amp;gt;
+//prologue
+t1 = a(0); //L 0
+t2 = b + t1; //A 0
+t1 = a(1); //L 1
+for (i=0;i&amp;lt;n-2;i++){
+    a(i) = t2; //S i
+    t2 = b + t1; //A i+1
+    t1 = a(i+2); //L i+2
+}
+//epilogue
+a(n-2) = t2; //S n-2
+t2 = b + t1; //A n-1
+a(n-1) = t2; //S n-1
+
+
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;这样搞对向量化的架构很有好处（superscalar and VLIW），因为：&lt;/p&gt;
+&lt;p&gt;• large loop body
+• few dependencies between instructions
+• lots of scope for multiple issue&lt;/p&gt;
+&lt;h2 id=&#34;optimisations-for-the-memory-hierarchy&#34;&gt;optimisations for the memory hierarchy&lt;/h2&gt;
+&lt;p&gt;这一层级的优化就很大可能要自己手动实现&lt;/p&gt;
+&lt;h3 id=&#34;loop-interchange&#34;&gt;&lt;strong&gt;Loop interchange&lt;/strong&gt;&lt;/h3&gt;
+&lt;p&gt;多层循环，交换循环次数，这个很熟悉了，为了cache命中率：&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;
+for (j=0;j&amp;lt;n;j++){
+    for (i=0;i&amp;lt;m;i++){
+        a[i][j]+=b[i][j];
+    }
+}
+------------------------------&amp;gt;
+for (i=0;i&amp;lt;m;i++){
+    for (j=0;j&amp;lt;n;j++){
+        a[i][j]+=b[i][j];
+    }
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;h3 id=&#34;loop-reversal&#34;&gt;&lt;strong&gt;Loop reversal&lt;/strong&gt;&lt;/h3&gt;
+&lt;p&gt;交换循环的次序，从前到后，从后到前，可以利用在array比cache大一点的时候，在循环开始前array末尾刚存进cache，先从末尾开始访问，命中率高&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;for(i=0;i=&amp;lt;m;i++){
+    a[i]+=b[i];
+}
+----------------------&amp;gt;
+for(i=m;i&amp;gt;=0;i--){
+    a[i]+=b[i];
+}
+
+&lt;/code&gt;&lt;/pre&gt;&lt;h3 id=&#34;loop-skewing&#34;&gt;&lt;strong&gt;Loop skewing&lt;/strong&gt;&lt;/h3&gt;
+&lt;pre&gt;&lt;code&gt;for (j=0;j&amp;lt;n;j++){
+    for (i=0;i&amp;lt;m;i++){
+        a[j]+=b[i+j]+1;
+    }
+}
+--------------------------&amp;gt;
+for (j=0;j&amp;lt;n;j++){
+    for (i=j;i&amp;lt;m+j;i++){
+        a[j]+=b[i]+1;
+    }
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;转化成这种形式，可以惠及其他的转化方式。这种转化本身一般不会带来直接的好处。&lt;/p&gt;
+&lt;h3 id=&#34;unimodular-transformations&#34;&gt;&lt;strong&gt;Unimodular transformations&lt;/strong&gt;&lt;/h3&gt;
+&lt;p&gt;Loop skewing，Loop reversal，Loop interchange都是Unimodular transformations&lt;/p&gt;
+&lt;h3 id=&#34;loop-fusion&#34;&gt;&lt;strong&gt;Loop fusion&lt;/strong&gt;&lt;/h3&gt;
+&lt;p&gt;将俩循环合并：&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;for(j=0;j&amp;lt;n;j++){
+    a[j]+=1;
+}
+for(i=0;i&amp;lt;n;i++){
+    b[i]=a[i]*2;
+}
+------------------------------------&amp;gt;
+for(j=0;j&amp;lt;n;j++){
+    a[j]+=1;
+    b[j]=a[j]*2;
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;可能可以减少内存访问的次数，比如这里a的访问放到一起去了&lt;/p&gt;
+&lt;p&gt;循环块加大了，对于scheduler的优化也有更大的发挥空间&lt;/p&gt;
+&lt;p&gt;附上dalao写的：https://zhuanlan.zhihu.com/p/315041435&lt;/p&gt;
+&lt;h3 id=&#34;loop-distribution&#34;&gt;&lt;strong&gt;Loop distribution&lt;/strong&gt;&lt;/h3&gt;
+&lt;p&gt;Loop fusion的反向操作，一般用来减轻寄存器pressure&lt;/p&gt;
+&lt;h3 id=&#34;loop-tiling&#34;&gt;&lt;strong&gt;Loop tiling&lt;/strong&gt;&lt;/h3&gt;
+&lt;pre&gt;&lt;code&gt;for (i=0;i&amp;lt;n;i++){
+    for (j=0;j&amp;lt;n;j++){
+        a[i][j]+=b[i][j];
+    }
+}
+-------------------------&amp;gt;
+for (ii=0;ii&amp;lt;n;ii+=B){
+    for (jj=0;jj&amp;lt;n;jj+=B){
+        for (i=ii;i&amp;lt;ii+B;i++){
+            for (j=jj;j&amp;lt;jj+B;j++){
+                a[i][j]+=b[i][j];
+            }
+        }
+    }
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;这个比较复杂，直接看dalao写的：
+&lt;a class=&#34;link&#34; href=&#34;https://zhuanlan.zhihu.com/p/292539074&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
+    &gt;https://zhuanlan.zhihu.com/p/292539074&lt;/a&gt;&lt;/p&gt;
+&lt;p&gt;&lt;a class=&#34;link&#34; href=&#34;https://zhuanlan.zhihu.com/p/301905385&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
+    &gt;https://zhuanlan.zhihu.com/p/301905385&lt;/a&gt;&lt;/p&gt;
+&lt;h3 id=&#34;array-padding&#34;&gt;&lt;strong&gt;Array padding&lt;/strong&gt;&lt;/h3&gt;
+&lt;p&gt;根据cache的映射规则，加上padding的话，连续访问的元素也许就不会造成大量的cache conflict&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;float a[2][4096];
+for (j=0;j&amp;lt;n;j++){
+a[1][j]+=1;
+a[2][j]*=2;
+}
+---------------&amp;gt;
+float a[2][4096+64];
+for (j=0;j&amp;lt;n;j++){
+a[1][j]+=1;
+a[2][j]*=2;
+}
+&lt;/code&gt;&lt;/pre&gt;</description>
+        </item>
+        <item>
         <title>Openmpi</title>
         <link>https://gao377020481.github.io/p/cmake/</link>
         <pubDate>Fri, 17 Sep 2021 00:00:00 +0000</pubDate>

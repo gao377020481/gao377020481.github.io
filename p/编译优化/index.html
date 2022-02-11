@@ -1,0 +1,840 @@
+<!DOCTYPE html>
+<html lang="en-us">
+    <head><meta charset='utf-8'>
+<meta name='viewport' content='width=device-width, initial-scale=1'><meta name='description' content='编译器角度来优化程序'><title>编译优化</title>
+
+<link rel='canonical' href='https://gao377020481.github.io/p/%E7%BC%96%E8%AF%91%E4%BC%98%E5%8C%96/'>
+
+<link rel="stylesheet" href="/scss/style.min.css"><meta property='og:title' content='编译优化'>
+<meta property='og:description' content='编译器角度来优化程序'>
+<meta property='og:url' content='https://gao377020481.github.io/p/%E7%BC%96%E8%AF%91%E4%BC%98%E5%8C%96/'>
+<meta property='og:site_name' content='Gao&#39;s Happy Day'>
+<meta property='og:type' content='article'><meta property='article:section' content='Post' /><meta property='article:tag' content='optimization' /><meta property='article:published_time' content='2022-01-30T00:00:00&#43;00:00'/><meta property='article:modified_time' content='2022-01-30T00:00:00&#43;00:00'/><meta property='og:image' content='https://gao377020481.github.io/p/%E7%BC%96%E8%AF%91%E4%BC%98%E5%8C%96/324.jpg' />
+<meta name="twitter:title" content="编译优化">
+<meta name="twitter:description" content="编译器角度来优化程序"><meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:image" content='https://gao377020481.github.io/p/%E7%BC%96%E8%AF%91%E4%BC%98%E5%8C%96/324.jpg' />
+    </head>
+    <body class="
+    article-page has-toc
+">
+    <script>
+        (function() {
+            const colorSchemeKey = 'StackColorScheme';
+            if(!localStorage.getItem(colorSchemeKey)){
+                localStorage.setItem(colorSchemeKey, "auto");
+            }
+        })();
+    </script><script>
+    (function() {
+        const colorSchemeKey = 'StackColorScheme';
+        const colorSchemeItem = localStorage.getItem(colorSchemeKey);
+        const supportDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches === true;
+
+        if (colorSchemeItem == 'dark' || colorSchemeItem === 'auto' && supportDarkMode) {
+            
+
+            document.documentElement.dataset.scheme = 'dark';
+        } else {
+            document.documentElement.dataset.scheme = 'light';
+        }
+    })();
+</script>
+<div class="container main-container flex 
+    
+        extended
+    
+">
+    
+        <div id="article-toolbar">
+            <a href="https://gao377020481.github.io" class="back-home">
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-chevron-left" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <polyline points="15 6 9 12 15 18" />
+</svg>
+
+
+
+                <span>Back</span>
+            </a>
+        </div>
+    
+<main class="main full-width">
+    <article class="has-image main-article">
+    <header class="article-header">
+        <div class="article-image">
+            <a href="/p/%E7%BC%96%E8%AF%91%E4%BC%98%E5%8C%96/">
+                <img src="/p/%E7%BC%96%E8%AF%91%E4%BC%98%E5%8C%96/324_hu5345abdaa640012db8d08e2af4454d52_5473626_800x0_resize_q75_box.jpg"
+                        srcset="/p/%E7%BC%96%E8%AF%91%E4%BC%98%E5%8C%96/324_hu5345abdaa640012db8d08e2af4454d52_5473626_800x0_resize_q75_box.jpg 800w, /p/%E7%BC%96%E8%AF%91%E4%BC%98%E5%8C%96/324_hu5345abdaa640012db8d08e2af4454d52_5473626_1600x0_resize_q75_box.jpg 1600w"
+                        width="800" 
+                        height="500" 
+                        loading="lazy"
+                        alt="Featured image of post 编译优化" />
+                
+            </a>
+        </div>
+    
+
+    <div class="article-details">
+    
+    <header class="article-category">
+        
+            <a href="/categories/hpc/" style="background-color: #2a9d8f; color: #fff;">
+                HPC
+            </a>
+        
+    </header>
+    
+
+    <h2 class="article-title">
+        <a href="/p/%E7%BC%96%E8%AF%91%E4%BC%98%E5%8C%96/">编译优化</a>
+    </h2>
+
+    
+    <h3 class="article-subtitle">
+        编译器角度来优化程序
+    </h3>
+    
+
+    
+    <footer class="article-time">
+        
+            <div>
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-calendar-time" width="56" height="56" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <path d="M11.795 21h-6.795a2 2 0 0 1 -2 -2v-12a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v4" />
+  <circle cx="18" cy="18" r="4" />
+  <path d="M15 3v4" />
+  <path d="M7 3v4" />
+  <path d="M3 11h16" />
+  <path d="M18 16.496v1.504l1 1" />
+</svg>
+                <time class="article-time--published">Jan 30, 2022</time>
+            </div>
+        
+
+        
+            <div>
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="12" r="9" />
+  <polyline points="12 7 12 12 15 15" />
+</svg>
+
+
+
+                <time class="article-time--reading">
+                    3 minute read
+                </time>
+            </div>
+        
+    </footer>
+    
+</div>
+</header>
+
+    <section class="article-content">
+    <p>讨论一些编译器会做的优化，这些优化一般不需要我们自己来做。</p>
+<p>但是我们讨论时从源码角度来模拟，实际上编译器是在中间代码（IR）层进行优化的。</p>
+<p>分四部分：</p>
+<h2 id="ir-optimisations">IR optimisations</h2>
+<h3 id="basic-optimisations"><strong>Basic optimisations</strong></h3>
+<h4 id="constant-folding"><strong>Constant folding</strong></h4>
+<p>将一些变量转换为常量，这有助于减少内存的访问。 且常量相关的求值是可以在编译阶段就确定，不必等待运行阶段。</p>
+<p>转换前：</p>
+<pre><code>integer, parameter :: n=100
+do i=1,n
+....
+end do
+</code></pre><p>转换后：</p>
+<pre><code>do i=1,100
+....
+end do
+</code></pre><h4 id="algebraic-simplifications"><strong>Algebraic simplifications</strong></h4>
+<p>简化算术运算，包括了运用结合，交换和分配律等：</p>
+<p>(i-j)+(i-j)+(i-j) &mdash;&mdash;&gt; 3*i - 3*i</p>
+<p>但是要注意浮点数操作，它不遵循结合律：</p>
+<p>1.0 + (MF - MF) = 1.0</p>
+<p>(1.0 + MF) - MF = 0.0</p>
+<p>这个例子里MF比1.0大，1.0在和MF结合后会被舍去，所以第二个结果出来就是0.0了，这是因为浮点运算会先算出精确值然后舍去多余位，所以结合律失效。</p>
+<h4 id="copy-propagation"><strong>Copy propagation</strong></h4>
+<p>拷贝出来的变量在后续的使用中可以被原来的变量替代，那就少用一个寄存器。</p>
+<pre><code>x = y
+c = x + 3
+d = x + y
+--------&gt;
+x = y
+c = y + 3
+d = y + y
+</code></pre><p>这里x这个变量就不需要了。</p>
+<h4 id="constant-propagation"><strong>Constant propagation</strong></h4>
+<p>一个常量的值，在后续的使用中可以直接被一个常量替换掉。</p>
+<pre><code>x = 4
+c = x + 3
+d = x + y
+----------------&gt;
+x = 4
+c = 4 + 3
+d = 4 + y
+</code></pre><h3 id="redundancy-elimination"><strong>Redundancy elimination</strong></h3>
+<h4 id="common-subexpression-elimination-cse"><strong>Common subexpression elimination (CSE)</strong></h4>
+<p>有重复使用的表达式可以被替换为一次表达式运算，然后存储他的结果，后续的重复表达式运算直接使用第一次得到的结果就可以。</p>
+<pre><code>a = b + (c - 2)
+d = 4 * b
+e = d + (c - 2)
+------------&gt;
+t1 = c - 2
+a = b + t1
+d = 4 * b
+e = d + t1 
+</code></pre><h4 id="loop-invariant-code-motion"><strong>Loop invariant code motion</strong></h4>
+<p>在所有循环中结果都一样的表达式直接放到循环外来计算。</p>
+<pre><code>do i = 1,n
+    do j = 1,n
+        a(j,i)=2*b(i+1)+j-(m*5)
+    end do
+end do
+-------------------&gt;
+t1 = m*5
+do i = 1,n
+    t2 = 2*b(i+1)
+    do j = 1,n
+        a(j,i)=t2 + j - t1
+    end do
+end do
+</code></pre><h4 id="algebraic-simplification-in-redundancy-elimination"><strong>Algebraic simplification in redundancy elimination</strong></h4>
+<p>再做一下算术运算的简化。</p>
+<pre><code>do i=1,n
+    a=b+i
+    c=a-i
+    d=a
+end do
+-------------&gt;
+do i=1,n
+    a=b+i
+    c=b
+    d=a
+end do
+</code></pre><h4 id="dead-code-elimination"><strong>Dead code elimination</strong></h4>
+<p>去掉结果从不使用的代码。</p>
+<h3 id="loop-optimisations"><strong>loop optimisations</strong></h3>
+<h4 id="strength-reduction"><strong>Strength reduction</strong></h4>
+<p>简化计算，将每次循环的计算强度降低。尽量将基于迭代变量的运算转化为单纯的加法递增。</p>
+<pre><code>for (i=0;i&lt;n;i++){
+    j = 3*i+2;
+    a[j] = b[i];
+}
+---------------&gt;
+j=2;
+for (i=0;i&lt;n;i++){
+    a[j] = b[i];
+    j+=3;
+}
+
+</code></pre><h4 id="induction-variable-removal"><strong>Induction variable removal</strong></h4>
+<p>Induction variable归纳变量，指随着迭代连续变化的变量。</p>
+<p>有可能的话，使用一个（迭代变量）来表示所有的归纳变量，减少寄存器的使用。</p>
+<pre><code>for (i=0;i&lt;n;i++){
+j = 3*i+2;
+    a[j] = b[i];
+}
+----------&gt;
+j=2;
+for (i=0;i&lt;n;i++){
+    a[j] = b[i];
+    j+=3;
+}
+
+</code></pre><h4 id="bounds-checking-elimination"><strong>Bounds checking elimination</strong></h4>
+<pre><code>int a[n];
+for (i=lo;i&lt;hi;i++){
+    a[i] = i;
+}
+
+</code></pre><p>拿这个举例子，每次循环都需要检查i是否越界，这很耗费时间，其实只需要在一开始检查一下lo和hi是否满足：</p>
+<pre><code>lo &lt; n
+hi &lt; n
+lo &lt; hi
+</code></pre><p>就行。</p>
+<h3 id="procedure-call-optimisations"><strong>Procedure call optimisations</strong></h3>
+<h4 id="inlining"><strong>Inlining</strong></h4>
+<p>内联，即提示编译器去将函数以类似宏定义的形式展开在调用处。</p>
+<p>可能使代码量增大，使用寄存器的数量也会增多。</p>
+<h4 id="expansion"><strong>Expansion</strong></h4>
+<p>Inlining是编译器在IR这里做的事情，但是expansion是在汇编/机器码这里做的事情。</p>
+<p>它是将函数调用改为一系列指令的组合，层次更低，可以利用一些特别的指令序列。</p>
+<h2 id="instruction-scheduling">Instruction scheduling</h2>
+<p>这是编译器应该在source level做的优化</p>
+<p>指令可以重排序，只要维持寄存器的依赖图不变就行了。</p>
+<p>而且有一些指令是不能pipeline的比如sqrt，那就需要在sqrt计算和结果之间插入一些指令来充分利用cpu。</p>
+<p>目标：</p>
+<ol>
+<li>减少执行的指令</li>
+<li>减少流水线停顿（data hazards, control hazards, structural hazards）</li>
+<li>使用多发射(VLIW, superscalar)</li>
+</ol>
+<h3 id="branch-scheduling"><strong>Branch scheduling</strong></h3>
+<p>分支会导致流水线停顿，两种方案：</p>
+<ol>
+<li>delayed branches（编译器来做，引入分支延迟槽，流水线中，分支指令执行时因为确定下一条指令的目标地址（紧随其后 or 跳转目标处？）一般要到第 2 级以后，在目标确定前流水线的取指级是不能工作的，即整个流水线就“浪费”（阻塞）了一个时间片，为了利用这个时间片，在体系结构的层面上规定跳转指令后 面的一个时间片为分支延迟槽（branch delay slot）。位于分支延迟槽中的指令总是被执行，与分支发生与否没有关系。这样就有效利用了一个时间片，消除了流水线的一个“气泡”。）</li>
+<li>分支预测(依赖硬件Reorder Buffer，用于rollback结果)</li>
+</ol>
+<p>编译器就找一些可以放到分支延迟槽的指令，把它们放进去就更有效地利用了流水线，消除了stall。当然可能还要尝试找一些可以忽视分支的指令。</p>
+<h3 id="loop-unrolling"><strong>Loop unrolling</strong></h3>
+<p>就是展开循环，因为小的循环中花费在分支上的代价太大，把他们展开，可能耗费更多寄存器但是减少了stall。</p>
+<p>同时一些特殊指令也可以被使用进去。</p>
+<p>有几点需要注意：</p>
+<p>unroll factor选择很重要，大了会用完寄存器，数量的选择可以考虑cache line，提高缓存的命中</p>
+<p>Outer loop unrolling：
+在unroll的时候对于多层循环，尽量去unroll外层的循环，这有助于提升代码的局部性</p>
+<p>就类似内存读取时读取连续的值一样，有助于缓存命中</p>
+<h3 id="variable-expansion"><strong>Variable expansion</strong></h3>
+<p>用于解除展开循环中的数据依赖：</p>
+<pre><code>for (i=0,i&lt;n,i+=2){
+    b+=a[i];
+    b+=a[i+1];
+}
+---------------------&gt;
+for (i=0,i&lt;n,i+=2){
+    b1+=a[i];
+    b2+=a[i+1];
+}
+b=b1+b2;
+</code></pre><h3 id="register-renaming"><strong>Register renaming</strong></h3>
+<p>在一个block中寄存器可能被重用，这会带来不必要的依赖。</p>
+<p>使用多个寄存器可以提供更多的scheduling flexibility、</p>
+<p>有些CPU在硬件上实现了寄存器raname，但是这些都是对编译器不可见的。</p>
+<pre><code>add %f2,1,%f1
+st [%o1],f1
+add %f3,2,%f1
+st [%o2],f1
+----------------&gt;rename
+add %f2,1,%f1
+st [%o1],f1
+add %f3,2,%f27
+st [%o2],f27
+----------------&gt;reschedule
+add %f2,1,%f1
+add %f3,2,%f27
+st [%o1],f1
+st [%o2],f27
+</code></pre><h3 id="software-pipelining"><strong>Software pipelining</strong></h3>
+<p>软件层面实现流水线来解决循环，看例子：</p>
+<pre><code>
+for (i=0;i&lt;n;i++){
+    a(i) += b;
+}
+------------------------&gt;
+for (i=0;i&lt;n;i++){
+    t1 = a(i); //L i
+    t2 = b + t1; //A i
+    a(i) = t2; //S i
+}
+---------------------------&gt;
+//prologue
+t1 = a(0); //L 0
+t2 = b + t1; //A 0
+t1 = a(1); //L 1
+for (i=0;i&lt;n-2;i++){
+    a(i) = t2; //S i
+    t2 = b + t1; //A i+1
+    t1 = a(i+2); //L i+2
+}
+//epilogue
+a(n-2) = t2; //S n-2
+t2 = b + t1; //A n-1
+a(n-1) = t2; //S n-1
+
+
+</code></pre><p>这样搞对向量化的架构很有好处（superscalar and VLIW），因为：</p>
+<p>• large loop body
+• few dependencies between instructions
+• lots of scope for multiple issue</p>
+<h2 id="optimisations-for-the-memory-hierarchy">optimisations for the memory hierarchy</h2>
+<p>这一层级的优化就很大可能要自己手动实现</p>
+<h3 id="loop-interchange"><strong>Loop interchange</strong></h3>
+<p>多层循环，交换循环次数，这个很熟悉了，为了cache命中率：</p>
+<pre><code>
+for (j=0;j&lt;n;j++){
+    for (i=0;i&lt;m;i++){
+        a[i][j]+=b[i][j];
+    }
+}
+------------------------------&gt;
+for (i=0;i&lt;m;i++){
+    for (j=0;j&lt;n;j++){
+        a[i][j]+=b[i][j];
+    }
+}
+</code></pre><h3 id="loop-reversal"><strong>Loop reversal</strong></h3>
+<p>交换循环的次序，从前到后，从后到前，可以利用在array比cache大一点的时候，在循环开始前array末尾刚存进cache，先从末尾开始访问，命中率高</p>
+<pre><code>for(i=0;i=&lt;m;i++){
+    a[i]+=b[i];
+}
+----------------------&gt;
+for(i=m;i&gt;=0;i--){
+    a[i]+=b[i];
+}
+
+</code></pre><h3 id="loop-skewing"><strong>Loop skewing</strong></h3>
+<pre><code>for (j=0;j&lt;n;j++){
+    for (i=0;i&lt;m;i++){
+        a[j]+=b[i+j]+1;
+    }
+}
+--------------------------&gt;
+for (j=0;j&lt;n;j++){
+    for (i=j;i&lt;m+j;i++){
+        a[j]+=b[i]+1;
+    }
+}
+</code></pre><p>转化成这种形式，可以惠及其他的转化方式。这种转化本身一般不会带来直接的好处。</p>
+<h3 id="unimodular-transformations"><strong>Unimodular transformations</strong></h3>
+<p>Loop skewing，Loop reversal，Loop interchange都是Unimodular transformations</p>
+<h3 id="loop-fusion"><strong>Loop fusion</strong></h3>
+<p>将俩循环合并：</p>
+<pre><code>for(j=0;j&lt;n;j++){
+    a[j]+=1;
+}
+for(i=0;i&lt;n;i++){
+    b[i]=a[i]*2;
+}
+------------------------------------&gt;
+for(j=0;j&lt;n;j++){
+    a[j]+=1;
+    b[j]=a[j]*2;
+}
+</code></pre><p>可能可以减少内存访问的次数，比如这里a的访问放到一起去了</p>
+<p>循环块加大了，对于scheduler的优化也有更大的发挥空间</p>
+<p>附上dalao写的：https://zhuanlan.zhihu.com/p/315041435</p>
+<h3 id="loop-distribution"><strong>Loop distribution</strong></h3>
+<p>Loop fusion的反向操作，一般用来减轻寄存器pressure</p>
+<h3 id="loop-tiling"><strong>Loop tiling</strong></h3>
+<pre><code>for (i=0;i&lt;n;i++){
+    for (j=0;j&lt;n;j++){
+        a[i][j]+=b[i][j];
+    }
+}
+-------------------------&gt;
+for (ii=0;ii&lt;n;ii+=B){
+    for (jj=0;jj&lt;n;jj+=B){
+        for (i=ii;i&lt;ii+B;i++){
+            for (j=jj;j&lt;jj+B;j++){
+                a[i][j]+=b[i][j];
+            }
+        }
+    }
+}
+</code></pre><p>这个比较复杂，直接看dalao写的：
+<a class="link" href="https://zhuanlan.zhihu.com/p/292539074"  target="_blank" rel="noopener"
+    >https://zhuanlan.zhihu.com/p/292539074</a></p>
+<p><a class="link" href="https://zhuanlan.zhihu.com/p/301905385"  target="_blank" rel="noopener"
+    >https://zhuanlan.zhihu.com/p/301905385</a></p>
+<h3 id="array-padding"><strong>Array padding</strong></h3>
+<p>根据cache的映射规则，加上padding的话，连续访问的元素也许就不会造成大量的cache conflict</p>
+<pre><code>float a[2][4096];
+for (j=0;j&lt;n;j++){
+a[1][j]+=1;
+a[2][j]*=2;
+}
+---------------&gt;
+float a[2][4096+64];
+for (j=0;j&lt;n;j++){
+a[1][j]+=1;
+a[2][j]*=2;
+}
+</code></pre>
+</section>
+
+
+    <footer class="article-footer">
+    
+    <section class="article-tags">
+        
+            <a href="/tags/optimization/">optimization</a>
+        
+    </section>
+
+
+    
+    <section class="article-copyright">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-copyright" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="12" r="9" />
+  <path d="M14.5 9a3.5 4 0 1 0 0 6" />
+</svg>
+
+
+
+        <span>Licensed under CC BY-NC-SA 4.0</span>
+    </section>
+    </footer>
+
+
+    
+</article>
+
+    <aside class="related-contents--wrapper">
+    
+    
+        <h2 class="section-title">Related contents</h2>
+        <div class="related-contents">
+            <div class="flex article-list--tile">
+                
+                    
+<article class="has-image">
+    <a href="/p/%E5%90%91%E9%87%8F%E5%8C%96/">
+        
+        
+            <div class="article-image">
+                <img src="/p/%E5%90%91%E9%87%8F%E5%8C%96/316.2a4d462720db7c5c15a737190869b43f_hu2053fdeb7f8648c516bbfdc346f4d20d_4844619_250x150_fill_q75_box_smart1.jpg" 
+                        width="250" 
+                        height="150" 
+                        loading="lazy" 
+                        data-key="向量化" 
+                        data-hash="md5-Kk1GJyDbfFwVpzcZCGm0Pw==">
+                
+            </div>
+        
+
+        <div class="article-details">
+            <h2 class="article-title">向量化</h2>
+        </div>
+    </a>
+</article>
+                
+                    
+<article class="has-image">
+    <a href="/p/%E5%86%85%E5%AD%98%E4%BC%98%E5%8C%96/">
+        
+        
+            <div class="article-image">
+                <img src="/p/%E5%86%85%E5%AD%98%E4%BC%98%E5%8C%96/430.a1da3aefecd0a68f33722a3f7a2511f6_hu5d968a7e44909eeacdbd0844a8dbe990_11030818_250x150_fill_q75_box_smart1.jpg" 
+                        width="250" 
+                        height="150" 
+                        loading="lazy" 
+                        data-key="内存优化" 
+                        data-hash="md5-odo67&#43;zQpo8zcio/eiUR9g==">
+                
+            </div>
+        
+
+        <div class="article-details">
+            <h2 class="article-title">内存优化</h2>
+        </div>
+    </a>
+</article>
+                
+                    
+<article class="has-image">
+    <a href="/p/gekkofs/">
+        
+        
+            <div class="article-image">
+                <img src="/p/gekkofs/309.8941172e9df13172cd7bdf003c1221b3_hu80f756db431420bf1003157b0f57b409_4015254_250x150_fill_q75_box_smart1.jpg" 
+                        width="250" 
+                        height="150" 
+                        loading="lazy" 
+                        data-key="Gekkofs" 
+                        data-hash="md5-iUEXLp3xMXLNe98APBIhsw==">
+                
+            </div>
+        
+
+        <div class="article-details">
+            <h2 class="article-title">Gekkofs</h2>
+        </div>
+    </a>
+</article>
+                
+                    
+<article class="has-image">
+    <a href="/p/cmake/">
+        
+        
+            <div class="article-image">
+                <img src="/p/cmake/405.0c2a193a9ed2812305195d7eb4adba8d_huaea55e1e24566107c91b0c14c5461267_4592730_250x150_fill_q75_box_smart1.jpg" 
+                        width="250" 
+                        height="150" 
+                        loading="lazy" 
+                        data-key="cmake" 
+                        data-hash="md5-DCoZOp7SgSMFGV1&#43;tK26jQ==">
+                
+            </div>
+        
+
+        <div class="article-details">
+            <h2 class="article-title">Openmpi</h2>
+        </div>
+    </a>
+</article>
+                
+                    
+<article class="has-image">
+    <a href="/p/spectremeltdown/">
+        
+        
+            <div class="article-image">
+                <img src="/p/spectremeltdown/325.b955d1b6de1f9b7e753b021def3a7f2d_hube714498331873c40184a998a513a196_5002269_250x150_fill_q75_box_smart1.jpg" 
+                        width="250" 
+                        height="150" 
+                        loading="lazy" 
+                        data-key="Spectre&amp;Meltdown" 
+                        data-hash="md5-uVXRtt4fm351OwId7zp/LQ==">
+                
+            </div>
+        
+
+        <div class="article-details">
+            <h2 class="article-title">Spectre&amp;Meltdown</h2>
+        </div>
+    </a>
+</article>
+                
+            </div>
+        </div>
+    
+</aside>
+
+     
+     
+        
+    <div class="disqus-container">
+    <div id="disqus_thread"></div>
+<script type="application/javascript">
+    var disqus_config = function () {
+    
+    
+    
+    };
+    (function() {
+        if (["localhost", "127.0.0.1"].indexOf(window.location.hostname) != -1) {
+            document.getElementById('disqus_thread').innerHTML = 'Disqus comments not available by default when the website is previewed locally.';
+            return;
+        }
+        var d = document, s = d.createElement('script'); s.async = true;
+        s.src = '//' + "hugo-theme-stack" + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="https://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+</div>
+
+<style>
+    .disqus-container {
+        background-color: var(--card-background);
+        border-radius: var(--card-border-radius);
+        box-shadow: var(--shadow-l1);
+        padding: var(--card-padding);
+    }
+</style>
+
+<script>
+    window.addEventListener('onColorSchemeChange', (e) => {
+        if (DISQUS) {
+            DISQUS.reset({
+                reload: true
+            });
+        }
+    })
+</script>
+
+    
+
+    <footer class="site-footer">
+    <section class="copyright">
+        &copy; 
+        
+            2020 - 
+        
+        2022 Gao&#39;s Happy Day
+    </section>
+    
+    <section class="powerby">
+        Built with <a href="https://gohugo.io/" target="_blank" rel="noopener">Hugo</a> <br />
+        Theme <b><a href="https://github.com/CaiJimmy/hugo-theme-stack" target="_blank" rel="noopener" data-version="3.2.0">Stack</a></b> designed by <a href="https://jimmycai.com" target="_blank" rel="noopener">Jimmy</a>
+    </section>
+</footer>
+
+
+    
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+    
+    <div class="pswp__bg"></div>
+
+    
+    <div class="pswp__scroll-wrap">
+
+        
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+
+        
+        <div class="pswp__ui pswp__ui--hidden">
+
+            <div class="pswp__top-bar">
+
+                
+
+                <div class="pswp__counter"></div>
+
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+
+                <button class="pswp__button pswp__button--share" title="Share"></button>
+
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+
+                
+                
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                        <div class="pswp__preloader__cut">
+                            <div class="pswp__preloader__donut"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div>
+            </div>
+
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div><script 
+                src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js"integrity="sha256-ePwmChbbvXbsO02lbM3HoHbSHTHFAeChekF1xKJdleo="crossorigin="anonymous"
+                defer="true"
+                >
+            </script><script 
+                src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js"integrity="sha256-UKkzOn/w1mBxRmLLGrSeyB4e1xbrp4xylgAWb3M42pU="crossorigin="anonymous"
+                defer="true"
+                >
+            </script><link 
+                rel="stylesheet" 
+                href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.css"integrity="sha256-c0uckgykQ9v5k&#43;IqViZOZKc47Jn7KQil4/MP3ySA3F8="crossorigin="anonymous"
+            ><link 
+                rel="stylesheet" 
+                href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.css"integrity="sha256-SBLU4vv6CA6lHsZ1XyTdhyjJxCjPif/TRkjnsyGAGnE="crossorigin="anonymous"
+            >
+
+            </main>
+    
+        <aside class="sidebar right-sidebar sticky">
+            <section class="widget archives">
+                <div class="widget-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-hash" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <line x1="5" y1="9" x2="19" y2="9" />
+  <line x1="5" y1="15" x2="19" y2="15" />
+  <line x1="11" y1="4" x2="7" y2="20" />
+  <line x1="17" y1="4" x2="13" y2="20" />
+</svg>
+
+
+
+                </div>
+                <h2 class="widget-title section-title">Table of contents</h2>
+                
+                <div class="widget--toc">
+                    <nav id="TableOfContents">
+  <ol>
+    <li><a href="#ir-optimisations">IR optimisations</a>
+      <ol>
+        <li><a href="#basic-optimisations"><strong>Basic optimisations</strong></a>
+          <ol>
+            <li><a href="#constant-folding"><strong>Constant folding</strong></a></li>
+            <li><a href="#algebraic-simplifications"><strong>Algebraic simplifications</strong></a></li>
+            <li><a href="#copy-propagation"><strong>Copy propagation</strong></a></li>
+            <li><a href="#constant-propagation"><strong>Constant propagation</strong></a></li>
+          </ol>
+        </li>
+        <li><a href="#redundancy-elimination"><strong>Redundancy elimination</strong></a>
+          <ol>
+            <li><a href="#common-subexpression-elimination-cse"><strong>Common subexpression elimination (CSE)</strong></a></li>
+            <li><a href="#loop-invariant-code-motion"><strong>Loop invariant code motion</strong></a></li>
+            <li><a href="#algebraic-simplification-in-redundancy-elimination"><strong>Algebraic simplification in redundancy elimination</strong></a></li>
+            <li><a href="#dead-code-elimination"><strong>Dead code elimination</strong></a></li>
+          </ol>
+        </li>
+        <li><a href="#loop-optimisations"><strong>loop optimisations</strong></a>
+          <ol>
+            <li><a href="#strength-reduction"><strong>Strength reduction</strong></a></li>
+            <li><a href="#induction-variable-removal"><strong>Induction variable removal</strong></a></li>
+            <li><a href="#bounds-checking-elimination"><strong>Bounds checking elimination</strong></a></li>
+          </ol>
+        </li>
+        <li><a href="#procedure-call-optimisations"><strong>Procedure call optimisations</strong></a>
+          <ol>
+            <li><a href="#inlining"><strong>Inlining</strong></a></li>
+            <li><a href="#expansion"><strong>Expansion</strong></a></li>
+          </ol>
+        </li>
+      </ol>
+    </li>
+    <li><a href="#instruction-scheduling">Instruction scheduling</a>
+      <ol>
+        <li><a href="#branch-scheduling"><strong>Branch scheduling</strong></a></li>
+        <li><a href="#loop-unrolling"><strong>Loop unrolling</strong></a></li>
+        <li><a href="#variable-expansion"><strong>Variable expansion</strong></a></li>
+        <li><a href="#register-renaming"><strong>Register renaming</strong></a></li>
+        <li><a href="#software-pipelining"><strong>Software pipelining</strong></a></li>
+      </ol>
+    </li>
+    <li><a href="#optimisations-for-the-memory-hierarchy">optimisations for the memory hierarchy</a>
+      <ol>
+        <li><a href="#loop-interchange"><strong>Loop interchange</strong></a></li>
+        <li><a href="#loop-reversal"><strong>Loop reversal</strong></a></li>
+        <li><a href="#loop-skewing"><strong>Loop skewing</strong></a></li>
+        <li><a href="#unimodular-transformations"><strong>Unimodular transformations</strong></a></li>
+        <li><a href="#loop-fusion"><strong>Loop fusion</strong></a></li>
+        <li><a href="#loop-distribution"><strong>Loop distribution</strong></a></li>
+        <li><a href="#loop-tiling"><strong>Loop tiling</strong></a></li>
+        <li><a href="#array-padding"><strong>Array padding</strong></a></li>
+      </ol>
+    </li>
+  </ol>
+</nav>
+                </div>
+            </section>
+        </aside>
+    
+
+        </div>
+        <script 
+                src="https://cdn.jsdelivr.net/npm/node-vibrant@3.1.5/dist/vibrant.min.js"integrity="sha256-5NovOZc4iwiAWTYIFiIM7DxKUXKWvpVEuMEPLzcm5/g="crossorigin="anonymous"
+                defer="false"
+                >
+            </script><script type="text/javascript" src="/ts/main.js" defer></script>
+<script>
+    (function () {
+        const customFont = document.createElement('link');
+        customFont.href = "https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap";
+
+        customFont.type = "text/css";
+        customFont.rel = "stylesheet";
+
+        document.head.appendChild(customFont);
+    }());
+</script>
+
+    </body>
+</html>

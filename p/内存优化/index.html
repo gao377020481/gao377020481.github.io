@@ -1,0 +1,680 @@
+<!DOCTYPE html>
+<html lang="en-us">
+    <head><meta charset='utf-8'>
+<meta name='viewport' content='width=device-width, initial-scale=1'><meta name='description' content='内存结构角度来优化程序'><title>内存优化</title>
+
+<link rel='canonical' href='https://gao377020481.github.io/p/%E5%86%85%E5%AD%98%E4%BC%98%E5%8C%96/'>
+
+<link rel="stylesheet" href="/scss/style.min.css"><meta property='og:title' content='内存优化'>
+<meta property='og:description' content='内存结构角度来优化程序'>
+<meta property='og:url' content='https://gao377020481.github.io/p/%E5%86%85%E5%AD%98%E4%BC%98%E5%8C%96/'>
+<meta property='og:site_name' content='Gao&#39;s Happy Day'>
+<meta property='og:type' content='article'><meta property='article:section' content='Post' /><meta property='article:tag' content='optimization' /><meta property='article:published_time' content='2022-02-04T00:00:00&#43;00:00'/><meta property='article:modified_time' content='2022-02-04T00:00:00&#43;00:00'/><meta property='og:image' content='https://gao377020481.github.io/p/%E5%86%85%E5%AD%98%E4%BC%98%E5%8C%96/430.jpg' />
+<meta name="twitter:title" content="内存优化">
+<meta name="twitter:description" content="内存结构角度来优化程序"><meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:image" content='https://gao377020481.github.io/p/%E5%86%85%E5%AD%98%E4%BC%98%E5%8C%96/430.jpg' />
+    </head>
+    <body class="
+    article-page has-toc
+">
+    <script>
+        (function() {
+            const colorSchemeKey = 'StackColorScheme';
+            if(!localStorage.getItem(colorSchemeKey)){
+                localStorage.setItem(colorSchemeKey, "auto");
+            }
+        })();
+    </script><script>
+    (function() {
+        const colorSchemeKey = 'StackColorScheme';
+        const colorSchemeItem = localStorage.getItem(colorSchemeKey);
+        const supportDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches === true;
+
+        if (colorSchemeItem == 'dark' || colorSchemeItem === 'auto' && supportDarkMode) {
+            
+
+            document.documentElement.dataset.scheme = 'dark';
+        } else {
+            document.documentElement.dataset.scheme = 'light';
+        }
+    })();
+</script>
+<div class="container main-container flex 
+    
+        extended
+    
+">
+    
+        <div id="article-toolbar">
+            <a href="https://gao377020481.github.io" class="back-home">
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-chevron-left" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <polyline points="15 6 9 12 15 18" />
+</svg>
+
+
+
+                <span>Back</span>
+            </a>
+        </div>
+    
+<main class="main full-width">
+    <article class="has-image main-article">
+    <header class="article-header">
+        <div class="article-image">
+            <a href="/p/%E5%86%85%E5%AD%98%E4%BC%98%E5%8C%96/">
+                <img src="/p/%E5%86%85%E5%AD%98%E4%BC%98%E5%8C%96/430_hu5d968a7e44909eeacdbd0844a8dbe990_11030818_800x0_resize_q75_box.jpg"
+                        srcset="/p/%E5%86%85%E5%AD%98%E4%BC%98%E5%8C%96/430_hu5d968a7e44909eeacdbd0844a8dbe990_11030818_800x0_resize_q75_box.jpg 800w, /p/%E5%86%85%E5%AD%98%E4%BC%98%E5%8C%96/430_hu5d968a7e44909eeacdbd0844a8dbe990_11030818_1600x0_resize_q75_box.jpg 1600w"
+                        width="800" 
+                        height="533" 
+                        loading="lazy"
+                        alt="Featured image of post 内存优化" />
+                
+            </a>
+        </div>
+    
+
+    <div class="article-details">
+    
+    <header class="article-category">
+        
+            <a href="/categories/hpc/" style="background-color: #2a9d8f; color: #fff;">
+                HPC
+            </a>
+        
+    </header>
+    
+
+    <h2 class="article-title">
+        <a href="/p/%E5%86%85%E5%AD%98%E4%BC%98%E5%8C%96/">内存优化</a>
+    </h2>
+
+    
+    <h3 class="article-subtitle">
+        内存结构角度来优化程序
+    </h3>
+    
+
+    
+    <footer class="article-time">
+        
+            <div>
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-calendar-time" width="56" height="56" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <path d="M11.795 21h-6.795a2 2 0 0 1 -2 -2v-12a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v4" />
+  <circle cx="18" cy="18" r="4" />
+  <path d="M15 3v4" />
+  <path d="M7 3v4" />
+  <path d="M3 11h16" />
+  <path d="M18 16.496v1.504l1 1" />
+</svg>
+                <time class="article-time--published">Feb 04, 2022</time>
+            </div>
+        
+
+        
+            <div>
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="12" r="9" />
+  <polyline points="12 7 12 12 15 15" />
+</svg>
+
+
+
+                <time class="article-time--reading">
+                    2 minute read
+                </time>
+            </div>
+        
+    </footer>
+    
+</div>
+</header>
+
+    <section class="article-content">
+    <p>从内存结构的角度来优化我们的程序。</p>
+<h2 id="vector-temporaries">Vector temporaries</h2>
+<pre><code>REAL V(1024,3), S(1024), U(3)
+
+DO I=1,1024
+    S(I) = U(1)*V(I,1)
+END DO
+
+DO I=1,1024
+    S(I) = S(I) + U(2)*V(I,2)
+END DO
+
+DO I=1,1024
+    S(I) = S(I) + U(3)*V(I,3)
+END DO
+
+DO J=1,3
+    DO I=1,1024
+        V(I,J) = S(I) * U(J)
+    END DO
+END DO
+----------------------------------------&gt;
+REAL V(1024,3), S, U(3)
+    DO I=1,1024
+        S = U(1)*V(I,1) + U(2)*V(I,2) + U(3)*V(I,3)
+        DO J=1,3
+            V(I,J) = S * U(J)
+        END DO
+END DO
+</code></pre><p>将运算组织成近似向量的形式，编译器就很容易借助这种优势来将代码优化为向量的运算。</p>
+<h3 id="hybrid"><strong>Hybrid</strong></h3>
+<pre><code>REAL V(1024,3), S(8), U(3)
+DO K=1,1024,8
+    DO I=0,7
+        S(I) = U(1)*V(I+K,1) + U(2)*V(I+K,2) + U(3)*V(I+K,3)
+        DO J=1,3
+            V(I+K,J) = S(I) * U(J)
+        END DO
+    END DO
+END DO
+</code></pre><p>这种版本的代码可以increase locality</p>
+<h2 id="subroutine-merging">Subroutine merging</h2>
+<p>两个过程（可以是循环）有相似的迭代空间并且数据array只用来在他们之间传输数据，也就是他们之间这个array上没有其他操作。那就可以合并，合并的好处是很多的。</p>
+<p>If two routines have the same iteration space and an data array only exists to pass data between them then consider merging</p>
+<h2 id="reduce-cache-miss">reduce cache miss</h2>
+<p>conflict code:</p>
+<pre><code>REAL A(1024), B(1024), C(1024), X
+COMMON /DAT/ A,B,C ! Contiguous
+    DO I=1,1024
+        A(I) = B(I) + X*C(I)
+    END DO
+</code></pre><p>每一个循环里A,B,C的I位置都映射到一个set里（当然是在直接映射cache下，如果multi-way那就好很多），每次都发生三次conflict</p>
+<h3 id="cache-padding"><strong>Cache padding</strong></h3>
+<pre><code>REAL A(1024),B(1024),C(1024),T(8),T2(8),X
+COMMON /DAT/ A,T,B,T2,C
+    DO I=1,1024
+        A(I) = B(I) + X*C(I)
+    END DO
+
+</code></pre><p>Padding 是常用技巧，不说了</p>
+<h3 id="array-extension"><strong>Array extension</strong></h3>
+<pre><code>REAL A(1032,4), B(1024)
+DO I=1,1024
+    DO J=1,4
+        B(I) = B(I) + A(I,J)
+    END DO
+END DO
+</code></pre><p>这个也可以叫做padding，是A自己的不同维度的vector发生coflict，把A自己padding一下就行了</p>
+<h3 id="loop-re-ordering"><strong>Loop re-ordering</strong></h3>
+<pre><code>REAL A(1024,4),T(8), B(1024)
+
+DO J=1,4
+    DO I=1,1024
+        B(I) = B(I) + A(I,J)
+    END DO
+END DO
+</code></pre><p>直接按列访问就没有A上的冲突了，B与A的冲突就依赖于T（8）的引入来消除。</p>
+<h3 id="index-re-ordering"><strong>Index re-ordering</strong></h3>
+<pre><code>
+REAL A(4,1024), B(1024)
+DO I=1,1024
+    DO J=1,4
+        B(I) = B(I) + A(J,I)
+    END DO
+END DO
+
+</code></pre><p>这样一来A和B的冲突也没了，但这种改变影响的是所有用到A的地方，一般需要在全局来修改，用脚本来改。</p>
+<h3 id="introduce-temporaries"><strong>Introduce temporaries</strong></h3>
+<pre><code>REAL A(1024,4), B(1024),T1,T2,…
+DO I=1,1024,8
+    DO J=1,4
+        T1 = A(I,J)
+        T2 = A(I+1,J)
+        …
+        B(I) = B(I) + T1 +T2 …
+    END DO
+END DO
+</code></pre><p>留一下，这里的优化感觉很有限，这句也没理解：</p>
+<p>Only works if unroll is multiple of block size</p>
+<h2 id="关于写操作的优化">关于写操作的优化</h2>
+<h3 id="cache"><strong>cache</strong></h3>
+<p>先说一下cache：</p>
+<p>写回，写穿透</p>
+<p>还有：</p>
+<p>write allocate ：写区域不在cache，就把它搞到cache里写</p>
+<p>No write allocate： 写区域不在cache，就直接修改cache以下的内存层级</p>
+<h4 id="write-stalls"><strong>Write stalls</strong></h4>
+<p>CPU在寄存器里的值被拷贝回去之后才能继续进行操作，这就引入了stall。</p>
+<p>引入write buffer： 这是硬件的解决方案，写操作时直接写入write buffer，一般大小和一级缓存差不多，且如果比多个字长的话就可以合并这个write到一个单独的block write里去。</p>
+<h4 id="array-initialization"><strong>Array initialization</strong></h4>
+<p>初始化array的开销会比较大，尤其在array的size比较大的时候更明显。</p>
+<ol>
+<li>使用特殊硬件配合编译器指令来做初始化</li>
+<li>将初始化操作和第一次使用的loop放到一起（很明显这会导致一些错误，因为你无法保证第一次是什么时候）</li>
+</ol>
+<h4 id="writes-and-vectorisation"><strong>Writes and vectorisation</strong></h4>
+<p>SIMD/Vector store operations usually work best when writing well-aligned contiguous blocks of data</p>
+<p>这和write buffer的使用很类似，所以只需要遵循向量化的数据访存就能顺带做到适应write buffer的优化。</p>
+<h4 id="prefetch"><strong>prefetch</strong></h4>
+<p>预取数据到cache中</p>
+<p>很多处理器都有这个支持，编译器也可以做一些工作</p>
+<p>最好的情况是有一些指令可以给程序员自己使用</p>
+<p>Write-allocate caches可能有一些清零cache line的指令</p>
+<pre><code>void __builtin_prefetch (const void *addr, int rw, int locality)
+
+https://gcc.gnu.org/onlinedocs/gcc/Other-Builtins.html
+</code></pre><h3 id="streams"><strong>Streams</strong></h3>
+<p>一般预取到cache里能优化的都是连续序列的cache miss。</p>
+<p>处理器还有一些stream buffer：</p>
+<ol>
+<li>每一个都保存有active stream的地址</li>
+<li>这个地址会随着data的load移动，指向未load的data</li>
+<li>由一系列的连续地址的cache miss构建</li>
+</ol>
+<p>如果一个loop需要比硬件支持的多的stream，那么就没有cache预取发生因为硬件流引擎将会不断地被重置到新的流上。</p>
+<p>这个还得回来研究一下，其实没太理解它到底是啥。</p>
+<h3 id="non-temporal-operations"><strong>Non-temporal operations</strong></h3>
+<p>直接操作内存，忽视cache</p>
+<pre><code>#pragma vector nontemporal
+void __builtin_nontemporal_store(T value, T *addr);
+T __builtin_nontemporal_load(T *addr);
+</code></pre><h3 id="alignment"><strong>alignment</strong></h3>
+<p>load/store指令的大小是不一样的，对齐做好的话可以一次load就取出整数个元素。</p>
+<p>Compilers 做了什么？</p>
+<ol>
+<li>内置类型和局部变量的对齐是编译器的强项。</li>
+<li>参数指针和结构体变量编译器一般就无能为力了</li>
+</ol>
+<p>如果编译器没办法确定对齐策略：</p>
+<ol>
+<li>不用对齐的指令（带来低效率）</li>
+<li>通过一些动态测试，测出程序的对齐大小</li>
+</ol>
+<p>优化：</p>
+<ol>
+<li>编译器提供对齐相关的指令</li>
+<li>需要确保内存数据有一个良好的排列</li>
+<li>malloc：只有最大的内置类型可以保证良好的对齐。64bit</li>
+<li>有的话就不用malloc，换成其他提供的带对齐的内存分配api</li>
+</ol>
+<h3 id="pointer-aliasing"><strong>Pointer aliasing</strong></h3>
+<p>考虑一下，编译器需要：</p>
+<ol>
+<li>当通过指针写，重新加载所有指针指向的值</li>
+<li>当通过指针读，需要确保这个操作前的操作都可见。</li>
+<li>如果有类似c++的unique指针就比较好</li>
+</ol>
+<p>C语言里指针是unrestricted的，所以严重影响了性能。</p>
+<p>防止指针重叠，可以采用类似引用计数的方法（Explicit use of local scalar temporaries）</p>
+<p>分配在堆上的内存，一般都是比较随机的，除非一次分配很多一样的元素。
+cache miss会少一些，但是因为缺少了局部性，TLB的miss会增多（缺页）。</p>
+<p>一些动态类型比如双向链表，它里面指针占的内存也很多，存在浪费。且会带来更多的cache miss。</p>
+
+</section>
+
+
+    <footer class="article-footer">
+    
+    <section class="article-tags">
+        
+            <a href="/tags/optimization/">optimization</a>
+        
+    </section>
+
+
+    
+    <section class="article-copyright">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-copyright" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="12" r="9" />
+  <path d="M14.5 9a3.5 4 0 1 0 0 6" />
+</svg>
+
+
+
+        <span>Licensed under CC BY-NC-SA 4.0</span>
+    </section>
+    </footer>
+
+
+    
+</article>
+
+    <aside class="related-contents--wrapper">
+    
+    
+        <h2 class="section-title">Related contents</h2>
+        <div class="related-contents">
+            <div class="flex article-list--tile">
+                
+                    
+<article class="has-image">
+    <a href="/p/%E5%90%91%E9%87%8F%E5%8C%96/">
+        
+        
+            <div class="article-image">
+                <img src="/p/%E5%90%91%E9%87%8F%E5%8C%96/316.2a4d462720db7c5c15a737190869b43f_hu2053fdeb7f8648c516bbfdc346f4d20d_4844619_250x150_fill_q75_box_smart1.jpg" 
+                        width="250" 
+                        height="150" 
+                        loading="lazy" 
+                        data-key="向量化" 
+                        data-hash="md5-Kk1GJyDbfFwVpzcZCGm0Pw==">
+                
+            </div>
+        
+
+        <div class="article-details">
+            <h2 class="article-title">向量化</h2>
+        </div>
+    </a>
+</article>
+                
+                    
+<article class="has-image">
+    <a href="/p/%E7%BC%96%E8%AF%91%E4%BC%98%E5%8C%96/">
+        
+        
+            <div class="article-image">
+                <img src="/p/%E7%BC%96%E8%AF%91%E4%BC%98%E5%8C%96/324.163a584205708d736e255d8928f5ad3d_hu5345abdaa640012db8d08e2af4454d52_5473626_250x150_fill_q75_box_smart1.jpg" 
+                        width="250" 
+                        height="150" 
+                        loading="lazy" 
+                        data-key="编译优化" 
+                        data-hash="md5-FjpYQgVwjXNuJV2JKPWtPQ==">
+                
+            </div>
+        
+
+        <div class="article-details">
+            <h2 class="article-title">编译优化</h2>
+        </div>
+    </a>
+</article>
+                
+                    
+<article class="has-image">
+    <a href="/p/gekkofs/">
+        
+        
+            <div class="article-image">
+                <img src="/p/gekkofs/309.8941172e9df13172cd7bdf003c1221b3_hu80f756db431420bf1003157b0f57b409_4015254_250x150_fill_q75_box_smart1.jpg" 
+                        width="250" 
+                        height="150" 
+                        loading="lazy" 
+                        data-key="Gekkofs" 
+                        data-hash="md5-iUEXLp3xMXLNe98APBIhsw==">
+                
+            </div>
+        
+
+        <div class="article-details">
+            <h2 class="article-title">Gekkofs</h2>
+        </div>
+    </a>
+</article>
+                
+                    
+<article class="has-image">
+    <a href="/p/cmake/">
+        
+        
+            <div class="article-image">
+                <img src="/p/cmake/405.0c2a193a9ed2812305195d7eb4adba8d_huaea55e1e24566107c91b0c14c5461267_4592730_250x150_fill_q75_box_smart1.jpg" 
+                        width="250" 
+                        height="150" 
+                        loading="lazy" 
+                        data-key="cmake" 
+                        data-hash="md5-DCoZOp7SgSMFGV1&#43;tK26jQ==">
+                
+            </div>
+        
+
+        <div class="article-details">
+            <h2 class="article-title">Openmpi</h2>
+        </div>
+    </a>
+</article>
+                
+                    
+<article class="has-image">
+    <a href="/p/spectremeltdown/">
+        
+        
+            <div class="article-image">
+                <img src="/p/spectremeltdown/325.b955d1b6de1f9b7e753b021def3a7f2d_hube714498331873c40184a998a513a196_5002269_250x150_fill_q75_box_smart1.jpg" 
+                        width="250" 
+                        height="150" 
+                        loading="lazy" 
+                        data-key="Spectre&amp;Meltdown" 
+                        data-hash="md5-uVXRtt4fm351OwId7zp/LQ==">
+                
+            </div>
+        
+
+        <div class="article-details">
+            <h2 class="article-title">Spectre&amp;Meltdown</h2>
+        </div>
+    </a>
+</article>
+                
+            </div>
+        </div>
+    
+</aside>
+
+     
+     
+        
+    <div class="disqus-container">
+    <div id="disqus_thread"></div>
+<script type="application/javascript">
+    var disqus_config = function () {
+    
+    
+    
+    };
+    (function() {
+        if (["localhost", "127.0.0.1"].indexOf(window.location.hostname) != -1) {
+            document.getElementById('disqus_thread').innerHTML = 'Disqus comments not available by default when the website is previewed locally.';
+            return;
+        }
+        var d = document, s = d.createElement('script'); s.async = true;
+        s.src = '//' + "hugo-theme-stack" + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="https://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+</div>
+
+<style>
+    .disqus-container {
+        background-color: var(--card-background);
+        border-radius: var(--card-border-radius);
+        box-shadow: var(--shadow-l1);
+        padding: var(--card-padding);
+    }
+</style>
+
+<script>
+    window.addEventListener('onColorSchemeChange', (e) => {
+        if (DISQUS) {
+            DISQUS.reset({
+                reload: true
+            });
+        }
+    })
+</script>
+
+    
+
+    <footer class="site-footer">
+    <section class="copyright">
+        &copy; 
+        
+            2020 - 
+        
+        2022 Gao&#39;s Happy Day
+    </section>
+    
+    <section class="powerby">
+        Built with <a href="https://gohugo.io/" target="_blank" rel="noopener">Hugo</a> <br />
+        Theme <b><a href="https://github.com/CaiJimmy/hugo-theme-stack" target="_blank" rel="noopener" data-version="3.2.0">Stack</a></b> designed by <a href="https://jimmycai.com" target="_blank" rel="noopener">Jimmy</a>
+    </section>
+</footer>
+
+
+    
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+    
+    <div class="pswp__bg"></div>
+
+    
+    <div class="pswp__scroll-wrap">
+
+        
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+
+        
+        <div class="pswp__ui pswp__ui--hidden">
+
+            <div class="pswp__top-bar">
+
+                
+
+                <div class="pswp__counter"></div>
+
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+
+                <button class="pswp__button pswp__button--share" title="Share"></button>
+
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+
+                
+                
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                        <div class="pswp__preloader__cut">
+                            <div class="pswp__preloader__donut"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div>
+            </div>
+
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div><script 
+                src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js"integrity="sha256-ePwmChbbvXbsO02lbM3HoHbSHTHFAeChekF1xKJdleo="crossorigin="anonymous"
+                defer="true"
+                >
+            </script><script 
+                src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js"integrity="sha256-UKkzOn/w1mBxRmLLGrSeyB4e1xbrp4xylgAWb3M42pU="crossorigin="anonymous"
+                defer="true"
+                >
+            </script><link 
+                rel="stylesheet" 
+                href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.css"integrity="sha256-c0uckgykQ9v5k&#43;IqViZOZKc47Jn7KQil4/MP3ySA3F8="crossorigin="anonymous"
+            ><link 
+                rel="stylesheet" 
+                href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.css"integrity="sha256-SBLU4vv6CA6lHsZ1XyTdhyjJxCjPif/TRkjnsyGAGnE="crossorigin="anonymous"
+            >
+
+            </main>
+    
+        <aside class="sidebar right-sidebar sticky">
+            <section class="widget archives">
+                <div class="widget-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-hash" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <line x1="5" y1="9" x2="19" y2="9" />
+  <line x1="5" y1="15" x2="19" y2="15" />
+  <line x1="11" y1="4" x2="7" y2="20" />
+  <line x1="17" y1="4" x2="13" y2="20" />
+</svg>
+
+
+
+                </div>
+                <h2 class="widget-title section-title">Table of contents</h2>
+                
+                <div class="widget--toc">
+                    <nav id="TableOfContents">
+  <ol>
+    <li><a href="#vector-temporaries">Vector temporaries</a>
+      <ol>
+        <li><a href="#hybrid"><strong>Hybrid</strong></a></li>
+      </ol>
+    </li>
+    <li><a href="#subroutine-merging">Subroutine merging</a></li>
+    <li><a href="#reduce-cache-miss">reduce cache miss</a>
+      <ol>
+        <li><a href="#cache-padding"><strong>Cache padding</strong></a></li>
+        <li><a href="#array-extension"><strong>Array extension</strong></a></li>
+        <li><a href="#loop-re-ordering"><strong>Loop re-ordering</strong></a></li>
+        <li><a href="#index-re-ordering"><strong>Index re-ordering</strong></a></li>
+        <li><a href="#introduce-temporaries"><strong>Introduce temporaries</strong></a></li>
+      </ol>
+    </li>
+    <li><a href="#关于写操作的优化">关于写操作的优化</a>
+      <ol>
+        <li><a href="#cache"><strong>cache</strong></a>
+          <ol>
+            <li><a href="#write-stalls"><strong>Write stalls</strong></a></li>
+            <li><a href="#array-initialization"><strong>Array initialization</strong></a></li>
+            <li><a href="#writes-and-vectorisation"><strong>Writes and vectorisation</strong></a></li>
+            <li><a href="#prefetch"><strong>prefetch</strong></a></li>
+          </ol>
+        </li>
+        <li><a href="#streams"><strong>Streams</strong></a></li>
+        <li><a href="#non-temporal-operations"><strong>Non-temporal operations</strong></a></li>
+        <li><a href="#alignment"><strong>alignment</strong></a></li>
+        <li><a href="#pointer-aliasing"><strong>Pointer aliasing</strong></a></li>
+      </ol>
+    </li>
+  </ol>
+</nav>
+                </div>
+            </section>
+        </aside>
+    
+
+        </div>
+        <script 
+                src="https://cdn.jsdelivr.net/npm/node-vibrant@3.1.5/dist/vibrant.min.js"integrity="sha256-5NovOZc4iwiAWTYIFiIM7DxKUXKWvpVEuMEPLzcm5/g="crossorigin="anonymous"
+                defer="false"
+                >
+            </script><script type="text/javascript" src="/ts/main.js" defer></script>
+<script>
+    (function () {
+        const customFont = document.createElement('link');
+        customFont.href = "https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap";
+
+        customFont.type = "text/css";
+        customFont.rel = "stylesheet";
+
+        document.head.appendChild(customFont);
+    }());
+</script>
+
+    </body>
+</html>
