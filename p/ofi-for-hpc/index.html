@@ -1,0 +1,632 @@
+<!DOCTYPE html>
+<html lang="en-us">
+    <head><meta charset='utf-8'>
+<meta name='viewport' content='width=device-width, initial-scale=1'><meta name='description' content='OFI for HPC'><title>OFI/libfabric</title>
+
+<link rel='canonical' href='https://gao377020481.github.io/p/ofi-for-hpc/'>
+
+<link rel="stylesheet" href="/scss/style.min.css"><meta property='og:title' content='OFI/libfabric'>
+<meta property='og:description' content='OFI for HPC'>
+<meta property='og:url' content='https://gao377020481.github.io/p/ofi-for-hpc/'>
+<meta property='og:site_name' content='Gao&#39;s Happy Day'>
+<meta property='og:type' content='article'><meta property='article:section' content='Post' /><meta property='article:tag' content='HPC' /><meta property='article:tag' content='分布式' /><meta property='article:tag' content='网络' /><meta property='article:published_time' content='2021-11-12T00:00:00&#43;00:00'/><meta property='article:modified_time' content='2021-11-12T00:00:00&#43;00:00'/><meta property='og:image' content='https://gao377020481.github.io/p/ofi-for-hpc/786.jpg' />
+<meta name="twitter:title" content="OFI/libfabric">
+<meta name="twitter:description" content="OFI for HPC"><meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:image" content='https://gao377020481.github.io/p/ofi-for-hpc/786.jpg' />
+    </head>
+    <body class="
+    article-page has-toc
+">
+    <script>
+        (function() {
+            const colorSchemeKey = 'StackColorScheme';
+            if(!localStorage.getItem(colorSchemeKey)){
+                localStorage.setItem(colorSchemeKey, "auto");
+            }
+        })();
+    </script><script>
+    (function() {
+        const colorSchemeKey = 'StackColorScheme';
+        const colorSchemeItem = localStorage.getItem(colorSchemeKey);
+        const supportDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches === true;
+
+        if (colorSchemeItem == 'dark' || colorSchemeItem === 'auto' && supportDarkMode) {
+            
+
+            document.documentElement.dataset.scheme = 'dark';
+        } else {
+            document.documentElement.dataset.scheme = 'light';
+        }
+    })();
+</script>
+<div class="container main-container flex 
+    
+        extended
+    
+">
+    
+        <div id="article-toolbar">
+            <a href="https://gao377020481.github.io" class="back-home">
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-chevron-left" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <polyline points="15 6 9 12 15 18" />
+</svg>
+
+
+
+                <span>Back</span>
+            </a>
+        </div>
+    
+<main class="main full-width">
+    <article class="has-image main-article">
+    <header class="article-header">
+        <div class="article-image">
+            <a href="/p/ofi-for-hpc/">
+                <img src="/p/ofi-for-hpc/786_hucac7feb76ac17aeca67ee18e353cf80e_4947876_800x0_resize_q75_box.jpg"
+                        srcset="/p/ofi-for-hpc/786_hucac7feb76ac17aeca67ee18e353cf80e_4947876_800x0_resize_q75_box.jpg 800w, /p/ofi-for-hpc/786_hucac7feb76ac17aeca67ee18e353cf80e_4947876_1600x0_resize_q75_box.jpg 1600w"
+                        width="800" 
+                        height="500" 
+                        loading="lazy"
+                        alt="Featured image of post OFI/libfabric" />
+                
+            </a>
+        </div>
+    
+
+    <div class="article-details">
+    
+    <header class="article-category">
+        
+            <a href="/categories/hpc/" style="background-color: #2a9d8f; color: #fff;">
+                HPC
+            </a>
+        
+    </header>
+    
+
+    <h2 class="article-title">
+        <a href="/p/ofi-for-hpc/">OFI/libfabric</a>
+    </h2>
+
+    
+    <h3 class="article-subtitle">
+        OFI for HPC
+    </h3>
+    
+
+    
+    <footer class="article-time">
+        
+            <div>
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-calendar-time" width="56" height="56" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <path d="M11.795 21h-6.795a2 2 0 0 1 -2 -2v-12a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v4" />
+  <circle cx="18" cy="18" r="4" />
+  <path d="M15 3v4" />
+  <path d="M7 3v4" />
+  <path d="M3 11h16" />
+  <path d="M18 16.496v1.504l1 1" />
+</svg>
+                <time class="article-time--published">Nov 12, 2021</time>
+            </div>
+        
+
+        
+            <div>
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="12" r="9" />
+  <polyline points="12 7 12 12 15 15" />
+</svg>
+
+
+
+                <time class="article-time--reading">
+                    2 minute read
+                </time>
+            </div>
+        
+    </footer>
+    
+</div>
+</header>
+
+    <section class="article-content">
+    <p>之前一直很好奇，在超算里（或大规模的集群里），是怎么减少network传输的损耗的，最近项目中接触到了mecury这个rpc框架，他依赖于OFI、libfabric这个网络框架来做集群内的高性能网络传输。</p>
+<p>OFI相比于普通的内核TCP/IP协议栈的优化思路与用户态协议栈有异曲同工之妙，准备好好写一下这篇笔记，先从内核里的TCP/IP协议栈的缺点开始，到优化思路与实现，再看看能不能学习一下ofi实现的trick。开个坑先，慢慢写。。</p>
+<h2 id="从缺点找灵感">从缺点找灵感</h2>
+<p>TCP/IP 缺点</p>
+<ol>
+<li>用于提供可靠性的header占用很多带宽</li>
+<li>同步的话耗时，异步的话耗空间（内核里的缓冲区）拷贝也耗时</li>
+</ol>
+<h2 id="高性能的网络api应该是什么样的">高性能的网络API应该是什么样的？</h2>
+<h3 id="尽量少的内存拷贝">尽量少的内存拷贝</h3>
+<p>两点：</p>
+<ol>
+<li>用户提供buffer，与协议栈用一个buffer</li>
+<li>建立一个流量控制机制</li>
+</ol>
+<h3 id="异步操作">异步操作</h3>
+<p>两种策略：</p>
+<ol>
+<li>中断和信号，这种机制会打断正在运行的程序，evict CPU cache，而且一个随时能接受信号还不影响自己工作的程序就比较难开发</li>
+<li>事件queue， 来了就进queue</li>
+</ol>
+<h3 id="direct-hardware-access">Direct Hardware Access</h3>
+<p>主要两种思路：</p>
+<ol>
+<li>越过kernel，直接与网卡的buffer交互（代表DPDK）</li>
+<li>硬件软件配合来在用户空间共享同一块地址空间作为buffer（RDMA）</li>
+</ol>
+<h2 id="那应该怎么设计呢">那应该怎么设计呢？</h2>
+<p>先抄来个需要的interface：</p>
+<pre><code>/* Notable socket function prototypes */
+/* &quot;control&quot; functions */
+int socket(int domain, int type, int protocol);
+int bind(int socket, const struct sockaddr *addr, socklen_t addrlen);
+int listen(int socket, int backlog);
+int accept(int socket, struct sockaddr *addr, socklen_t *addrlen);
+int connect(int socket, const struct sockaddr *addr, socklen_t addrlen);
+int shutdown(int socket, int how);
+int close(int socket); 
+
+/* &quot;fast path&quot; data operations - send only (receive calls not shown) */
+ssize_t send(int socket, const void *buf, size_t len, int flags);
+ssize_t sendto(int socket, const void *buf, size_t len, int flags,
+    const struct sockaddr *dest_addr, socklen_t addrlen);
+ssize_t sendmsg(int socket, const struct msghdr *msg, int flags);
+ssize_t write(int socket, const void *buf, size_t count);
+ssize_t writev(int socket, const struct iovec *iov, int iovcnt);
+
+/* &quot;indirect&quot; data operations */
+int poll(struct pollfd *fds, nfds_t nfds, int timeout);
+int select(int nfds, fd_set *readfds, fd_set *writefds,
+    fd_set *exceptfds, struct timeval *timeout); 
+</code></pre><p>首先来看看这几类都有什么目标？</p>
+<p>&ldquo;control&rdquo; functions ： 这东西是用来控制的，一般调用次数一两次，不需要高性能。
+&ldquo;indirect&rdquo; data operations： 这个东西虽然性能也重要的，但是跟操作系统调度带来的损耗相比，他的损耗直接被抹平</p>
+<p>所以主要：</p>
+<p>&ldquo;fast path&rdquo; data operations</p>
+<p>这种操作是最需要改善的</p>
+<h3 id="更少的参数">更少的参数</h3>
+<p>很好理解，略</p>
+<h3 id="更少的loop和分支">更少的LOOP和分支</h3>
+<p>在interface内部的实现中，尽量少的使用分支和loop</p>
+<h3 id="command-formatting">Command Formatting</h3>
+<p>网卡驱动程序与网卡交互的时候有formatting，如果这个格式控制可以由application插手，那可以做很多特定的优化，将网路通信的path搞得更确定，比如我知道我只和这个peer通信，那么我直接给包加个头，这个头会由网卡取到然后发送给peer。流程更少，性能更高。</p>
+<h3 id="memory-footprint">Memory Footprint</h3>
+<p>减小内存占用：</p>
+<p>举个例子：一个socket address：</p>
+<pre><code>/* IPv4 socket address - with typedefs removed */
+struct sockaddr_in {
+    uint16_t sin_family; /* AF_INET */
+    uint16_t sin_port;
+    struct {
+        uint32_t sin_addr;
+    } in_addr;
+};
+</code></pre><p>这里面这个sin_family标识了协议栈，这个东西很多peer都一样，那直接让一样的用一个就行，能节省很多空间。</p>
+<p>这只是个例子，为了说明节省内存的思路。</p>
+<h3 id="communication-resources">Communication Resources</h3>
+<p>首先，可以使用预发布缓冲区的思路，就是我不知道我这一次要接受多少的数据，我直接post一块4MB的缓冲区，作为一次接收的缓冲区，意思就是哪怕这一次传输只传了1KB（很多浪费），我也不管。那么消息和缓冲区就一一对应。</p>
+<p>当然对大小不同的数据使用不同的通信协议也是很有必要的，因为他们对应的缓冲区的管理难度不同。</p>
+<h4 id="共享接收队列">共享接收队列</h4>
+<p>为每一个address peer维护一个缓冲区块集合好像有点成本太高。而且有的通信频繁的peer会阻塞，而其他的buffer却一直空着，也不均衡。</p>
+<p>现在考虑所有endpoint用一个缓冲区块集合，来请求的时候就从集合里分发一块。类似池的思路。</p>
+<h4 id="多接收缓冲区">多接收缓冲区</h4>
+<p>多接收缓冲区是另一种思路：</p>
+<p>它通过维护消息边界的方法，尝试重用每一块缓冲（那个4MB的），举个例子：一个1KB的消息到来，进入4MB的缓冲区内，剩下的将不会被浪费，而是给这1KB的数据加上头尾，区分边界，继续尝试利用4MB-1KB的空间接受更多的数据。</p>
+<h3 id="optimal-hardware-allocation">Optimal Hardware Allocation</h3>
+<p>控制硬件资源（网卡），一般来讲网卡有自己的控制程序，为了极致的性能，考虑暴露接口给用户来控制网卡行为。</p>
+<h4 id="sharing-command-queues">Sharing Command Queues</h4>
+<p>将使用的共享接收队列暴露给应用程序，叫用户自己控制多个endpoint怎么使用共享队列。（不同endpoint可能有不同优先级之类的）</p>
+<h4 id="multiple-queues">Multiple Queues</h4>
+<p>直接不用多个endpoint，用一个endpoint就行，这样address也就一个，充分利用网卡资源。</p>
+<h3 id="ordering">Ordering</h3>
+<p>顺序问题，如果要保证顺序，那显然问题会变复杂，性能会变差。</p>
+<p>UDP是值得参考的，而且在local 网络内一般顺序是自动保证的，因为线都是自己连接的，可控程度很高。</p>
+<h4 id="messages">Messages</h4>
+<p>与UDP不同的是，OFI的设计可以是很大的message（1GB）。</p>
+<p>它将每一次发送都分成很小的块，比如要发送一个64KB的块和一个4KB的块，接收端有64KB和4KB俩buffer，如果乱序，64KB的就被截断。但是无所谓，因为每次发送1KB的小块，后面在组装起来。</p>
+<h4 id="data">Data</h4>
+<p>数据顺序就比较重要，尤其是数据在更新同一个缓冲区的情况，顺序更应该保证。</p>
+<p>但同一个message内的数据顺序就不那么重要，除非有的机制用到了最后一个数据块来标识message结束，那就需要保证一个message内的数据顺序。</p>
+<h4 id="completions">Completions</h4>
+<p>操作的完成顺序，这个不知道有啥优化的点。。</p>
+<h2 id="ofi-architecture">OFI Architecture</h2>
+<p><figure 
+	>
+	<a href="/post/OFI/arch.png" >
+		<img src="/post/OFI/arch.png"
+			
+			
+			
+			loading="lazy"
+			>
+	</a>
+	
+</figure></p>
+
+</section>
+
+
+    <footer class="article-footer">
+    
+    <section class="article-tags">
+        
+            <a href="/tags/hpc/">HPC</a>
+        
+            <a href="/tags/%E5%88%86%E5%B8%83%E5%BC%8F/">分布式</a>
+        
+            <a href="/tags/%E7%BD%91%E7%BB%9C/">网络</a>
+        
+    </section>
+
+
+    
+    <section class="article-copyright">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-copyright" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="12" r="9" />
+  <path d="M14.5 9a3.5 4 0 1 0 0 6" />
+</svg>
+
+
+
+        <span>Licensed under CC BY-NC-SA 4.0</span>
+    </section>
+    </footer>
+
+
+    
+</article>
+
+    <aside class="related-contents--wrapper">
+    
+    
+        <h2 class="section-title">Related contents</h2>
+        <div class="related-contents">
+            <div class="flex article-list--tile">
+                
+                    
+<article class="has-image">
+    <a href="/p/mercury-rpc-framework-for-hpc/">
+        
+        
+            <div class="article-image">
+                <img src="/p/mercury-rpc-framework-for-hpc/430.a1da3aefecd0a68f33722a3f7a2511f6_hu5d968a7e44909eeacdbd0844a8dbe990_11030818_250x150_fill_q75_box_smart1.jpg" 
+                        width="250" 
+                        height="150" 
+                        loading="lazy" 
+                        data-key="Mercury RPC framework for HPC" 
+                        data-hash="md5-odo67&#43;zQpo8zcio/eiUR9g==">
+                
+            </div>
+        
+
+        <div class="article-details">
+            <h2 class="article-title">Mercury初探</h2>
+        </div>
+    </a>
+</article>
+                
+                    
+<article class="has-image">
+    <a href="/p/gekkofs/">
+        
+        
+            <div class="article-image">
+                <img src="/p/gekkofs/309.8941172e9df13172cd7bdf003c1221b3_hu80f756db431420bf1003157b0f57b409_4015254_250x150_fill_q75_box_smart1.jpg" 
+                        width="250" 
+                        height="150" 
+                        loading="lazy" 
+                        data-key="Gekkofs" 
+                        data-hash="md5-iUEXLp3xMXLNe98APBIhsw==">
+                
+            </div>
+        
+
+        <div class="article-details">
+            <h2 class="article-title">Gekkofs</h2>
+        </div>
+    </a>
+</article>
+                
+                    
+<article class="has-image">
+    <a href="/p/spectremeltdown/">
+        
+        
+            <div class="article-image">
+                <img src="/p/spectremeltdown/325.b955d1b6de1f9b7e753b021def3a7f2d_hube714498331873c40184a998a513a196_5002269_250x150_fill_q75_box_smart1.jpg" 
+                        width="250" 
+                        height="150" 
+                        loading="lazy" 
+                        data-key="Spectre&amp;Meltdown" 
+                        data-hash="md5-uVXRtt4fm351OwId7zp/LQ==">
+                
+            </div>
+        
+
+        <div class="article-details">
+            <h2 class="article-title">Spectre&amp;Meltdown</h2>
+        </div>
+    </a>
+</article>
+                
+                    
+<article class="has-image">
+    <a href="/p/cmake/">
+        
+        
+            <div class="article-image">
+                <img src="/p/cmake/405.0c2a193a9ed2812305195d7eb4adba8d_huaea55e1e24566107c91b0c14c5461267_4592730_250x150_fill_q75_box_smart1.jpg" 
+                        width="250" 
+                        height="150" 
+                        loading="lazy" 
+                        data-key="cmake" 
+                        data-hash="md5-DCoZOp7SgSMFGV1&#43;tK26jQ==">
+                
+            </div>
+        
+
+        <div class="article-details">
+            <h2 class="article-title">Openmpi</h2>
+        </div>
+    </a>
+</article>
+                
+                    
+<article class="has-image">
+    <a href="/p/%E5%90%91%E9%87%8F%E5%8C%96/">
+        
+        
+            <div class="article-image">
+                <img src="/p/%E5%90%91%E9%87%8F%E5%8C%96/316.2a4d462720db7c5c15a737190869b43f_hu2053fdeb7f8648c516bbfdc346f4d20d_4844619_250x150_fill_q75_box_smart1.jpg" 
+                        width="250" 
+                        height="150" 
+                        loading="lazy" 
+                        data-key="向量化" 
+                        data-hash="md5-Kk1GJyDbfFwVpzcZCGm0Pw==">
+                
+            </div>
+        
+
+        <div class="article-details">
+            <h2 class="article-title">向量化</h2>
+        </div>
+    </a>
+</article>
+                
+            </div>
+        </div>
+    
+</aside>
+
+     
+     
+        
+    <div class="disqus-container">
+    <div id="disqus_thread"></div>
+<script type="application/javascript">
+    var disqus_config = function () {
+    
+    
+    
+    };
+    (function() {
+        if (["localhost", "127.0.0.1"].indexOf(window.location.hostname) != -1) {
+            document.getElementById('disqus_thread').innerHTML = 'Disqus comments not available by default when the website is previewed locally.';
+            return;
+        }
+        var d = document, s = d.createElement('script'); s.async = true;
+        s.src = '//' + "hugo-theme-stack" + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="https://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+</div>
+
+<style>
+    .disqus-container {
+        background-color: var(--card-background);
+        border-radius: var(--card-border-radius);
+        box-shadow: var(--shadow-l1);
+        padding: var(--card-padding);
+    }
+</style>
+
+<script>
+    window.addEventListener('onColorSchemeChange', (e) => {
+        if (DISQUS) {
+            DISQUS.reset({
+                reload: true
+            });
+        }
+    })
+</script>
+
+    
+
+    <footer class="site-footer">
+    <section class="copyright">
+        &copy; 
+        
+            2020 - 
+        
+        2022 Gao&#39;s Happy Day
+    </section>
+    
+    <section class="powerby">
+        Built with <a href="https://gohugo.io/" target="_blank" rel="noopener">Hugo</a> <br />
+        Theme <b><a href="https://github.com/CaiJimmy/hugo-theme-stack" target="_blank" rel="noopener" data-version="3.2.0">Stack</a></b> designed by <a href="https://jimmycai.com" target="_blank" rel="noopener">Jimmy</a>
+    </section>
+</footer>
+
+
+    
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+    
+    <div class="pswp__bg"></div>
+
+    
+    <div class="pswp__scroll-wrap">
+
+        
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+
+        
+        <div class="pswp__ui pswp__ui--hidden">
+
+            <div class="pswp__top-bar">
+
+                
+
+                <div class="pswp__counter"></div>
+
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+
+                <button class="pswp__button pswp__button--share" title="Share"></button>
+
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+
+                
+                
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                        <div class="pswp__preloader__cut">
+                            <div class="pswp__preloader__donut"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div>
+            </div>
+
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div><script 
+                src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js"integrity="sha256-ePwmChbbvXbsO02lbM3HoHbSHTHFAeChekF1xKJdleo="crossorigin="anonymous"
+                defer="true"
+                >
+            </script><script 
+                src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js"integrity="sha256-UKkzOn/w1mBxRmLLGrSeyB4e1xbrp4xylgAWb3M42pU="crossorigin="anonymous"
+                defer="true"
+                >
+            </script><link 
+                rel="stylesheet" 
+                href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.css"integrity="sha256-c0uckgykQ9v5k&#43;IqViZOZKc47Jn7KQil4/MP3ySA3F8="crossorigin="anonymous"
+            ><link 
+                rel="stylesheet" 
+                href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.css"integrity="sha256-SBLU4vv6CA6lHsZ1XyTdhyjJxCjPif/TRkjnsyGAGnE="crossorigin="anonymous"
+            >
+
+            </main>
+    
+        <aside class="sidebar right-sidebar sticky">
+            <section class="widget archives">
+                <div class="widget-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-hash" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <line x1="5" y1="9" x2="19" y2="9" />
+  <line x1="5" y1="15" x2="19" y2="15" />
+  <line x1="11" y1="4" x2="7" y2="20" />
+  <line x1="17" y1="4" x2="13" y2="20" />
+</svg>
+
+
+
+                </div>
+                <h2 class="widget-title section-title">Table of contents</h2>
+                
+                <div class="widget--toc">
+                    <nav id="TableOfContents">
+  <ol>
+    <li><a href="#从缺点找灵感">从缺点找灵感</a></li>
+    <li><a href="#高性能的网络api应该是什么样的">高性能的网络API应该是什么样的？</a>
+      <ol>
+        <li><a href="#尽量少的内存拷贝">尽量少的内存拷贝</a></li>
+        <li><a href="#异步操作">异步操作</a></li>
+        <li><a href="#direct-hardware-access">Direct Hardware Access</a></li>
+      </ol>
+    </li>
+    <li><a href="#那应该怎么设计呢">那应该怎么设计呢？</a>
+      <ol>
+        <li><a href="#更少的参数">更少的参数</a></li>
+        <li><a href="#更少的loop和分支">更少的LOOP和分支</a></li>
+        <li><a href="#command-formatting">Command Formatting</a></li>
+        <li><a href="#memory-footprint">Memory Footprint</a></li>
+        <li><a href="#communication-resources">Communication Resources</a>
+          <ol>
+            <li><a href="#共享接收队列">共享接收队列</a></li>
+            <li><a href="#多接收缓冲区">多接收缓冲区</a></li>
+          </ol>
+        </li>
+        <li><a href="#optimal-hardware-allocation">Optimal Hardware Allocation</a>
+          <ol>
+            <li><a href="#sharing-command-queues">Sharing Command Queues</a></li>
+            <li><a href="#multiple-queues">Multiple Queues</a></li>
+          </ol>
+        </li>
+        <li><a href="#ordering">Ordering</a>
+          <ol>
+            <li><a href="#messages">Messages</a></li>
+            <li><a href="#data">Data</a></li>
+            <li><a href="#completions">Completions</a></li>
+          </ol>
+        </li>
+      </ol>
+    </li>
+    <li><a href="#ofi-architecture">OFI Architecture</a></li>
+  </ol>
+</nav>
+                </div>
+            </section>
+        </aside>
+    
+
+        </div>
+        <script 
+                src="https://cdn.jsdelivr.net/npm/node-vibrant@3.1.5/dist/vibrant.min.js"integrity="sha256-5NovOZc4iwiAWTYIFiIM7DxKUXKWvpVEuMEPLzcm5/g="crossorigin="anonymous"
+                defer="false"
+                >
+            </script><script type="text/javascript" src="/ts/main.js" defer></script>
+<script>
+    (function () {
+        const customFont = document.createElement('link');
+        customFont.href = "https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap";
+
+        customFont.type = "text/css";
+        customFont.rel = "stylesheet";
+
+        document.head.appendChild(customFont);
+    }());
+</script>
+
+    </body>
+</html>

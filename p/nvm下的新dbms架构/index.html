@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="en-us">
+    <head><meta charset='utf-8'>
+<meta name='viewport' content='width=device-width, initial-scale=1'><meta name='description' content='NVM下的新DBMS架构'><title>NVM下的新DBMS架构（VMM角度应用NVM，only NVM）</title>
+
+<link rel='canonical' href='https://gao377020481.github.io/p/nvm%E4%B8%8B%E7%9A%84%E6%96%B0dbms%E6%9E%B6%E6%9E%84/'>
+
+<link rel="stylesheet" href="/scss/style.min.css"><meta property='og:title' content='NVM下的新DBMS架构（VMM角度应用NVM，only NVM）'>
+<meta property='og:description' content='NVM下的新DBMS架构'>
+<meta property='og:url' content='https://gao377020481.github.io/p/nvm%E4%B8%8B%E7%9A%84%E6%96%B0dbms%E6%9E%B6%E6%9E%84/'>
+<meta property='og:site_name' content='Gao&#39;s Happy Day'>
+<meta property='og:type' content='article'><meta property='article:section' content='Post' /><meta property='article:tag' content='存储' /><meta property='article:published_time' content='2021-12-14T00:00:00&#43;00:00'/><meta property='article:modified_time' content='2021-12-14T00:00:00&#43;00:00'/><meta property='og:image' content='https://gao377020481.github.io/p/nvm%E4%B8%8B%E7%9A%84%E6%96%B0dbms%E6%9E%B6%E6%9E%84/450.jpg' />
+<meta name="twitter:title" content="NVM下的新DBMS架构（VMM角度应用NVM，only NVM）">
+<meta name="twitter:description" content="NVM下的新DBMS架构"><meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:image" content='https://gao377020481.github.io/p/nvm%E4%B8%8B%E7%9A%84%E6%96%B0dbms%E6%9E%B6%E6%9E%84/450.jpg' />
+    </head>
+    <body class="
+    article-page has-toc
+">
+    <script>
+        (function() {
+            const colorSchemeKey = 'StackColorScheme';
+            if(!localStorage.getItem(colorSchemeKey)){
+                localStorage.setItem(colorSchemeKey, "auto");
+            }
+        })();
+    </script><script>
+    (function() {
+        const colorSchemeKey = 'StackColorScheme';
+        const colorSchemeItem = localStorage.getItem(colorSchemeKey);
+        const supportDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches === true;
+
+        if (colorSchemeItem == 'dark' || colorSchemeItem === 'auto' && supportDarkMode) {
+            
+
+            document.documentElement.dataset.scheme = 'dark';
+        } else {
+            document.documentElement.dataset.scheme = 'light';
+        }
+    })();
+</script>
+<div class="container main-container flex 
+    
+        extended
+    
+">
+    
+        <div id="article-toolbar">
+            <a href="https://gao377020481.github.io" class="back-home">
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-chevron-left" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <polyline points="15 6 9 12 15 18" />
+</svg>
+
+
+
+                <span>Back</span>
+            </a>
+        </div>
+    
+<main class="main full-width">
+    <article class="has-image main-article">
+    <header class="article-header">
+        <div class="article-image">
+            <a href="/p/nvm%E4%B8%8B%E7%9A%84%E6%96%B0dbms%E6%9E%B6%E6%9E%84/">
+                <img src="/p/nvm%E4%B8%8B%E7%9A%84%E6%96%B0dbms%E6%9E%B6%E6%9E%84/450_hu6a236b509d40a20723f23eba9bde37c2_4792235_800x0_resize_q75_box.jpg"
+                        srcset="/p/nvm%E4%B8%8B%E7%9A%84%E6%96%B0dbms%E6%9E%B6%E6%9E%84/450_hu6a236b509d40a20723f23eba9bde37c2_4792235_800x0_resize_q75_box.jpg 800w, /p/nvm%E4%B8%8B%E7%9A%84%E6%96%B0dbms%E6%9E%B6%E6%9E%84/450_hu6a236b509d40a20723f23eba9bde37c2_4792235_1600x0_resize_q75_box.jpg 1600w"
+                        width="800" 
+                        height="560" 
+                        loading="lazy"
+                        alt="Featured image of post NVM下的新DBMS架构（VMM角度应用NVM，only NVM）" />
+                
+            </a>
+        </div>
+    
+
+    <div class="article-details">
+    
+    <header class="article-category">
+        
+            <a href="/categories/%E5%AD%98%E5%82%A8/" style="background-color: #2a9d8f; color: #fff;">
+                存储
+            </a>
+        
+    </header>
+    
+
+    <h2 class="article-title">
+        <a href="/p/nvm%E4%B8%8B%E7%9A%84%E6%96%B0dbms%E6%9E%B6%E6%9E%84/">NVM下的新DBMS架构（VMM角度应用NVM，only NVM）</a>
+    </h2>
+
+    
+    <h3 class="article-subtitle">
+        NVM下的新DBMS架构
+    </h3>
+    
+
+    
+    <footer class="article-time">
+        
+            <div>
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-calendar-time" width="56" height="56" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <path d="M11.795 21h-6.795a2 2 0 0 1 -2 -2v-12a2 2 0 0 1 2 -2h12a2 2 0 0 1 2 2v4" />
+  <circle cx="18" cy="18" r="4" />
+  <path d="M15 3v4" />
+  <path d="M7 3v4" />
+  <path d="M3 11h16" />
+  <path d="M18 16.496v1.504l1 1" />
+</svg>
+                <time class="article-time--published">Dec 14, 2021</time>
+            </div>
+        
+
+        
+            <div>
+                <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-clock" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="12" r="9" />
+  <polyline points="12 7 12 12 15 15" />
+</svg>
+
+
+
+                <time class="article-time--reading">
+                    1 minute read
+                </time>
+            </div>
+        
+    </footer>
+    
+</div>
+</header>
+
+    <section class="article-content">
+    <p>原文：Let’s Talk About Storage &amp; Recovery Methods for Non-Volatile Memory Database Systems</p>
+<p>cmu几个大佬在16年的文章，主要讨论的是完全的NVM下的优化，偏向于应用allocator而非FS，当然他也模糊了两者之间的概念，得益于NVM的nonvolatile，allocator也能实现naming，使用固定指针存到固定位置就行（FS里当然是地址开始处由SB提供信息了）。</p>
+<h2 id="background">background</h2>
+<p>OLTP的增多，简单就是数据增删改增多。所以需要优化DBMS。但是DBMS一直以来都在权衡VM(volatile memory)和NVM(non-volatile memory)，因为他们自身的特性。DRAM作为VM可以按字节寻址，具有很高的读写性能，SSD/HDD等NVM只能按block寻址，随机写的性能也很差，一般都需要利用其顺序写速度快的特性来做优化(LSM in leveldb/rocksdb)。这里有一点：server里40%的能源都被flash DRAM用掉，DRAM需要一直刷新，即使这片数据不用也要刷新，不刷新就消失了。而SSD/HDD这些的缺点就不用说了，很慢，且写放大读放大都存在。</p>
+<p>NVM是个概念，有一系列的具体实现技术，他就是兼具DRAM的性能和寻址又掉电保留数据。目前的DBMS都没有好好利用这个东西：</p>
+<p>磁盘型DBMS如mysql orcal在内存中有一个cache，积累一下然后去顺序的以block写入磁盘，内存型DBMS如redis voltdb都有自己的持久化策略来缓和DRAM的易失性。这些多余的组件在NVM中都没必要。</p>
+<p>这篇文章是讲一种只使用NVM的情况下的DBMS，不是DRAM和NVM混合架构也不是只用NVM做log(nova就有点这个意思)。</p>
+<p>说一下模拟：</p>
+<p>使用的是intel的一个工具，有一个microcode，他会用dram模拟nvm，当nvm需要停顿的时候就让cpustall。（ The microcode estimates the additional cycles that the CPU would have to wait if DRAM is replaced by slower NVM and then stalls the CPU for those cycles. ）</p>
+<p>直接用libnuma来提供malloc，然后用fence来确保数据不会在cache中停留而是直接进入NVM。
+文件系统也有对应的api，一个基于byte-addressable的FS。当然IO还是要过VFS  <strong>tip</strong>：基于mmap可以不过VFS，特殊的mmap甚至可以掠过kernel里的page cache直接写数据到disk（NVMM）进一步加快速度。</p>
+<p>这里用memory allocator，但是restart的时候不好找到数据，文件系统有superblock可以找到inode数据结构获取文件目录结构信息，memory没办法。所以改进一下：NVM-aware Memory Allocator</p>
+<ol>
+<li>虚拟内存到NVM的映射是固定的，基于此保存指向这个地址的pointer，每次重启拿到这个pointer就可以获取到之前的数据信息。</li>
+<li>避免数据在cache中停留引发的不一致，依次使用clflush将cache中的data写回数据，再用SFENCE确保clflush在这里完成（对所有processor可见，因为你现在把cache刷回去了那你得让cache刷回到所有proccsor，cache分级的，每个processor都有自己的呢，我理解实现上把cacheline置为steal就可以了），之后提交事务，这就是sync原语。</li>
+</ol>
+<h2 id="参照">参照</h2>
+<p>三个存储引擎类型： (1) inplace updates engine, (2) copy-on-write updates engine, and (3） log-structured updates engine</p>
+<p>从两部分来描述： 1. 事务怎么样作用 2. 怎么处理crash</p>
+<p>当然这些都是没针对NVM优化过的</p>
+<h3 id="in-place-updates-engine">In-Place Updates Engine</h3>
+<p><figure 
+	>
+	<a href="/post/NVM%e4%b8%8b%e7%9a%84%e6%96%b0DBMS%e6%9e%b6%e6%9e%84/Inp.png" >
+		<img src="/post/NVM%e4%b8%8b%e7%9a%84%e6%96%b0DBMS%e6%9e%b6%e6%9e%84/Inp.png"
+			
+			
+			
+			loading="lazy"
+			>
+	</a>
+	
+</figure></p>
+<p>像VoltDB 这样的内存型数据库，直接在原位置更新数据没有buffer pool。</p>
+<p>Block Pool分两种，一种定长一种变长，block大于8Byte就用变长的pool</p>
+<p>还有一个Block lookup table用于找到block，对于变长的block，先通过Block lookup table在定长pool里找到其在变长Pool里的地址，然后再进变长pool找到真正的block</p>
+<p>一般使用WAL（write ahead log）来在事务change前记录信息：
+the transaction identifier, the table modified, the tuple identifier, and the before/after tuple images depending on the operation</p>
+<p>ARIES是比较有名的协议，他会定期做checkpoint也就是snapshot，每次恢复使用最新的checkpoint结合WAL里的commit的log来将DB恢复到断开之前的状态。</p>
+<h3 id="copy-on-write-updates-engine">Copy-on-Write Updates Engine</h3>
+<p><figure 
+	>
+	<a href="/post/NVM%e4%b8%8b%e7%9a%84%e6%96%b0DBMS%e6%9e%b6%e6%9e%84/cow.png" >
+		<img src="/post/NVM%e4%b8%8b%e7%9a%84%e6%96%b0DBMS%e6%9e%b6%e6%9e%84/cow.png"
+			
+			
+			
+			loading="lazy"
+			>
+	</a>
+	
+</figure></p>
+<p>page cache加速查找，LRU来更新cache，最小单位是leaf，结构在leaf page layout里。</p>
+<p>需要修改时，复制整个directory（LMDB’s copy-on-write B+trees使用特殊技巧，只复制从leaf到root路径上的nodes，其他nodes由dirty directory和current directory共享）。</p>
+<p>复制完出现dirty directory之后开始修改，分两步：</p>
+<ol>
+<li>在dirty directory上修改，指向新的tuple</li>
+<li>事务commit之后，将master record指向dirty directory这时dirty就变成current了</li>
+</ol>
+<p>master record是持久化在文件里的，他在某个特殊offset处。</p>
+<p>这种设计存在写放大（总是要复制，写新的，再丢掉旧的），对NVM来说磨损太大。但他恢复时直接用旧的就行，因为旧的里肯定是commit过的数据，</p>
+<h3 id="log-structured-updates-engine">Log-structured Updates Engine</h3>
+<p><figure 
+	>
+	<a href="/post/NVM%e4%b8%8b%e7%9a%84%e6%96%b0DBMS%e6%9e%b6%e6%9e%84/log.png" >
+		<img src="/post/NVM%e4%b8%8b%e7%9a%84%e6%96%b0DBMS%e6%9e%b6%e6%9e%84/log.png"
+			
+			
+			
+			loading="lazy"
+			>
+	</a>
+	
+</figure></p>
+<p>典型的：leveldb和他的“子集”rocksdb</p>
+<p>放个leveldb的arch省个事。。</p>
+<p><figure 
+	>
+	<a href="/post/NVM%e4%b8%8b%e7%9a%84%e6%96%b0DBMS%e6%9e%b6%e6%9e%84/leveldb.png" >
+		<img src="/post/NVM%e4%b8%8b%e7%9a%84%e6%96%b0DBMS%e6%9e%b6%e6%9e%84/leveldb.png"
+			
+			
+			
+			loading="lazy"
+			>
+	</a>
+	
+</figure></p>
+<p>memtable到达指定大小就开始打包成为level0的一部分去持久化</p>
+<p>各级level数量到达指定大小就开始打包向下一级迁移（compaction）</p>
+<p>这一设计有利于顺序写，但是存在读放大，因为根据key找目标在哪一个sst就很可能需要好几次，这个是比较暴力的，用bloom filter可以快速排除sst但是还是得去触发到FS的IO操作没法在一次读操作里完成。</p>
+<h2 id="针对nvm的优化版本">针对NVM的优化版本</h2>
+<h3 id="in-place-updates-engine-1">In-Place Updates Engine</h3>
+<p><figure 
+	>
+	<a href="/post/NVM%e4%b8%8b%e7%9a%84%e6%96%b0DBMS%e6%9e%b6%e6%9e%84/inp1.png" >
+		<img src="/post/NVM%e4%b8%8b%e7%9a%84%e6%96%b0DBMS%e6%9e%b6%e6%9e%84/inp1.png"
+			
+			
+			
+			loading="lazy"
+			>
+	</a>
+	
+</figure></p>
+<ol>
+<li>NV的B+树存储索引，restart的时候不用再重建</li>
+<li>WAL中的log只需要保存指针，不需要保存一大块的数据tuple image，因为指针指向的数据就存储在NVM中，不会因掉电失去。</li>
+</ol>
+<p>显然需要先写WAL再写data才能保证事务。</p>
+<p>且log可以是一个链表，因为随机写的效率不再是问题。</p>
+<h3 id="copy-on-write-updates-engine-1">Copy-on-Write Updates Engine</h3>
+<p><figure 
+	>
+	<a href="/post/NVM%e4%b8%8b%e7%9a%84%e6%96%b0DBMS%e6%9e%b6%e6%9e%84/cow1.png" >
+		<img src="/post/NVM%e4%b8%8b%e7%9a%84%e6%96%b0DBMS%e6%9e%b6%e6%9e%84/cow1.png"
+			
+			
+			
+			loading="lazy"
+			>
+	</a>
+	
+</figure></p>
+<p>使用了非易失性的copy-on-write B+tree</p>
+<p>直接持久化拷贝后的tuple副本其实就是拷贝到NVM中，并且在The dirty directory中保存非易失性指针-》也是在nvm中</p>
+<p>用更轻量级的持久化机制来持久化copy-on-write B+tree中的更新操作</p>
+<h3 id="log-structured-updates-engine-1">Log-structured Updates Engine</h3>
+<p><figure 
+	>
+	<a href="/post/NVM%e4%b8%8b%e7%9a%84%e6%96%b0DBMS%e6%9e%b6%e6%9e%84/log1.png" >
+		<img src="/post/NVM%e4%b8%8b%e7%9a%84%e6%96%b0DBMS%e6%9e%b6%e6%9e%84/log1.png"
+			
+			
+			
+			loading="lazy"
+			>
+	</a>
+	
+</figure></p>
+<p>相比于之前使用sst还要分层来增加顺序性（sst）和减少读放大（compaction和分层），现在直接不需要sst，所有到了一定大小的memtable直接设置一个不可变位，变成immutable memtable就行，这些immutable memtable也可以再进行compaction的，同样每一个immutable memtable也有自己的bloom filter。 注意到memtable也在NVM中，那他就是非易失的，这就很像steal语义，uncommited的tuple被持久化了，那就需要再restart的时候吧这个uncommited的undo掉，所以这里的log是undolog。 且因为memtable本来就持久化在NVM中，不需要对他进行重建。</p>
+
+</section>
+
+
+    <footer class="article-footer">
+    
+    <section class="article-tags">
+        
+            <a href="/tags/%E5%AD%98%E5%82%A8/">存储</a>
+        
+    </section>
+
+
+    
+    <section class="article-copyright">
+        <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-copyright" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <circle cx="12" cy="12" r="9" />
+  <path d="M14.5 9a3.5 4 0 1 0 0 6" />
+</svg>
+
+
+
+        <span>Licensed under CC BY-NC-SA 4.0</span>
+    </section>
+    </footer>
+
+
+    
+</article>
+
+    <aside class="related-contents--wrapper">
+    
+    
+        <h2 class="section-title">Related contents</h2>
+        <div class="related-contents">
+            <div class="flex article-list--tile">
+                
+                    
+<article class="has-image">
+    <a href="/p/nvm%E4%B8%8Bsoftware%E4%BC%98%E5%8C%96/">
+        
+        
+            <div class="article-image">
+                <img src="/p/nvm%E4%B8%8Bsoftware%E4%BC%98%E5%8C%96/392.51c5f45fa1ed1ecc7d7e8e2f8a9af5b5_huac36e2c85ed8649a34771cb2c2f77ce2_7021583_250x150_fill_q75_box_smart1.jpg" 
+                        width="250" 
+                        height="150" 
+                        loading="lazy" 
+                        data-key="NVM下software优化" 
+                        data-hash="md5-UcX0X6HtHsx9fo4vipr1tQ==">
+                
+            </div>
+        
+
+        <div class="article-details">
+            <h2 class="article-title">NVM下software优化（FS角度应用NVM，NVM &#43; DRAM）</h2>
+        </div>
+    </a>
+</article>
+                
+                    
+<article class="has-image">
+    <a href="/p/%E5%AD%98%E5%82%A8%E9%A2%86%E5%9F%9F%E6%A6%82%E5%BF%B5%E6%95%B4%E7%90%86/">
+        
+        
+            <div class="article-image">
+                <img src="/p/%E5%AD%98%E5%82%A8%E9%A2%86%E5%9F%9F%E6%A6%82%E5%BF%B5%E6%95%B4%E7%90%86/623.0d3a1f01064ba46bf6d2cdd97a45d973_hu0b28264e11eb4142d69cccd53820e776_26598711_250x150_fill_q75_box_smart1.jpg" 
+                        width="250" 
+                        height="150" 
+                        loading="lazy" 
+                        data-key="存储领域概念整理" 
+                        data-hash="md5-DTofAQZLpGv20s3ZekXZcw==">
+                
+            </div>
+        
+
+        <div class="article-details">
+            <h2 class="article-title">存储领域概念整理</h2>
+        </div>
+    </a>
+</article>
+                
+            </div>
+        </div>
+    
+</aside>
+
+     
+     
+        
+    <div class="disqus-container">
+    <div id="disqus_thread"></div>
+<script type="application/javascript">
+    var disqus_config = function () {
+    
+    
+    
+    };
+    (function() {
+        if (["localhost", "127.0.0.1"].indexOf(window.location.hostname) != -1) {
+            document.getElementById('disqus_thread').innerHTML = 'Disqus comments not available by default when the website is previewed locally.';
+            return;
+        }
+        var d = document, s = d.createElement('script'); s.async = true;
+        s.src = '//' + "hugo-theme-stack" + '.disqus.com/embed.js';
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="https://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+</div>
+
+<style>
+    .disqus-container {
+        background-color: var(--card-background);
+        border-radius: var(--card-border-radius);
+        box-shadow: var(--shadow-l1);
+        padding: var(--card-padding);
+    }
+</style>
+
+<script>
+    window.addEventListener('onColorSchemeChange', (e) => {
+        if (DISQUS) {
+            DISQUS.reset({
+                reload: true
+            });
+        }
+    })
+</script>
+
+    
+
+    <footer class="site-footer">
+    <section class="copyright">
+        &copy; 
+        
+            2020 - 
+        
+        2022 Gao&#39;s Happy Day
+    </section>
+    
+    <section class="powerby">
+        Built with <a href="https://gohugo.io/" target="_blank" rel="noopener">Hugo</a> <br />
+        Theme <b><a href="https://github.com/CaiJimmy/hugo-theme-stack" target="_blank" rel="noopener" data-version="3.2.0">Stack</a></b> designed by <a href="https://jimmycai.com" target="_blank" rel="noopener">Jimmy</a>
+    </section>
+</footer>
+
+
+    
+<div class="pswp" tabindex="-1" role="dialog" aria-hidden="true">
+
+    
+    <div class="pswp__bg"></div>
+
+    
+    <div class="pswp__scroll-wrap">
+
+        
+        <div class="pswp__container">
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+            <div class="pswp__item"></div>
+        </div>
+
+        
+        <div class="pswp__ui pswp__ui--hidden">
+
+            <div class="pswp__top-bar">
+
+                
+
+                <div class="pswp__counter"></div>
+
+                <button class="pswp__button pswp__button--close" title="Close (Esc)"></button>
+
+                <button class="pswp__button pswp__button--share" title="Share"></button>
+
+                <button class="pswp__button pswp__button--fs" title="Toggle fullscreen"></button>
+
+                <button class="pswp__button pswp__button--zoom" title="Zoom in/out"></button>
+
+                
+                
+                <div class="pswp__preloader">
+                    <div class="pswp__preloader__icn">
+                        <div class="pswp__preloader__cut">
+                            <div class="pswp__preloader__donut"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pswp__share-modal pswp__share-modal--hidden pswp__single-tap">
+                <div class="pswp__share-tooltip"></div>
+            </div>
+
+            <button class="pswp__button pswp__button--arrow--left" title="Previous (arrow left)">
+            </button>
+
+            <button class="pswp__button pswp__button--arrow--right" title="Next (arrow right)">
+            </button>
+
+            <div class="pswp__caption">
+                <div class="pswp__caption__center"></div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div><script 
+                src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.min.js"integrity="sha256-ePwmChbbvXbsO02lbM3HoHbSHTHFAeChekF1xKJdleo="crossorigin="anonymous"
+                defer="true"
+                >
+            </script><script 
+                src="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe-ui-default.min.js"integrity="sha256-UKkzOn/w1mBxRmLLGrSeyB4e1xbrp4xylgAWb3M42pU="crossorigin="anonymous"
+                defer="true"
+                >
+            </script><link 
+                rel="stylesheet" 
+                href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/default-skin/default-skin.css"integrity="sha256-c0uckgykQ9v5k&#43;IqViZOZKc47Jn7KQil4/MP3ySA3F8="crossorigin="anonymous"
+            ><link 
+                rel="stylesheet" 
+                href="https://cdn.jsdelivr.net/npm/photoswipe@4.1.3/dist/photoswipe.css"integrity="sha256-SBLU4vv6CA6lHsZ1XyTdhyjJxCjPif/TRkjnsyGAGnE="crossorigin="anonymous"
+            >
+
+            </main>
+    
+        <aside class="sidebar right-sidebar sticky">
+            <section class="widget archives">
+                <div class="widget-icon">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="icon icon-tabler icon-tabler-hash" width="24" height="24" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" fill="none" stroke-linecap="round" stroke-linejoin="round">
+  <path stroke="none" d="M0 0h24v24H0z"/>
+  <line x1="5" y1="9" x2="19" y2="9" />
+  <line x1="5" y1="15" x2="19" y2="15" />
+  <line x1="11" y1="4" x2="7" y2="20" />
+  <line x1="17" y1="4" x2="13" y2="20" />
+</svg>
+
+
+
+                </div>
+                <h2 class="widget-title section-title">Table of contents</h2>
+                
+                <div class="widget--toc">
+                    <nav id="TableOfContents">
+  <ol>
+    <li><a href="#background">background</a></li>
+    <li><a href="#参照">参照</a>
+      <ol>
+        <li><a href="#in-place-updates-engine">In-Place Updates Engine</a></li>
+        <li><a href="#copy-on-write-updates-engine">Copy-on-Write Updates Engine</a></li>
+        <li><a href="#log-structured-updates-engine">Log-structured Updates Engine</a></li>
+      </ol>
+    </li>
+    <li><a href="#针对nvm的优化版本">针对NVM的优化版本</a>
+      <ol>
+        <li><a href="#in-place-updates-engine-1">In-Place Updates Engine</a></li>
+        <li><a href="#copy-on-write-updates-engine-1">Copy-on-Write Updates Engine</a></li>
+        <li><a href="#log-structured-updates-engine-1">Log-structured Updates Engine</a></li>
+      </ol>
+    </li>
+  </ol>
+</nav>
+                </div>
+            </section>
+        </aside>
+    
+
+        </div>
+        <script 
+                src="https://cdn.jsdelivr.net/npm/node-vibrant@3.1.5/dist/vibrant.min.js"integrity="sha256-5NovOZc4iwiAWTYIFiIM7DxKUXKWvpVEuMEPLzcm5/g="crossorigin="anonymous"
+                defer="false"
+                >
+            </script><script type="text/javascript" src="/ts/main.js" defer></script>
+<script>
+    (function () {
+        const customFont = document.createElement('link');
+        customFont.href = "https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&display=swap";
+
+        customFont.type = "text/css";
+        customFont.rel = "stylesheet";
+
+        document.head.appendChild(customFont);
+    }());
+</script>
+
+    </body>
+</html>

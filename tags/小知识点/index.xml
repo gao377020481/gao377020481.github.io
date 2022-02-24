@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>小知识点 on Gao&#39;s Happy Day</title>
+    <link>https://gao377020481.github.io/tags/%E5%B0%8F%E7%9F%A5%E8%AF%86%E7%82%B9/</link>
+    <description>Recent content in 小知识点 on Gao&#39;s Happy Day</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Mon, 01 Mar 2021 00:00:00 +0000</lastBuildDate><atom:link href="https://gao377020481.github.io/tags/%E5%B0%8F%E7%9F%A5%E8%AF%86%E7%82%B9/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>micro 和 marco benchmarks</title>
+      <link>https://gao377020481.github.io/p/benchmark/</link>
+      <pubDate>Mon, 01 Mar 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://gao377020481.github.io/p/benchmark/</guid>
+      <description>Micro-benchmarks (repeatable sections of code) can be useful but may not represent real-world behavior. Factors that can skew micro-benchmark performance include Java virtual machine warm-up time, and global code interactions.
+Macro-benchmarks (repeatable test sequences from the user point of view) test your system as actual end users will see it.</description>
+    </item>
+    
+  </channel>
+</rss>

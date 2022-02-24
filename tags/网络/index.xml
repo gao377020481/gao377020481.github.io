@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>网络 on Gao&#39;s Happy Day</title>
+    <link>https://gao377020481.github.io/tags/%E7%BD%91%E7%BB%9C/</link>
+    <description>Recent content in 网络 on Gao&#39;s Happy Day</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Fri, 12 Nov 2021 00:00:00 +0000</lastBuildDate><atom:link href="https://gao377020481.github.io/tags/%E7%BD%91%E7%BB%9C/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>OFI/libfabric</title>
+      <link>https://gao377020481.github.io/p/ofi-for-hpc/</link>
+      <pubDate>Fri, 12 Nov 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://gao377020481.github.io/p/ofi-for-hpc/</guid>
+      <description>之前一直很好奇，在超算里（或大规模的集群里），是怎么减少network传输的损耗的，最近项目中接触到了mecury这个rpc框架，他依赖于OFI、libfabric这个网络框架来做集群内的高性能网络传输。
+OFI相比于普通的内核TCP/IP协议栈的优化思路与用户态协议栈有异曲同工之妙，准备好好写一下这篇笔记，先从内核里的TCP/IP协议栈的缺点开始，到优化思路与实现，再看看能不能学习一下ofi实现的trick。开个坑先，慢慢写。。
+从缺点找灵感 TCP/IP 缺点
+ 用于提供可靠性的header占用很多带宽 同步的话耗时，异步的话耗空间（内核里的缓冲区）拷贝也耗时  高性能的网络API应该是什么样的？ 尽量少的内存拷贝 两点：
+ 用户提供buffer，与协议栈用一个buffer 建立一个流量控制机制  异步操作 两种策略：
+ 中断和信号，这种机制会打断正在运行的程序，evict CPU cache，而且一个随时能接受信号还不影响自己工作的程序就比较难开发 事件queue， 来了就进queue  Direct Hardware Access 主要两种思路：
+ 越过kernel，直接与网卡的buffer交互（代表DPDK） 硬件软件配合来在用户空间共享同一块地址空间作为buffer（RDMA）  那应该怎么设计呢？ 先抄来个需要的interface：
+/* Notable socket function prototypes *//* &amp;quot;control&amp;quot; functions */int socket(int domain, int type, int protocol);int bind(int socket, const struct sockaddr *addr, socklen_t addrlen);int listen(int socket, int backlog);int accept(int socket, struct sockaddr *addr, socklen_t *addrlen);int connect(int socket, const struct sockaddr *addr, socklen_t addrlen);int shutdown(int socket, int how);int close(int socket); /* &amp;quot;fast path&amp;quot; data operations - send only (receive calls not shown) */ssize_t send(int socket, const void *buf, size_t len, int flags);ssize_t sendto(int socket, const void *buf, size_t len, int flags,const struct sockaddr *dest_addr, socklen_t addrlen);ssize_t sendmsg(int socket, const struct msghdr *msg, int flags);ssize_t write(int socket, const void *buf, size_t count);ssize_t writev(int socket, const struct iovec *iov, int iovcnt);/* &amp;quot;indirect&amp;quot; data operations */int poll(struct pollfd *fds, nfds_t nfds, int timeout);int select(int nfds, fd_set *readfds, fd_set *writefds,fd_set *exceptfds, struct timeval *timeout); 首先来看看这几类都有什么目标？</description>
+    </item>
+    
+  </channel>
+</rss>

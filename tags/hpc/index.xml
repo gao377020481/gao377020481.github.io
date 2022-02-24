@@ -6,7 +6,53 @@
     <description>Recent content in HPC on Gao&#39;s Happy Day</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Fri, 17 Sep 2021 00:00:00 +0000</lastBuildDate><atom:link href="https://gao377020481.github.io/tags/hpc/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Sat, 12 Feb 2022 00:00:00 +0000</lastBuildDate><atom:link href="https://gao377020481.github.io/tags/hpc/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Mercury初探</title>
+      <link>https://gao377020481.github.io/p/mercury-rpc-framework-for-hpc/</link>
+      <pubDate>Sat, 12 Feb 2022 00:00:00 +0000</pubDate>
+      
+      <guid>https://gao377020481.github.io/p/mercury-rpc-framework-for-hpc/</guid>
+      <description>最近在看HPC领域分布式文件系统，发现代码里用到mercury来提供RPC功能，决定还是循序渐进先把这个框架学习一下。 &amp;lt;主要是报的一些关于mercury的错我看不懂*-*&amp;gt;
+该部分只涉及理论：
+Architecture Network Abstraction Layer 这一层是中间层，向上给Bluk layer和RPC layer提供一致的interface，向下采用插件机制适配不同的网络协议。
+Mercury RPC Layer Mercury Bulk Layer </description>
+    </item>
+    
+    <item>
+      <title>Spectre&amp;Meltdown</title>
+      <link>https://gao377020481.github.io/p/spectremeltdown/</link>
+      <pubDate>Tue, 08 Feb 2022 00:00:00 +0000</pubDate>
+      
+      <guid>https://gao377020481.github.io/p/spectremeltdown/</guid>
+      <description>Spectre&amp;amp;Meltdown
+这是一种利用现代处理器特性来“窃取”内存中重要信息的漏洞。
+Meltdown  诱使CPU在乱序执行的基础上将高权限的data信息放置于cache中  首先有一个数组，直接访问它的第data*4096个index处的元素 这样这个index处的元素会被放进cache中   循环遍历这个数组，当遍历到第data*4096个index处元素时，载入速度明显变快，这就说明这里是当时载入cache的元素 取到data*4096这个index就取到了data  假设data是一个内核内存空间内的数据，我们就get到了机密的内核数据，这都依赖于cpu的乱序执行：
+exception(dont have priority to access))access(array[data*4096])乱序执行使得在指令生效前，access运行在了exception之前，虽然指令未生效（寄存器状态等未变），但cache内却有了array[data*4096]这个元素
+Spectre Spectre基本原理与Meltdown类似，但他更强
+Meltdown一旦被从根本上避免就无法使用，比如内核和用户使用不同的页目录寄存器等
+Spectre并非依赖于乱序执行，而是依赖于分支预测。
+分支预测也会使cpu提前跑一下cpu认为正确的分支，尽管他不一定真的是接下来要执行的，同样会在cache里留下痕迹。
+但他要求代码有如下形式：
+if(index1&amp;lt;array_a_size) {index2=array_a[index1];if(index2 &amp;lt; array_b_size);value = array_b[index2];}通过控制index1的长度，让array_b的特定下标的数据Cacheline被点亮，如果有办法访问一次array_b的全部内容，我们就可以窃取到index1这个值。</description>
+    </item>
+    
+    <item>
+      <title>OFI/libfabric</title>
+      <link>https://gao377020481.github.io/p/ofi-for-hpc/</link>
+      <pubDate>Fri, 12 Nov 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://gao377020481.github.io/p/ofi-for-hpc/</guid>
+      <description>之前一直很好奇，在超算里（或大规模的集群里），是怎么减少network传输的损耗的，最近项目中接触到了mecury这个rpc框架，他依赖于OFI、libfabric这个网络框架来做集群内的高性能网络传输。
+OFI相比于普通的内核TCP/IP协议栈的优化思路与用户态协议栈有异曲同工之妙，准备好好写一下这篇笔记，先从内核里的TCP/IP协议栈的缺点开始，到优化思路与实现，再看看能不能学习一下ofi实现的trick。开个坑先，慢慢写。。
+从缺点找灵感 TCP/IP 缺点
+ 用于提供可靠性的header占用很多带宽 同步的话耗时，异步的话耗空间（内核里的缓冲区）拷贝也耗时  高性能的网络API应该是什么样的？ 尽量少的内存拷贝 两点：
+ 用户提供buffer，与协议栈用一个buffer 建立一个流量控制机制  异步操作 两种策略：
+ 中断和信号，这种机制会打断正在运行的程序，evict CPU cache，而且一个随时能接受信号还不影响自己工作的程序就比较难开发 事件queue， 来了就进queue  Direct Hardware Access 主要两种思路：
+ 越过kernel，直接与网卡的buffer交互（代表DPDK） 硬件软件配合来在用户空间共享同一块地址空间作为buffer（RDMA）  那应该怎么设计呢？ 先抄来个需要的interface：
+/* Notable socket function prototypes *//* &amp;quot;control&amp;quot; functions */int socket(int domain, int type, int protocol);int bind(int socket, const struct sockaddr *addr, socklen_t addrlen);int listen(int socket, int backlog);int accept(int socket, struct sockaddr *addr, socklen_t *addrlen);int connect(int socket, const struct sockaddr *addr, socklen_t addrlen);int shutdown(int socket, int how);int close(int socket); /* &amp;quot;fast path&amp;quot; data operations - send only (receive calls not shown) */ssize_t send(int socket, const void *buf, size_t len, int flags);ssize_t sendto(int socket, const void *buf, size_t len, int flags,const struct sockaddr *dest_addr, socklen_t addrlen);ssize_t sendmsg(int socket, const struct msghdr *msg, int flags);ssize_t write(int socket, const void *buf, size_t count);ssize_t writev(int socket, const struct iovec *iov, int iovcnt);/* &amp;quot;indirect&amp;quot; data operations */int poll(struct pollfd *fds, nfds_t nfds, int timeout);int select(int nfds, fd_set *readfds, fd_set *writefds,fd_set *exceptfds, struct timeval *timeout); 首先来看看这几类都有什么目标？</description>
+    </item>
+    
     <item>
       <title>Openmpi</title>
       <link>https://gao377020481.github.io/p/cmake/</link>
@@ -23,24 +69,6 @@ export PATH=/usr/local/openmpi/bin:$PATH export LD_LIBRARY_PATH=/usr/local/openm
 source /etc/profile 测试
 mpicc --version 写代码测试：hello.c
 #include &amp;lt;stdio.h&amp;gt;#include &amp;#34;mpi.h&amp;#34; int main(int argc, char* argv[]) { int rank, size, len; char version[MPI_MAX_LIBRARY_VERSION_STRING]; MPI_Init(&amp;amp;argc, &amp;amp;argv); MPI_Comm_rank(MPI_COMM_WORLD, &amp;amp;rank); MPI_Comm_size(MPI_COMM_WORLD, &amp;amp;size); MPI_Get_library_version(version, &amp;amp;len); printf(&amp;#34;Hello, world, I am %d of %d, (%s, %d)\n&amp;#34;, rank, size, version, len); MPI_Finalize(); return 0; } 编译并运行,我这里是四核虚拟机</description>
-    </item>
-    
-    <item>
-      <title>Spectre&amp;Meltdown</title>
-      <link>https://gao377020481.github.io/p/spectremeltdown/</link>
-      <pubDate>Wed, 10 Feb 2021 00:00:00 +0000</pubDate>
-      
-      <guid>https://gao377020481.github.io/p/spectremeltdown/</guid>
-      <description>Spectre&amp;amp;Meltdown
-这是一种利用现代处理器特性来“窃取”内存中重要信息的漏洞。
-Meltdown  诱使CPU在乱序执行的基础上将高权限的data信息放置于cache中  首先有一个数组，直接访问它的第data*4096个index处的元素 这样这个index处的元素会被放进cache中   循环遍历这个数组，当遍历到第data*4096个index处元素时，载入速度明显变快，这就说明这里是当时载入cache的元素 取到data*4096这个index就取到了data  假设data是一个内核内存空间内的数据，我们就get到了机密的内核数据，这都依赖于cpu的乱序执行：
-exception(dont have priority to access))access(array[data*4096])乱序执行使得在指令生效前，access运行在了exception之前，虽然指令未生效（寄存器状态等未变），但cache内却有了array[data*4096]这个元素
-Spectre Spectre基本原理与Meltdown类似，但他更强
-Meltdown一旦被从根本上避免就无法使用，比如内核和用户使用不同的页目录寄存器等
-Spectre并非依赖于乱序执行，而是依赖于分支预测。
-分支预测也会使cpu提前跑一下cpu认为正确的分支，尽管他不一定真的是接下来要执行的，同样会在cache里留下痕迹。
-但他要求代码有如下形式：
-if(index1&amp;lt;array_a_size) {index2=array_a[index1];if(index2 &amp;lt; array_b_size);value = array_b[index2];}通过控制index1的长度，让array_b的特定下标的数据Cacheline被点亮，如果有办法访问一次array_b的全部内容，我们就可以窃取到index1这个值。</description>
     </item>
     
   </channel>

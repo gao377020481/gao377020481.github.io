@@ -6,7 +6,19 @@
     <description>Recent content in Posts on Gao&#39;s Happy Day</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Fri, 11 Feb 2022 00:00:00 +0000</lastBuildDate><atom:link href="https://gao377020481.github.io/post/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Sat, 12 Feb 2022 00:00:00 +0000</lastBuildDate><atom:link href="https://gao377020481.github.io/post/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>Mercury初探</title>
+      <link>https://gao377020481.github.io/p/mercury-rpc-framework-for-hpc/</link>
+      <pubDate>Sat, 12 Feb 2022 00:00:00 +0000</pubDate>
+      
+      <guid>https://gao377020481.github.io/p/mercury-rpc-framework-for-hpc/</guid>
+      <description>最近在看HPC领域分布式文件系统，发现代码里用到mercury来提供RPC功能，决定还是循序渐进先把这个框架学习一下。 &amp;lt;主要是报的一些关于mercury的错我看不懂*-*&amp;gt;
+该部分只涉及理论：
+Architecture Network Abstraction Layer 这一层是中间层，向上给Bluk layer和RPC layer提供一致的interface，向下采用插件机制适配不同的网络协议。
+Mercury RPC Layer Mercury Bulk Layer </description>
+    </item>
+    
     <item>
       <title>Gekkofs</title>
       <link>https://gao377020481.github.io/p/gekkofs/</link>
@@ -32,6 +44,24 @@ Server端：GekkoFS daemon  Sever端通过本地的rocksdb来保存文件系统�
       
       <guid>https://gao377020481.github.io/p/%E5%90%91%E9%87%8F%E5%8C%96/</guid>
       <description>Requirements  loop得有可以（ determinable (at run time)）确定的循环次数 loop里不能包含（inline不算）过程调用 loop里不能包含分支 迭代次数也得多 迭代之间最好也没有依赖性 理论上就算有依赖性也可以向量化但是不实用  </description>
+    </item>
+    
+    <item>
+      <title>Spectre&amp;Meltdown</title>
+      <link>https://gao377020481.github.io/p/spectremeltdown/</link>
+      <pubDate>Tue, 08 Feb 2022 00:00:00 +0000</pubDate>
+      
+      <guid>https://gao377020481.github.io/p/spectremeltdown/</guid>
+      <description>Spectre&amp;amp;Meltdown
+这是一种利用现代处理器特性来“窃取”内存中重要信息的漏洞。
+Meltdown  诱使CPU在乱序执行的基础上将高权限的data信息放置于cache中  首先有一个数组，直接访问它的第data*4096个index处的元素 这样这个index处的元素会被放进cache中   循环遍历这个数组，当遍历到第data*4096个index处元素时，载入速度明显变快，这就说明这里是当时载入cache的元素 取到data*4096这个index就取到了data  假设data是一个内核内存空间内的数据，我们就get到了机密的内核数据，这都依赖于cpu的乱序执行：
+exception(dont have priority to access))access(array[data*4096])乱序执行使得在指令生效前，access运行在了exception之前，虽然指令未生效（寄存器状态等未变），但cache内却有了array[data*4096]这个元素
+Spectre Spectre基本原理与Meltdown类似，但他更强
+Meltdown一旦被从根本上避免就无法使用，比如内核和用户使用不同的页目录寄存器等
+Spectre并非依赖于乱序执行，而是依赖于分支预测。
+分支预测也会使cpu提前跑一下cpu认为正确的分支，尽管他不一定真的是接下来要执行的，同样会在cache里留下痕迹。
+但他要求代码有如下形式：
+if(index1&amp;lt;array_a_size) {index2=array_a[index1];if(index2 &amp;lt; array_b_size);value = array_b[index2];}通过控制index1的长度，让array_b的特定下标的数据Cacheline被点亮，如果有办法访问一次array_b的全部内容，我们就可以窃取到index1这个值。</description>
     </item>
     
     <item>
@@ -64,6 +94,73 @@ do i=1,100....end doAlgebraic simplifications 简化算术运算，包括了�
 这个例子里MF比1.0大，1.0在和MF结合后会被舍去，所以第二个结果出来就是0.0了，这是因为浮点运算会先算出精确值然后舍去多余位，所以结合律失效。
 Copy propagation 拷贝出来的变量在后续的使用中可以被原来的变量替代，那就少用一个寄存器。
 x = yc = x + 3d = x + y--------&amp;gt;x = yc = y + 3d = y + y这里x这个变量就不需要了。</description>
+    </item>
+    
+    <item>
+      <title>NVM下software优化（FS角度应用NVM，NVM &#43; DRAM）</title>
+      <link>https://gao377020481.github.io/p/nvm%E4%B8%8Bsoftware%E4%BC%98%E5%8C%96/</link>
+      <pubDate>Thu, 16 Dec 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://gao377020481.github.io/p/nvm%E4%B8%8Bsoftware%E4%BC%98%E5%8C%96/</guid>
+      <description>原文：System Software for Persistent Memory
+这篇文章分析了NVM出现的情况下，软件层面（主要是内存和文件系统）的一些变革和适配。14年的文章了，intel的人参与，显然在傲腾研发的时候发出来的。
+后面的nova是借鉴了这里的思路的，堆砖砌瓦，总觉得这种知识的传承和发掘很有趣。。。
+这篇文章搞了个PMFS，发掘了fs在NVM上的优化思路。（细粒度logging和大规模的页IO）
+背景 先来回顾一下PM发展，从一开始将NAND flash与DRAM混合使用（NVDIMM），掉电时放入NAND flash，上电再从NAND flash中加载出来到DRAM中。（电池+NAND Flash+DRAM）这样的做法，但是因为受限于NAND，这玩意还是只能block addressable。想要byte-addressable还得看NVM（PCM等做法）。对于PM主要两种思路：1. 扩展虚拟内存管理器来将PM当内存用2. 把PM当块设备用（FS里，ext4的做法）3.直接做个文件系统，跳出块设备的层来管理PM。
+于是就有了PMFS：这是个POSIX semantic的fs，有一些针对NVM的特殊优化。
+PMFS:
+ API完善（POSIX-compliant file system interface），所以向后兼容老的应用程序。 轻量级文件系统，绕过VFS的块设备层，避免了繁杂耗时的内核发生的拷贝（page cache），过程调用等 优化的mmap，绕过page cache（需要先从disk-&amp;gt;SSD拷贝到memory-&amp;gt;DRAM），这是为了加速，但在NVM里就不需要，直接从NVM映射用户空间页表就可以，应用需要的时候直接通过虚拟内存就能寻址到  . PMFS also implements other features, such as transparent large page support [18], to further optimize memory-mapped I/O. &amp;mdash;有待研究
+挑战：
+ 现在的内存管理器把PM作为一个memory用，因为cache（WB）的存在，写回是异步的，这个memory并不会及时更新，比如cache还未写回PM，就掉电，那数据还是要丢失，durable和reliability就无法保证。所以需要一个原语来完成这种强制写回。PM write barrier or pm_wbarrier这是一个硬件实现. 为了性能，PM被PMFS直接整个映射到内核地址空间，这就带来了stray writes的问题（就是kernel里出bug的话&amp;ndash;一般是内核驱动程序出错，指针写到我PM的这一块内核地址空间去了，发生了脏写）。一个解决办法是平时在cpu的页表里把PM设置为只读，需要写的时候先改成写，写完再改成只读。但你这样搞，来回变页表，TLB要一直更新 global TLB shootdowns，cost很大。所以intel的人实现了个utilize processor write protection control to implement uninterruptible, temporal, write windows（回头看看是啥）。 测试可靠性（主要是consistency），Intel的人开发了个东西：For PMFS validation, we use a hypervisorbased validation tool that uses record-replay to simulate and test for ordering and durability failures in PM software (§3.</description>
+    </item>
+    
+    <item>
+      <title>NVM下的新DBMS架构（VMM角度应用NVM，only NVM）</title>
+      <link>https://gao377020481.github.io/p/nvm%E4%B8%8B%E7%9A%84%E6%96%B0dbms%E6%9E%B6%E6%9E%84/</link>
+      <pubDate>Tue, 14 Dec 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://gao377020481.github.io/p/nvm%E4%B8%8B%E7%9A%84%E6%96%B0dbms%E6%9E%B6%E6%9E%84/</guid>
+      <description>原文：Let’s Talk About Storage &amp;amp; Recovery Methods for Non-Volatile Memory Database Systems
+cmu几个大佬在16年的文章，主要讨论的是完全的NVM下的优化，偏向于应用allocator而非FS，当然他也模糊了两者之间的概念，得益于NVM的nonvolatile，allocator也能实现naming，使用固定指针存到固定位置就行（FS里当然是地址开始处由SB提供信息了）。
+background OLTP的增多，简单就是数据增删改增多。所以需要优化DBMS。但是DBMS一直以来都在权衡VM(volatile memory)和NVM(non-volatile memory)，因为他们自身的特性。DRAM作为VM可以按字节寻址，具有很高的读写性能，SSD/HDD等NVM只能按block寻址，随机写的性能也很差，一般都需要利用其顺序写速度快的特性来做优化(LSM in leveldb/rocksdb)。这里有一点：server里40%的能源都被flash DRAM用掉，DRAM需要一直刷新，即使这片数据不用也要刷新，不刷新就消失了。而SSD/HDD这些的缺点就不用说了，很慢，且写放大读放大都存在。
+NVM是个概念，有一系列的具体实现技术，他就是兼具DRAM的性能和寻址又掉电保留数据。目前的DBMS都没有好好利用这个东西：
+磁盘型DBMS如mysql orcal在内存中有一个cache，积累一下然后去顺序的以block写入磁盘，内存型DBMS如redis voltdb都有自己的持久化策略来缓和DRAM的易失性。这些多余的组件在NVM中都没必要。
+这篇文章是讲一种只使用NVM的情况下的DBMS，不是DRAM和NVM混合架构也不是只用NVM做log(nova就有点这个意思)。
+说一下模拟：
+使用的是intel的一个工具，有一个microcode，他会用dram模拟nvm，当nvm需要停顿的时候就让cpustall。（ The microcode estimates the additional cycles that the CPU would have to wait if DRAM is replaced by slower NVM and then stalls the CPU for those cycles. ）
+直接用libnuma来提供malloc，然后用fence来确保数据不会在cache中停留而是直接进入NVM。 文件系统也有对应的api，一个基于byte-addressable的FS。当然IO还是要过VFS tip：基于mmap可以不过VFS，特殊的mmap甚至可以掠过kernel里的page cache直接写数据到disk（NVMM）进一步加快速度。
+这里用memory allocator，但是restart的时候不好找到数据，文件系统有superblock可以找到inode数据结构获取文件目录结构信息，memory没办法。所以改进一下：NVM-aware Memory Allocator
+ 虚拟内存到NVM的映射是固定的，基于此保存指向这个地址的pointer，每次重启拿到这个pointer就可以获取到之前的数据信息。 避免数据在cache中停留引发的不一致，依次使用clflush将cache中的data写回数据，再用SFENCE确保clflush在这里完成（对所有processor可见，因为你现在把cache刷回去了那你得让cache刷回到所有proccsor，cache分级的，每个processor都有自己的呢，我理解实现上把cacheline置为steal就可以了），之后提交事务，这就是sync原语。  参照 三个存储引擎类型： (1) inplace updates engine, (2) copy-on-write updates engine, and (3） log-structured updates engine</description>
+    </item>
+    
+    <item>
+      <title>OFI/libfabric</title>
+      <link>https://gao377020481.github.io/p/ofi-for-hpc/</link>
+      <pubDate>Fri, 12 Nov 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://gao377020481.github.io/p/ofi-for-hpc/</guid>
+      <description>之前一直很好奇，在超算里（或大规模的集群里），是怎么减少network传输的损耗的，最近项目中接触到了mecury这个rpc框架，他依赖于OFI、libfabric这个网络框架来做集群内的高性能网络传输。
+OFI相比于普通的内核TCP/IP协议栈的优化思路与用户态协议栈有异曲同工之妙，准备好好写一下这篇笔记，先从内核里的TCP/IP协议栈的缺点开始，到优化思路与实现，再看看能不能学习一下ofi实现的trick。开个坑先，慢慢写。。
+从缺点找灵感 TCP/IP 缺点
+ 用于提供可靠性的header占用很多带宽 同步的话耗时，异步的话耗空间（内核里的缓冲区）拷贝也耗时  高性能的网络API应该是什么样的？ 尽量少的内存拷贝 两点：
+ 用户提供buffer，与协议栈用一个buffer 建立一个流量控制机制  异步操作 两种策略：
+ 中断和信号，这种机制会打断正在运行的程序，evict CPU cache，而且一个随时能接受信号还不影响自己工作的程序就比较难开发 事件queue， 来了就进queue  Direct Hardware Access 主要两种思路：
+ 越过kernel，直接与网卡的buffer交互（代表DPDK） 硬件软件配合来在用户空间共享同一块地址空间作为buffer（RDMA）  那应该怎么设计呢？ 先抄来个需要的interface：
+/* Notable socket function prototypes *//* &amp;quot;control&amp;quot; functions */int socket(int domain, int type, int protocol);int bind(int socket, const struct sockaddr *addr, socklen_t addrlen);int listen(int socket, int backlog);int accept(int socket, struct sockaddr *addr, socklen_t *addrlen);int connect(int socket, const struct sockaddr *addr, socklen_t addrlen);int shutdown(int socket, int how);int close(int socket); /* &amp;quot;fast path&amp;quot; data operations - send only (receive calls not shown) */ssize_t send(int socket, const void *buf, size_t len, int flags);ssize_t sendto(int socket, const void *buf, size_t len, int flags,const struct sockaddr *dest_addr, socklen_t addrlen);ssize_t sendmsg(int socket, const struct msghdr *msg, int flags);ssize_t write(int socket, const void *buf, size_t count);ssize_t writev(int socket, const struct iovec *iov, int iovcnt);/* &amp;quot;indirect&amp;quot; data operations */int poll(struct pollfd *fds, nfds_t nfds, int timeout);int select(int nfds, fd_set *readfds, fd_set *writefds,fd_set *exceptfds, struct timeval *timeout); 首先来看看这几类都有什么目标？</description>
+    </item>
+    
+    <item>
+      <title>存储领域概念整理</title>
+      <link>https://gao377020481.github.io/p/%E5%AD%98%E5%82%A8%E9%A2%86%E5%9F%9F%E6%A6%82%E5%BF%B5%E6%95%B4%E7%90%86/</link>
+      <pubDate>Tue, 12 Oct 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://gao377020481.github.io/p/%E5%AD%98%E5%82%A8%E9%A2%86%E5%9F%9F%E6%A6%82%E5%BF%B5%E6%95%B4%E7%90%86/</guid>
+      <description>Non-Volatile Memory (NVM) 是相对DRAM（掉电后数据丢失）而言的，指可以持久化保存数据的存储介质
+Non Volatile Main Memory (NVMM) NVMM是对多种新型非易失存储介质的统称，目前的NVMM包括：相变存储器 Phase-Change Memory (PCM)、忆阻器 Memristor（ReRAM）、自旋扭矩转换随机存储器 Spin Transfer Torque - Magnetic Random Access Memory (STT-MRAM)等等。
+DIMM全称Dual-Inline-Memory-Modules，中文名叫双列直插式存储模块，是指奔腾CPU推出后出现的新型内存条，它提供了64位的数据通道。
+NAND Flash可以做成不同接口和不同形式的闪存设备：SATA接口一般用于普通固态硬盘（SSD）产品、PCIe接口则常用于高端服务器闪存产品。NVMM由于可以媲美DRAM的性能，可以做成类似内存条形式直接插在主板的DIMM插槽上。这类产品可以称为持久化内存，Persistent Memory (PM)，或存储级内存，Storage Class Memory (SCM)。
+NVDIMM NVDIMM又是什么呢？实际上早已有之，是基于NAND Flash的非易失型内存条——通常被做成“电池+NAND Flash+DRAM”的形式：在掉电时用电池电量将DRAM数据刷回NAND Flash实现持久化。
+3D Xpoint 英特尔同时也推出了基于3D Xpoint技术的Optane SSD，采用PCIe接口。相比基于NAND Flash的企业级SSD在顺序读写上似乎并没有太大提升，顺序写大约在2000MB/s的水平。但得益于稳定的低时延——读写均为10us，其4KB随机读写性能非常逆天,随机写达到500000 IOPS。</description>
     </item>
     
     <item>
@@ -107,6 +204,16 @@ QUIC在计算RTT时会减去Ack Delay
     </item>
     
     <item>
+      <title>micro 和 marco benchmarks</title>
+      <link>https://gao377020481.github.io/p/benchmark/</link>
+      <pubDate>Mon, 01 Mar 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://gao377020481.github.io/p/benchmark/</guid>
+      <description>Micro-benchmarks (repeatable sections of code) can be useful but may not represent real-world behavior. Factors that can skew micro-benchmark performance include Java virtual machine warm-up time, and global code interactions.
+Macro-benchmarks (repeatable test sequences from the user point of view) test your system as actual end users will see it.</description>
+    </item>
+    
+    <item>
       <title>HTTP 1 to 2</title>
       <link>https://gao377020481.github.io/p/http-1-to-2/</link>
       <pubDate>Fri, 26 Feb 2021 00:00:00 +0000</pubDate>
@@ -118,24 +225,6 @@ QUIC在计算RTT时会减去Ack Delay
   臃肿的消息首部
   受限的优先级设置
   HTTP2 </description>
-    </item>
-    
-    <item>
-      <title>Spectre&amp;Meltdown</title>
-      <link>https://gao377020481.github.io/p/spectremeltdown/</link>
-      <pubDate>Wed, 10 Feb 2021 00:00:00 +0000</pubDate>
-      
-      <guid>https://gao377020481.github.io/p/spectremeltdown/</guid>
-      <description>Spectre&amp;amp;Meltdown
-这是一种利用现代处理器特性来“窃取”内存中重要信息的漏洞。
-Meltdown  诱使CPU在乱序执行的基础上将高权限的data信息放置于cache中  首先有一个数组，直接访问它的第data*4096个index处的元素 这样这个index处的元素会被放进cache中   循环遍历这个数组，当遍历到第data*4096个index处元素时，载入速度明显变快，这就说明这里是当时载入cache的元素 取到data*4096这个index就取到了data  假设data是一个内核内存空间内的数据，我们就get到了机密的内核数据，这都依赖于cpu的乱序执行：
-exception(dont have priority to access))access(array[data*4096])乱序执行使得在指令生效前，access运行在了exception之前，虽然指令未生效（寄存器状态等未变），但cache内却有了array[data*4096]这个元素
-Spectre Spectre基本原理与Meltdown类似，但他更强
-Meltdown一旦被从根本上避免就无法使用，比如内核和用户使用不同的页目录寄存器等
-Spectre并非依赖于乱序执行，而是依赖于分支预测。
-分支预测也会使cpu提前跑一下cpu认为正确的分支，尽管他不一定真的是接下来要执行的，同样会在cache里留下痕迹。
-但他要求代码有如下形式：
-if(index1&amp;lt;array_a_size) {index2=array_a[index1];if(index2 &amp;lt; array_b_size);value = array_b[index2];}通过控制index1的长度，让array_b的特定下标的数据Cacheline被点亮，如果有办法访问一次array_b的全部内容，我们就可以窃取到index1这个值。</description>
     </item>
     
     <item>

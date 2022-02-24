@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>存储 on Gao&#39;s Happy Day</title>
+    <link>https://gao377020481.github.io/categories/%E5%AD%98%E5%82%A8/</link>
+    <description>Recent content in 存储 on Gao&#39;s Happy Day</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Thu, 16 Dec 2021 00:00:00 +0000</lastBuildDate><atom:link href="https://gao377020481.github.io/categories/%E5%AD%98%E5%82%A8/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>NVM下software优化（FS角度应用NVM，NVM &#43; DRAM）</title>
+      <link>https://gao377020481.github.io/p/nvm%E4%B8%8Bsoftware%E4%BC%98%E5%8C%96/</link>
+      <pubDate>Thu, 16 Dec 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://gao377020481.github.io/p/nvm%E4%B8%8Bsoftware%E4%BC%98%E5%8C%96/</guid>
+      <description>原文：System Software for Persistent Memory
+这篇文章分析了NVM出现的情况下，软件层面（主要是内存和文件系统）的一些变革和适配。14年的文章了，intel的人参与，显然在傲腾研发的时候发出来的。
+后面的nova是借鉴了这里的思路的，堆砖砌瓦，总觉得这种知识的传承和发掘很有趣。。。
+这篇文章搞了个PMFS，发掘了fs在NVM上的优化思路。（细粒度logging和大规模的页IO）
+背景 先来回顾一下PM发展，从一开始将NAND flash与DRAM混合使用（NVDIMM），掉电时放入NAND flash，上电再从NAND flash中加载出来到DRAM中。（电池+NAND Flash+DRAM）这样的做法，但是因为受限于NAND，这玩意还是只能block addressable。想要byte-addressable还得看NVM（PCM等做法）。对于PM主要两种思路：1. 扩展虚拟内存管理器来将PM当内存用2. 把PM当块设备用（FS里，ext4的做法）3.直接做个文件系统，跳出块设备的层来管理PM。
+于是就有了PMFS：这是个POSIX semantic的fs，有一些针对NVM的特殊优化。
+PMFS:
+ API完善（POSIX-compliant file system interface），所以向后兼容老的应用程序。 轻量级文件系统，绕过VFS的块设备层，避免了繁杂耗时的内核发生的拷贝（page cache），过程调用等 优化的mmap，绕过page cache（需要先从disk-&amp;gt;SSD拷贝到memory-&amp;gt;DRAM），这是为了加速，但在NVM里就不需要，直接从NVM映射用户空间页表就可以，应用需要的时候直接通过虚拟内存就能寻址到  . PMFS also implements other features, such as transparent large page support [18], to further optimize memory-mapped I/O. &amp;mdash;有待研究
+挑战：
+ 现在的内存管理器把PM作为一个memory用，因为cache（WB）的存在，写回是异步的，这个memory并不会及时更新，比如cache还未写回PM，就掉电，那数据还是要丢失，durable和reliability就无法保证。所以需要一个原语来完成这种强制写回。PM write barrier or pm_wbarrier这是一个硬件实现. 为了性能，PM被PMFS直接整个映射到内核地址空间，这就带来了stray writes的问题（就是kernel里出bug的话&amp;ndash;一般是内核驱动程序出错，指针写到我PM的这一块内核地址空间去了，发生了脏写）。一个解决办法是平时在cpu的页表里把PM设置为只读，需要写的时候先改成写，写完再改成只读。但你这样搞，来回变页表，TLB要一直更新 global TLB shootdowns，cost很大。所以intel的人实现了个utilize processor write protection control to implement uninterruptible, temporal, write windows（回头看看是啥）。 测试可靠性（主要是consistency），Intel的人开发了个东西：For PMFS validation, we use a hypervisorbased validation tool that uses record-replay to simulate and test for ordering and durability failures in PM software (§3.</description>
+    </item>
+    
+    <item>
+      <title>NVM下的新DBMS架构（VMM角度应用NVM，only NVM）</title>
+      <link>https://gao377020481.github.io/p/nvm%E4%B8%8B%E7%9A%84%E6%96%B0dbms%E6%9E%B6%E6%9E%84/</link>
+      <pubDate>Tue, 14 Dec 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://gao377020481.github.io/p/nvm%E4%B8%8B%E7%9A%84%E6%96%B0dbms%E6%9E%B6%E6%9E%84/</guid>
+      <description>原文：Let’s Talk About Storage &amp;amp; Recovery Methods for Non-Volatile Memory Database Systems
+cmu几个大佬在16年的文章，主要讨论的是完全的NVM下的优化，偏向于应用allocator而非FS，当然他也模糊了两者之间的概念，得益于NVM的nonvolatile，allocator也能实现naming，使用固定指针存到固定位置就行（FS里当然是地址开始处由SB提供信息了）。
+background OLTP的增多，简单就是数据增删改增多。所以需要优化DBMS。但是DBMS一直以来都在权衡VM(volatile memory)和NVM(non-volatile memory)，因为他们自身的特性。DRAM作为VM可以按字节寻址，具有很高的读写性能，SSD/HDD等NVM只能按block寻址，随机写的性能也很差，一般都需要利用其顺序写速度快的特性来做优化(LSM in leveldb/rocksdb)。这里有一点：server里40%的能源都被flash DRAM用掉，DRAM需要一直刷新，即使这片数据不用也要刷新，不刷新就消失了。而SSD/HDD这些的缺点就不用说了，很慢，且写放大读放大都存在。
+NVM是个概念，有一系列的具体实现技术，他就是兼具DRAM的性能和寻址又掉电保留数据。目前的DBMS都没有好好利用这个东西：
+磁盘型DBMS如mysql orcal在内存中有一个cache，积累一下然后去顺序的以block写入磁盘，内存型DBMS如redis voltdb都有自己的持久化策略来缓和DRAM的易失性。这些多余的组件在NVM中都没必要。
+这篇文章是讲一种只使用NVM的情况下的DBMS，不是DRAM和NVM混合架构也不是只用NVM做log(nova就有点这个意思)。
+说一下模拟：
+使用的是intel的一个工具，有一个microcode，他会用dram模拟nvm，当nvm需要停顿的时候就让cpustall。（ The microcode estimates the additional cycles that the CPU would have to wait if DRAM is replaced by slower NVM and then stalls the CPU for those cycles. ）
+直接用libnuma来提供malloc，然后用fence来确保数据不会在cache中停留而是直接进入NVM。 文件系统也有对应的api，一个基于byte-addressable的FS。当然IO还是要过VFS tip：基于mmap可以不过VFS，特殊的mmap甚至可以掠过kernel里的page cache直接写数据到disk（NVMM）进一步加快速度。
+这里用memory allocator，但是restart的时候不好找到数据，文件系统有superblock可以找到inode数据结构获取文件目录结构信息，memory没办法。所以改进一下：NVM-aware Memory Allocator
+ 虚拟内存到NVM的映射是固定的，基于此保存指向这个地址的pointer，每次重启拿到这个pointer就可以获取到之前的数据信息。 避免数据在cache中停留引发的不一致，依次使用clflush将cache中的data写回数据，再用SFENCE确保clflush在这里完成（对所有processor可见，因为你现在把cache刷回去了那你得让cache刷回到所有proccsor，cache分级的，每个processor都有自己的呢，我理解实现上把cacheline置为steal就可以了），之后提交事务，这就是sync原语。  参照 三个存储引擎类型： (1) inplace updates engine, (2) copy-on-write updates engine, and (3） log-structured updates engine</description>
+    </item>
+    
+    <item>
+      <title>存储领域概念整理</title>
+      <link>https://gao377020481.github.io/p/%E5%AD%98%E5%82%A8%E9%A2%86%E5%9F%9F%E6%A6%82%E5%BF%B5%E6%95%B4%E7%90%86/</link>
+      <pubDate>Tue, 12 Oct 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://gao377020481.github.io/p/%E5%AD%98%E5%82%A8%E9%A2%86%E5%9F%9F%E6%A6%82%E5%BF%B5%E6%95%B4%E7%90%86/</guid>
+      <description>Non-Volatile Memory (NVM) 是相对DRAM（掉电后数据丢失）而言的，指可以持久化保存数据的存储介质
+Non Volatile Main Memory (NVMM) NVMM是对多种新型非易失存储介质的统称，目前的NVMM包括：相变存储器 Phase-Change Memory (PCM)、忆阻器 Memristor（ReRAM）、自旋扭矩转换随机存储器 Spin Transfer Torque - Magnetic Random Access Memory (STT-MRAM)等等。
+DIMM全称Dual-Inline-Memory-Modules，中文名叫双列直插式存储模块，是指奔腾CPU推出后出现的新型内存条，它提供了64位的数据通道。
+NAND Flash可以做成不同接口和不同形式的闪存设备：SATA接口一般用于普通固态硬盘（SSD）产品、PCIe接口则常用于高端服务器闪存产品。NVMM由于可以媲美DRAM的性能，可以做成类似内存条形式直接插在主板的DIMM插槽上。这类产品可以称为持久化内存，Persistent Memory (PM)，或存储级内存，Storage Class Memory (SCM)。
+NVDIMM NVDIMM又是什么呢？实际上早已有之，是基于NAND Flash的非易失型内存条——通常被做成“电池+NAND Flash+DRAM”的形式：在掉电时用电池电量将DRAM数据刷回NAND Flash实现持久化。
+3D Xpoint 英特尔同时也推出了基于3D Xpoint技术的Optane SSD，采用PCIe接口。相比基于NAND Flash的企业级SSD在顺序读写上似乎并没有太大提升，顺序写大约在2000MB/s的水平。但得益于稳定的低时延——读写均为10us，其4KB随机读写性能非常逆天,随机写达到500000 IOPS。</description>
+    </item>
+    
+  </channel>
+</rss>
