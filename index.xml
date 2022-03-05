@@ -14,10 +14,16 @@
         <guid>https://gao377020481.github.io/p/mercury-rpc-framework-for-hpc/</guid>
         <description>&lt;img src="https://gao377020481.github.io/p/mercury-rpc-framework-for-hpc/430.jpg" alt="Featured image of post Mercury初探" /&gt;&lt;p&gt;最近在看HPC领域分布式文件系统，发现代码里用到mercury来提供RPC功能，决定还是循序渐进先把这个框架学习一下。
 &amp;lt;主要是报的一些关于mercury的错我看不懂*-*&amp;gt;&lt;/p&gt;
-&lt;p&gt;该部分只涉及理论：&lt;/p&gt;
 &lt;h2 id=&#34;architecture&#34;&gt;Architecture&lt;/h2&gt;
 &lt;h3 id=&#34;network-abstraction-layer&#34;&gt;Network Abstraction Layer&lt;/h3&gt;
 &lt;p&gt;这一层是中间层，向上给Bluk layer和RPC layer提供一致的interface，向下采用插件机制适配不同的网络协议。&lt;/p&gt;
+&lt;p&gt;可提供的功能：target address lookup, point-to-point messaging with both unexpected and expected messaging（就是阻塞和非阻塞）, remote memory access (RMA), progress and cancelation.&lt;/p&gt;
+&lt;h4 id=&#34;初始化&#34;&gt;初始化&lt;/h4&gt;
+&lt;p&gt;首先需要初始化接口并选择底层的插件，之前的ofi就是一种网络插件，大意是指与网卡交互所使用的协议方法的集合或者说一层。&lt;/p&gt;
+&lt;h4 id=&#34;初始化-1&#34;&gt;初始化&lt;/h4&gt;
+&lt;h4 id=&#34;初始化-2&#34;&gt;初始化&lt;/h4&gt;
+&lt;h4 id=&#34;初始化-3&#34;&gt;初始化&lt;/h4&gt;
+&lt;h4 id=&#34;初始化-4&#34;&gt;初始化&lt;/h4&gt;
 &lt;h3 id=&#34;mercury-rpc-layer&#34;&gt;Mercury RPC Layer&lt;/h3&gt;
 &lt;h3 id=&#34;mercury-bulk-layer&#34;&gt;Mercury Bulk Layer&lt;/h3&gt;
 </description>
@@ -610,6 +616,23 @@ a[2][j]*=2;
 &lt;/code&gt;&lt;/pre&gt;</description>
         </item>
         <item>
+        <title>struct收紧结构编译器指令</title>
+        <link>https://gao377020481.github.io/p/struct%E6%94%B6%E7%B4%A7%E7%BB%93%E6%9E%84%E7%BC%96%E8%AF%91%E5%99%A8%E6%8C%87%E4%BB%A4/</link>
+        <pubDate>Mon, 03 Jan 2022 00:00:00 +0000</pubDate>
+        
+        <guid>https://gao377020481.github.io/p/struct%E6%94%B6%E7%B4%A7%E7%BB%93%E6%9E%84%E7%BC%96%E8%AF%91%E5%99%A8%E6%8C%87%E4%BB%A4/</guid>
+        <description>&lt;img src="https://gao377020481.github.io/p/struct%E6%94%B6%E7%B4%A7%E7%BB%93%E6%9E%84%E7%BC%96%E8%AF%91%E5%99%A8%E6%8C%87%E4%BB%A4/592.jpg" alt="Featured image of post struct收紧结构编译器指令" /&gt;&lt;p&gt;C/C++编译器指令 &lt;strong&gt;attribute&lt;/strong&gt;((packed)) 会告诉编译器不要对齐，收紧结构，这样struct的大小就是成员大小的和。&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;struct xfs_agfl {
+        __be32          agfl_magicnum;
+        __be32          agfl_seqno;
+        uuid_t          agfl_uuid;
+        __be64          agfl_lsn;
+        __be32          agfl_crc;
+} __attribute__((packed));
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;xfs里这个AGFL（allocation group free internal list） 就用到了这个东西。&lt;/p&gt;
+</description>
+        </item>
+        <item>
         <title>NVM下software优化（FS角度应用NVM，NVM &#43; DRAM）</title>
         <link>https://gao377020481.github.io/p/nvm%E4%B8%8Bsoftware%E4%BC%98%E5%8C%96/</link>
         <pubDate>Thu, 16 Dec 2021 00:00:00 +0000</pubDate>
@@ -1177,6 +1200,37 @@ struct sockaddr_in {
 &lt;p&gt;NVDIMM又是什么呢？实际上早已有之，是基于NAND Flash的非易失型内存条——通常被做成“电池+NAND Flash+DRAM”的形式：在掉电时用电池电量将DRAM数据刷回NAND Flash实现持久化。&lt;/p&gt;
 &lt;h3 id=&#34;3d-xpoint&#34;&gt;3D Xpoint&lt;/h3&gt;
 &lt;p&gt;英特尔同时也推出了基于3D Xpoint技术的Optane SSD，采用PCIe接口。相比基于NAND Flash的企业级SSD在顺序读写上似乎并没有太大提升，顺序写大约在2000MB/s的水平。但得益于稳定的低时延——读写均为10us，其4KB随机读写性能非常逆天,随机写达到500000 IOPS。&lt;/p&gt;
+</description>
+        </item>
+        <item>
+        <title>一次关于proc的分析</title>
+        <link>https://gao377020481.github.io/p/%E4%B8%80%E6%AC%A1%E5%85%B3%E4%BA%8Eproc%E7%9A%84%E5%88%86%E6%9E%90/</link>
+        <pubDate>Sat, 02 Oct 2021 00:00:00 +0000</pubDate>
+        
+        <guid>https://gao377020481.github.io/p/%E4%B8%80%E6%AC%A1%E5%85%B3%E4%BA%8Eproc%E7%9A%84%E5%88%86%E6%9E%90/</guid>
+        <description>&lt;img src="https://gao377020481.github.io/p/%E4%B8%80%E6%AC%A1%E5%85%B3%E4%BA%8Eproc%E7%9A%84%E5%88%86%E6%9E%90/362.jpg" alt="Featured image of post 一次关于proc的分析" /&gt;&lt;h1 id=&#34;一次关于proc的分析&#34;&gt;一次关于proc的分析&lt;/h1&gt;
+&lt;p&gt;运行：&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;
+strace file /proc/version
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;来一小段&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;
+execve(&amp;quot;/usr/bin/file&amp;quot;, [&amp;quot;file&amp;quot;, &amp;quot;/proc/version&amp;quot;], 0x7ffc3c1ee838 /* 25 vars */) = 0
+brk(NULL)                               = 0x5591347ae000
+access(&amp;quot;/etc/ld.so.nohwcap&amp;quot;, F_OK)      = -1 ENOENT (No such file or directory)
+access(&amp;quot;/etc/ld.so.preload&amp;quot;, R_OK)      = -1 ENOENT (No such file or directory)
+openat(AT_FDCWD, &amp;quot;/etc/ld.so.cache&amp;quot;, O_RDONLY|O_CLOEXEC) = 3
+fstat(3, {st_mode=S_IFREG|0644, st_size=36168, ...}) = 0
+mmap(NULL, 36168, PROT_READ, MAP_PRIVATE, 3, 0) = 0x7f48f3973000
+close(3)                                = 0
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;/etc/ld. so.nohwcap 这个文件存在，链接器就只会去load完全无优化的库版本（哪怕CPU支持优化）&lt;/p&gt;
+&lt;p&gt;/etc/ld.so.preload 这个文件就跟LD_PRELOAD 干一个事情，这玩意在GekkoFS的系统调用截取时用过，preload一下自己的IO库，当发生IO操作，链接器会讲call的func链接到自己的库上去而不是走正常的posix fileIOapi。&lt;/p&gt;
+&lt;p&gt;brk(NULL)                               = 0x5591347ae000&lt;/p&gt;
+&lt;p&gt;这是什么，这就是通过brk找到heap的边界，好了，这里找到是0x5591347ae000,为啥要找呢，是谁要找。&amp;mdash;&amp;ndash;》 因为程序要用malloc了，那肯定得知道先知道边界，很合理。&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;openat(AT_FDCWD, &amp;quot;/etc/ld.so.cache&amp;quot;, O_RDONLY|O_CLOEXEC) = 3
+fstat(3, {st_mode=S_IFREG|0644, st_size=36168, ...}) = 0
+mmap(NULL, 36168, PROT_READ, MAP_PRIVATE, 3, 0) = 0x7f48f3973000
+close(3)                                = 0
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;这一段打开了这个链接器的缓存文件返回fd为3，统计了一下相关信息，mmap再把它映射到mmap region， 然后把他关上，实际上在很多程序中这一段都会出现，他是很通用的CRT和ld工作的流程。&lt;/p&gt;
 </description>
         </item>
         <item>
@@ -2183,10 +2237,12 @@ insert_equal和insert_unique，看字面意思就知道是啥&lt;/p&gt;
 &lt;li&gt;物理内存的分配在JOS内目前还无相应算法，只是单纯的连续分配&lt;/li&gt;
 &lt;/ol&gt;
 &lt;h2 id=&#34;linux-kernel&#34;&gt;Linux kernel&lt;/h2&gt;
-&lt;p&gt;自顶向下来看：&lt;/p&gt;
-&lt;p&gt;从glibc的malloc到mmap/brk/sbrk再到物理页的分配（buddy算法,内核中的slab，非连续页分配器）&lt;/p&gt;
-&lt;p&gt;当然拿C++来说，其STL用于容器的alloc分配器的实现，又是基于malloc的，使用开链数组来存放多个线性增长大小的空闲内存块，当有分配需要时一次申请多块（应该是20块）该大小内存。且找不到对应块时还具有相应的回收，拼接，查找功能。对于大块内存的分配使用单独的路径来分配和存储。分层分级分区的思路是各级内存分配器的惯用思路。&lt;/p&gt;
-&lt;h3 id=&#34;glibc&#34;&gt;glibc&lt;/h3&gt;
+&lt;p&gt;最上层拿C++来说，其STL用于容器的alloc分配器的实现，又是基于malloc的，使用开链数组来存放多个线性增长大小的空闲内存块，当有分配需要时一次申请多块（应该是20块）该大小内存。且找不到对应块时还具有相应的回收，拼接，查找功能。对于大块内存的分配使用单独的路径来分配和存储。分层分级分区的思路是各级内存分配器的惯用思路。&lt;/p&gt;
+&lt;p&gt;然后低一层的malloc根据选择动态链接库的不同（就使用不同的分配器lib），有不同实现，以下以glibc为例。&lt;/p&gt;
+&lt;p&gt;至于内核中内存分配，由于其确定性，多用slab来做分配，也存在buddy allocation机制来管理。&lt;/p&gt;
+&lt;p&gt;虚拟地址一般都是大于物理地址的，所以只需要搞好虚拟地址上的内存管理就行了，至于物理页如果dirty，自然有page fault interrupt 来操心。当然以下提到物理页连续等，是默认了虚拟页到物理页的映射关系，实际上mmap,brk这样的系统调用都不会真的操作物理页，很多时候都是系统告诉我们：“你要的物理页已经准备好了”，实际上他也就是改了一下task_struct里mm_struct里的一些页表项罢了（准备好的是映射，真正的物理页可还是dirty的）。&lt;/p&gt;
+&lt;p&gt;所以内存分配器到底在哪一层呢，实际上内存分配器能看到的还就是虚拟内存，他一直在做修改页映射的操作，他并不会做将某个文件放到内存里的工作，这个工作显然是由缺页中断完成的紧跟其后的就是磁盘IO（以一个read操作为例&amp;ndash;，read -&amp;gt; vfs_read(首先要找到inode: 顺序是：check fd 在不在进程的打开文件列表里， 在的话找到file结构然后顺着找到dentry接着找到inode，check一下在不在page cache里这里就要通过inode里的address_space找到那颗组织page cache的基数树在上面查询了，查询用的是文件偏移量，不在就通过VFS里的inode做对应文件系统的operation，以xfs为例子，那就是解析inode数据结构，首先肯定要去它的data fork去找，xfs的data fork组织成两种形式，extent list or b+ tree, 无论是哪一种都能找到所有相关的block号了，一个一个把他们读出来就行了，这个工作显然是交给通用块设备层去做了，这层有点像VFS，下面马上就是各种不同的硬件驱动，上面是统一的请求，所以这一层用于整合，再下去就是到IO调度层，内核根据一些策略来做IO调度，这是因为磁盘读一次比较慢，尽量把连续扇区放一起读更快，再下去就真的从磁盘上读数据了。），只是它感性的认为自己在操作物理内存，比如：“太好了，这次我分配了0X10到0X2000这么多连续的内存空间”，实际上他就是把0X10到0X2000这一块虚拟内存的页表项改了一下，让虚拟页映射到了某一段连续物理页，实际的物理的IO并未发生呢&lt;/p&gt;
+&lt;h3 id=&#34;glibc-example-for-user-space&#34;&gt;glibc (example for user-space)&lt;/h3&gt;
 &lt;p&gt;以ptmalloc为例：&lt;/p&gt;
 &lt;p&gt;malloc时，如果内存分配区（主，非主）真的无空间，调用mmap或brk/sbrk来在虚拟内存上取一块作为新的空间，mmap取得内存在mmap区域，brk/sbrk在heap上（在进程的描述符task_struct中的mm_struct里可以找到）。主分配区可以使用sbrk和mmap向os申请内存，而非分配区只能通过mmap向os申请内存。接下来os可能（因为mmap只是给一块虚拟地址，真实数据还未拷贝到物理内存上）要去物理内存上找可用区块然后将真实数据拷贝上去（用户触发缺页syscall），这里再涉及物理页的分配。&lt;/p&gt;
 &lt;p&gt;ptmalloc的内存管理方法就可以很好的解决每次要内存都要去向OS要的问题。它回收管理分配出的内存而不是每次都还给操作系统而是放入bin中留待下次使用，bin的整理等一些其他操作会在特定时候触发。&lt;/p&gt;
@@ -2201,10 +2257,9 @@ insert_equal和insert_unique，看字面意思就知道是啥&lt;/p&gt;
 2.3 large bin： 与small bin类似，只是其中存的是大chunk，且不单纯线性增长，共63个不同大小的bin&lt;/li&gt;
 &lt;/ol&gt;
 &lt;p&gt;chunk的分配与释放是一个很复杂的管理流程，这里只说管理层级，不谈细致流程。&lt;/p&gt;
-&lt;h3 id=&#34;物理页分配&#34;&gt;物理页分配&lt;/h3&gt;
+&lt;h3 id=&#34;kernel-space&#34;&gt;kernel space&lt;/h3&gt;
 &lt;h4 id=&#34;buddy&#34;&gt;buddy&lt;/h4&gt;
-&lt;p&gt;用户空间使用的最简单的物理页分配算法，直接分配连续的物理内存，然后回收能称为伙伴的空闲内存。
-连续的物理页称为页块（page block），阶（order）是页的数量单位，2的n次方个连续页称为n阶页块。
+&lt;p&gt;连续的物理页称为页块（page block），阶（order）是页的数量单位，2的n次方个连续页称为n阶页块。
 如下条件的两个n阶页块称为伙伴（buddy）：&lt;/p&gt;
 &lt;ol&gt;
 &lt;li&gt;两个页块是相邻的，即物理地址是连续的；&lt;/li&gt;
@@ -2218,7 +2273,7 @@ insert_equal和insert_unique，看字面意思就知道是啥&lt;/p&gt;
 &lt;p&gt;c. 最低水线（MIN）：如果内存区域空闲页数小于最低水线，说明该内存区域的内存严重不足。&lt;/p&gt;
 &lt;p&gt;&lt;strong&gt;通用页分配入口&lt;/strong&gt;&lt;/p&gt;
 &lt;p&gt;__alloc_pages_nodemask&lt;/p&gt;
-&lt;h4 id=&#34;slab内核使用&#34;&gt;slab（内核使用）&lt;/h4&gt;
+&lt;h4 id=&#34;slab&#34;&gt;slab&lt;/h4&gt;
 &lt;p&gt;slab分配器的作用不仅仅是分配小块内存，更重要的作用是针对经常分配和释放的对象充当缓存。slab分配器的
 核心思路是：为每种对象类型创建一个内存缓存，每个内存缓存由多个大块组成，一个大块是由一个或多个连
 续的物理页，每个大块包含多个对象。slab采用面向对象的思想，基于对象类型管理内存，每种对象被划分为一
@@ -2235,7 +2290,7 @@ LIFO）的原则，这种做可以提高性能。&lt;/p&gt;
 &lt;p&gt;就是：&lt;/p&gt;
 &lt;ol&gt;
 &lt;li&gt;分配虚拟内存区域&lt;/li&gt;
-&lt;li&gt;分配不连续的物理内存区域并映射到连续的虚拟内存上（多次的低阶页块分配，基于buddy算法）&lt;/li&gt;
+&lt;li&gt;分配不连续的物理内存区域并映射到连续的虚拟内存上（多次的低阶页块分配，基于buddy算法因为是多次不同大小的分配）&lt;/li&gt;
 &lt;/ol&gt;
 &lt;p&gt;&lt;strong&gt;编程接口：&lt;/strong&gt;&lt;/p&gt;
 &lt;p&gt;vmalloc:分配不连续的物理页并且把物理页映射到连续的虚拟地址空间&lt;/p&gt;

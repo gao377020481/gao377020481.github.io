@@ -14,9 +14,10 @@
       
       <guid>https://gao377020481.github.io/p/mercury-rpc-framework-for-hpc/</guid>
       <description>最近在看HPC领域分布式文件系统，发现代码里用到mercury来提供RPC功能，决定还是循序渐进先把这个框架学习一下。 &amp;lt;主要是报的一些关于mercury的错我看不懂*-*&amp;gt;
-该部分只涉及理论：
 Architecture Network Abstraction Layer 这一层是中间层，向上给Bluk layer和RPC layer提供一致的interface，向下采用插件机制适配不同的网络协议。
-Mercury RPC Layer Mercury Bulk Layer </description>
+可提供的功能：target address lookup, point-to-point messaging with both unexpected and expected messaging（就是阻塞和非阻塞）, remote memory access (RMA), progress and cancelation.
+初始化 首先需要初始化接口并选择底层的插件，之前的ofi就是一种网络插件，大意是指与网卡交互所使用的协议方法的集合或者说一层。
+初始化 初始化 初始化 初始化 Mercury RPC Layer Mercury Bulk Layer </description>
     </item>
     
     <item>

@@ -6,7 +6,17 @@
     <description>Recent content in C&#43;&#43; on Gao&#39;s Happy Day</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Wed, 10 Feb 2021 00:00:00 +0000</lastBuildDate><atom:link href="https://gao377020481.github.io/tags/c++/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Mon, 03 Jan 2022 00:00:00 +0000</lastBuildDate><atom:link href="https://gao377020481.github.io/tags/c++/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>struct收紧结构编译器指令</title>
+      <link>https://gao377020481.github.io/p/struct%E6%94%B6%E7%B4%A7%E7%BB%93%E6%9E%84%E7%BC%96%E8%AF%91%E5%99%A8%E6%8C%87%E4%BB%A4/</link>
+      <pubDate>Mon, 03 Jan 2022 00:00:00 +0000</pubDate>
+      
+      <guid>https://gao377020481.github.io/p/struct%E6%94%B6%E7%B4%A7%E7%BB%93%E6%9E%84%E7%BC%96%E8%AF%91%E5%99%A8%E6%8C%87%E4%BB%A4/</guid>
+      <description>C/C++编译器指令 attribute((packed)) 会告诉编译器不要对齐，收紧结构，这样struct的大小就是成员大小的和。
+struct xfs_agfl {__be32 agfl_magicnum;__be32 agfl_seqno;uuid_t agfl_uuid;__be64 agfl_lsn;__be32 agfl_crc;} __attribute__((packed));xfs里这个AGFL（allocation group free internal list） 就用到了这个东西。</description>
+    </item>
+    
     <item>
       <title>STL</title>
       <link>https://gao377020481.github.io/p/stl/</link>

@@ -135,10 +135,16 @@
     <section class="article-content">
     <p>最近在看HPC领域分布式文件系统，发现代码里用到mercury来提供RPC功能，决定还是循序渐进先把这个框架学习一下。
 &lt;主要是报的一些关于mercury的错我看不懂*-*&gt;</p>
-<p>该部分只涉及理论：</p>
 <h2 id="architecture">Architecture</h2>
 <h3 id="network-abstraction-layer">Network Abstraction Layer</h3>
 <p>这一层是中间层，向上给Bluk layer和RPC layer提供一致的interface，向下采用插件机制适配不同的网络协议。</p>
+<p>可提供的功能：target address lookup, point-to-point messaging with both unexpected and expected messaging（就是阻塞和非阻塞）, remote memory access (RMA), progress and cancelation.</p>
+<h4 id="初始化">初始化</h4>
+<p>首先需要初始化接口并选择底层的插件，之前的ofi就是一种网络插件，大意是指与网卡交互所使用的协议方法的集合或者说一层。</p>
+<h4 id="初始化-1">初始化</h4>
+<h4 id="初始化-2">初始化</h4>
+<h4 id="初始化-3">初始化</h4>
+<h4 id="初始化-4">初始化</h4>
 <h3 id="mercury-rpc-layer">Mercury RPC Layer</h3>
 <h3 id="mercury-bulk-layer">Mercury Bulk Layer</h3>
 
@@ -458,7 +464,15 @@
   <ol>
     <li><a href="#architecture">Architecture</a>
       <ol>
-        <li><a href="#network-abstraction-layer">Network Abstraction Layer</a></li>
+        <li><a href="#network-abstraction-layer">Network Abstraction Layer</a>
+          <ol>
+            <li><a href="#初始化">初始化</a></li>
+            <li><a href="#初始化-1">初始化</a></li>
+            <li><a href="#初始化-2">初始化</a></li>
+            <li><a href="#初始化-3">初始化</a></li>
+            <li><a href="#初始化-4">初始化</a></li>
+          </ol>
+        </li>
         <li><a href="#mercury-rpc-layer">Mercury RPC Layer</a></li>
         <li><a href="#mercury-bulk-layer">Mercury Bulk Layer</a></li>
       </ol>

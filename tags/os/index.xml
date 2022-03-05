@@ -6,7 +6,19 @@
     <description>Recent content in OS on Gao&#39;s Happy Day</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Mon, 07 Dec 2020 00:00:00 +0000</lastBuildDate><atom:link href="https://gao377020481.github.io/tags/os/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Sat, 02 Oct 2021 00:00:00 +0000</lastBuildDate><atom:link href="https://gao377020481.github.io/tags/os/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>一次关于proc的分析</title>
+      <link>https://gao377020481.github.io/p/%E4%B8%80%E6%AC%A1%E5%85%B3%E4%BA%8Eproc%E7%9A%84%E5%88%86%E6%9E%90/</link>
+      <pubDate>Sat, 02 Oct 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://gao377020481.github.io/p/%E4%B8%80%E6%AC%A1%E5%85%B3%E4%BA%8Eproc%E7%9A%84%E5%88%86%E6%9E%90/</guid>
+      <description>一次关于proc的分析 运行：
+strace file /proc/version来一小段
+execve(&amp;quot;/usr/bin/file&amp;quot;, [&amp;quot;file&amp;quot;, &amp;quot;/proc/version&amp;quot;], 0x7ffc3c1ee838 /* 25 vars */) = 0brk(NULL) = 0x5591347ae000access(&amp;quot;/etc/ld.so.nohwcap&amp;quot;, F_OK) = -1 ENOENT (No such file or directory)access(&amp;quot;/etc/ld.so.preload&amp;quot;, R_OK) = -1 ENOENT (No such file or directory)openat(AT_FDCWD, &amp;quot;/etc/ld.so.cache&amp;quot;, O_RDONLY|O_CLOEXEC) = 3fstat(3, {st_mode=S_IFREG|0644, st_size=36168, ...}) = 0mmap(NULL, 36168, PROT_READ, MAP_PRIVATE, 3, 0) = 0x7f48f3973000close(3) = 0/etc/ld. so.nohwcap 这个文件存在，链接器就只会去load完全无优化的库版本（哪怕CPU支持优化）
+/etc/ld.so.preload 这个文件就跟LD_PRELOAD 干一个事情，这玩意在GekkoFS的系统调用截取时用过，preload一下自己的IO库，当发生IO操作，链接器会讲call的func链接到自己的库上去而不是走正常的posix fileIOapi。</description>
+    </item>
+    
     <item>
       <title>File System</title>
       <link>https://gao377020481.github.io/p/file-system/</link>
@@ -97,25 +109,19 @@ d.有独立的存储空间，拥有专有的用户空间。
       <guid>https://gao377020481.github.io/p/memory-management/</guid>
       <description>内存管理
 JOS JOS中主要是在做：
- 线性地址到物理地址的映射（通过操作修改页表项实现） 在物理内存上划分出内核的页目录和页表存储区域并完成映射 保护模式的映射关系与段寄存器相关，32位的JOS通过段选择子找到段描述符，再解析段描述符的基地址，检查权限位后加上虚拟地址来实现 物理内存的分配在JOS内目前还无相应算法，只是单纯的连续分配  Linux kernel 自顶向下来看：
-从glibc的malloc到mmap/brk/sbrk再到物理页的分配（buddy算法,内核中的slab，非连续页分配器）
-当然拿C++来说，其STL用于容器的alloc分配器的实现，又是基于malloc的，使用开链数组来存放多个线性增长大小的空闲内存块，当有分配需要时一次申请多块（应该是20块）该大小内存。且找不到对应块时还具有相应的回收，拼接，查找功能。对于大块内存的分配使用单独的路径来分配和存储。分层分级分区的思路是各级内存分配器的惯用思路。
-glibc 以ptmalloc为例：
+ 线性地址到物理地址的映射（通过操作修改页表项实现） 在物理内存上划分出内核的页目录和页表存储区域并完成映射 保护模式的映射关系与段寄存器相关，32位的JOS通过段选择子找到段描述符，再解析段描述符的基地址，检查权限位后加上虚拟地址来实现 物理内存的分配在JOS内目前还无相应算法，只是单纯的连续分配  Linux kernel 最上层拿C++来说，其STL用于容器的alloc分配器的实现，又是基于malloc的，使用开链数组来存放多个线性增长大小的空闲内存块，当有分配需要时一次申请多块（应该是20块）该大小内存。且找不到对应块时还具有相应的回收，拼接，查找功能。对于大块内存的分配使用单独的路径来分配和存储。分层分级分区的思路是各级内存分配器的惯用思路。
+然后低一层的malloc根据选择动态链接库的不同（就使用不同的分配器lib），有不同实现，以下以glibc为例。
+至于内核中内存分配，由于其确定性，多用slab来做分配，也存在buddy allocation机制来管理。
+虚拟地址一般都是大于物理地址的，所以只需要搞好虚拟地址上的内存管理就行了，至于物理页如果dirty，自然有page fault interrupt 来操心。当然以下提到物理页连续等，是默认了虚拟页到物理页的映射关系，实际上mmap,brk这样的系统调用都不会真的操作物理页，很多时候都是系统告诉我们：“你要的物理页已经准备好了”，实际上他也就是改了一下task_struct里mm_struct里的一些页表项罢了（准备好的是映射，真正的物理页可还是dirty的）。
+所以内存分配器到底在哪一层呢，实际上内存分配器能看到的还就是虚拟内存，他一直在做修改页映射的操作，他并不会做将某个文件放到内存里的工作，这个工作显然是由缺页中断完成的紧跟其后的就是磁盘IO（以一个read操作为例&amp;ndash;，read -&amp;gt; vfs_read(首先要找到inode: 顺序是：check fd 在不在进程的打开文件列表里， 在的话找到file结构然后顺着找到dentry接着找到inode，check一下在不在page cache里这里就要通过inode里的address_space找到那颗组织page cache的基数树在上面查询了，查询用的是文件偏移量，不在就通过VFS里的inode做对应文件系统的operation，以xfs为例子，那就是解析inode数据结构，首先肯定要去它的data fork去找，xfs的data fork组织成两种形式，extent list or b+ tree, 无论是哪一种都能找到所有相关的block号了，一个一个把他们读出来就行了，这个工作显然是交给通用块设备层去做了，这层有点像VFS，下面马上就是各种不同的硬件驱动，上面是统一的请求，所以这一层用于整合，再下去就是到IO调度层，内核根据一些策略来做IO调度，这是因为磁盘读一次比较慢，尽量把连续扇区放一起读更快，再下去就真的从磁盘上读数据了。），只是它感性的认为自己在操作物理内存，比如：“太好了，这次我分配了0X10到0X2000这么多连续的内存空间”，实际上他就是把0X10到0X2000这一块虚拟内存的页表项改了一下，让虚拟页映射到了某一段连续物理页，实际的物理的IO并未发生呢
+glibc (example for user-space) 以ptmalloc为例：
 malloc时，如果内存分配区（主，非主）真的无空间，调用mmap或brk/sbrk来在虚拟内存上取一块作为新的空间，mmap取得内存在mmap区域，brk/sbrk在heap上（在进程的描述符task_struct中的mm_struct里可以找到）。主分配区可以使用sbrk和mmap向os申请内存，而非分配区只能通过mmap向os申请内存。接下来os可能（因为mmap只是给一块虚拟地址，真实数据还未拷贝到物理内存上）要去物理内存上找可用区块然后将真实数据拷贝上去（用户触发缺页syscall），这里再涉及物理页的分配。
 ptmalloc的内存管理方法就可以很好的解决每次要内存都要去向OS要的问题。它回收管理分配出的内存而不是每次都还给操作系统而是放入bin中留待下次使用，bin的整理等一些其他操作会在特定时候触发。
 首先每个进程都有一个主分配区和几个非主分配区，分配区在多线程间共享，对分配区的操作需要加线程互斥锁。主分配区由一号或主线程拥有。
 最小的内存管理单位为chunk，一段连续的内存被分成多个chunk，chunk内记录当前和前一个chunk的大小，用于合并。
 下一层级是分配区中的bins，bins分为:
  fast bin: 保存小块的chunk bins: 2.1 unsorted bin： 是一个chunk缓冲区，这里的chunk都是在等待整理的chunk（释放或合并出来的），同时也有可能是即将被用得到的chunk，因为很多程序会频繁的分配释放相同大小的内存，它在fastbin里找不到就会直接来这里找，速度快。chunk的size 没有限制。 2.2 small bin： 类似alloc分配器的开链数组实现，大小小于512字节的chunk被称为small chunk，分级每个相差8KB放入small bin对应槽位。共62个不同大小的bin 2.3 large bin： 与small bin类似，只是其中存的是大chunk，且不单纯线性增长，共63个不同大小的bin  chunk的分配与释放是一个很复杂的管理流程，这里只说管理层级，不谈细致流程。
-物理页分配 buddy 用户空间使用的最简单的物理页分配算法，直接分配连续的物理内存，然后回收能称为伙伴的空闲内存。 连续的物理页称为页块（page block），阶（order）是页的数量单位，2的n次方个连续页称为n阶页块。 如下条件的两个n阶页块称为伙伴（buddy）：
- 两个页块是相邻的，即物理地址是连续的； 页块的第一页的物理面页号必须是2的n次方的整数倍； 如果合并（n+1）阶页块，第一页的物理页号必须是2的括号(n+1)次方的整数倍。  分配的基本单位是n阶页块，不存在的话就去更高阶找，找到后拆开，都找不到就要使用非连续页分配机制，多次调用更低阶的页块分配
-物理内存首先被分为不同zone，并对zone维护一个使用率，根据区域水线来决定是否从其他区域借用物理页。
-a. 高水线（HIGH）：如果内存区域的空闲页数大于高水线，说明该内存区域的内存充足。
-b. 低水线（LOW）：如果内存区域的空闲页数小于低水线，说明该内存区域的内存轻微不足。
-c. 最低水线（MIN）：如果内存区域空闲页数小于最低水线，说明该内存区域的内存严重不足。
-通用页分配入口
-__alloc_pages_nodemask
-slab（内核使用） slab分配器的作用不仅仅是分配小块内存，更重要的作用是针对经常分配和释放的对象充当缓存。slab分配器的 核心思路是：为每种对象类型创建一个内存缓存，每个内存缓存由多个大块组成，一个大块是由一个或多个连 续的物理页，每个大块包含多个对象。slab采用面向对象的思想，基于对象类型管理内存，每种对象被划分为一 类，比如进程描述符task_struct是一个类，每个进程描述符实例是一个对象。</description>
+kernel space buddy 连续的物理页称为页块（page block），阶（order）是页的数量单位，2的n次方个连续页称为n阶页块。 如下条件的两个n阶页块称为伙伴（buddy）：</description>
     </item>
     
     <item>

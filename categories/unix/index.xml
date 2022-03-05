@@ -6,7 +6,19 @@
     <description>Recent content in Unix on Gao&#39;s Happy Day</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Sat, 01 Feb 2020 00:00:00 +0000</lastBuildDate><atom:link href="https://gao377020481.github.io/categories/unix/index.xml" rel="self" type="application/rss+xml" />
+    <lastBuildDate>Sat, 02 Oct 2021 00:00:00 +0000</lastBuildDate><atom:link href="https://gao377020481.github.io/categories/unix/index.xml" rel="self" type="application/rss+xml" />
+    <item>
+      <title>一次关于proc的分析</title>
+      <link>https://gao377020481.github.io/p/%E4%B8%80%E6%AC%A1%E5%85%B3%E4%BA%8Eproc%E7%9A%84%E5%88%86%E6%9E%90/</link>
+      <pubDate>Sat, 02 Oct 2021 00:00:00 +0000</pubDate>
+      
+      <guid>https://gao377020481.github.io/p/%E4%B8%80%E6%AC%A1%E5%85%B3%E4%BA%8Eproc%E7%9A%84%E5%88%86%E6%9E%90/</guid>
+      <description>一次关于proc的分析 运行：
+strace file /proc/version来一小段
+execve(&amp;quot;/usr/bin/file&amp;quot;, [&amp;quot;file&amp;quot;, &amp;quot;/proc/version&amp;quot;], 0x7ffc3c1ee838 /* 25 vars */) = 0brk(NULL) = 0x5591347ae000access(&amp;quot;/etc/ld.so.nohwcap&amp;quot;, F_OK) = -1 ENOENT (No such file or directory)access(&amp;quot;/etc/ld.so.preload&amp;quot;, R_OK) = -1 ENOENT (No such file or directory)openat(AT_FDCWD, &amp;quot;/etc/ld.so.cache&amp;quot;, O_RDONLY|O_CLOEXEC) = 3fstat(3, {st_mode=S_IFREG|0644, st_size=36168, ...}) = 0mmap(NULL, 36168, PROT_READ, MAP_PRIVATE, 3, 0) = 0x7f48f3973000close(3) = 0/etc/ld. so.nohwcap 这个文件存在，链接器就只会去load完全无优化的库版本（哪怕CPU支持优化）
+/etc/ld.so.preload 这个文件就跟LD_PRELOAD 干一个事情，这玩意在GekkoFS的系统调用截取时用过，preload一下自己的IO库，当发生IO操作，链接器会讲call的func链接到自己的库上去而不是走正常的posix fileIOapi。</description>
+    </item>
+    
     <item>
       <title>ubuntu-server虚拟机配置</title>
       <link>https://gao377020481.github.io/p/ubuntu-server%E8%99%9A%E6%8B%9F%E6%9C%BA%E9%85%8D%E7%BD%AE/</link>
