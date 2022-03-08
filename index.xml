@@ -79,6 +79,261 @@
 &lt;li&gt;迭代之间最好也没有依赖性&lt;/li&gt;
 &lt;li&gt;理论上就算有依赖性也可以向量化但是不实用&lt;/li&gt;
 &lt;/ol&gt;
+&lt;h2 id=&#34;现代向量处理器&#34;&gt;现代向量处理器&lt;/h2&gt;
+&lt;ol&gt;
+&lt;li&gt;依赖于大量的硬件单元而非流水线&lt;/li&gt;
+&lt;li&gt;有SIMD指令&lt;/li&gt;
+&lt;li&gt;大量依赖缓存，所以对齐很重要&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h3 id=&#34;几个x86-vec指令&#34;&gt;&lt;strong&gt;几个x86 vec指令&lt;/strong&gt;&lt;/h3&gt;
+&lt;ol&gt;
+&lt;li&gt;MMX instructions&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;适用于 32,16 or 8-bit 整数类型的计算指令，有8 x 64-bit 的寄存器： MM0 … MM7&lt;/p&gt;
+&lt;ol start=&#34;2&#34;&gt;
+&lt;li&gt;SSE instructions&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;支持：64 &amp;amp; 32-bit floating point，64, 32,16 or 8-bit integer types， 有8 x 128-bit 寄存器： xmm0 … xmm7 (xmm8 .. xmm16 in 64-bit mode)&lt;/p&gt;
+&lt;ol start=&#34;3&#34;&gt;
+&lt;li&gt;AVX instructions&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;ymm0 … ymm15 寄存器相比于SSE拓展到256bits&lt;/p&gt;
+&lt;ol start=&#34;4&#34;&gt;
+&lt;li&gt;AVX2   AVX-512&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;AVX-512只在 Intel KNL and Skylake上有，更强力512-bits寄存器，zmm0 … zmm15，他分四部分：Foundation（扩展32，64指令），Conflict Detection Instructions（检测要vec的loop的冲突，尽可能让更多的loop能vec），Exponential and Reciprocal Instructions（KNL里的，能支持超越运算，咱也不懂。。）， Prefetch Instructions （KNL里的预取指支持）&lt;/p&gt;
+&lt;h3 id=&#34;amd和arm的&#34;&gt;&lt;strong&gt;AMD和ARM的&lt;/strong&gt;&lt;/h3&gt;
+&lt;p&gt;AMD：&lt;/p&gt;
+&lt;p&gt;256bits的AVX2已经支持，但是512的在下一代&lt;/p&gt;
+&lt;p&gt;ARM：&lt;/p&gt;
+&lt;p&gt;大多数没有vec支持，通过 NEON instruction set有一些现代HPC处理器支持128bits，但是有SVE: Scalable Vector Extensions这个东西能给芯片制造商提供支持不同长度vec的指令（A64FX 512-bit SVE ）&lt;/p&gt;
+&lt;h2 id=&#34;对齐&#34;&gt;对齐&lt;/h2&gt;
+&lt;p&gt;AVX在32字节对齐的地址上工作的最好&lt;/p&gt;
+&lt;p&gt;所以一般需要告诉编译器对齐，并且连续的去访问内存&lt;/p&gt;
+&lt;p&gt;这里说的都是intel上的，两步走：&lt;/p&gt;
+&lt;h3 id=&#34;分配&#34;&gt;&lt;strong&gt;分配&lt;/strong&gt;&lt;/h3&gt;
+&lt;h4 id=&#34;动态内存&#34;&gt;&lt;strong&gt;动态内存&lt;/strong&gt;&lt;/h4&gt;
+&lt;pre&gt;&lt;code&gt;_mm_malloc, _mm_free
+float *a = _mm_malloc(1024*sizeof(float),64);
+&lt;/code&gt;&lt;/pre&gt;&lt;h4 id=&#34;静态内存&#34;&gt;&lt;strong&gt;静态内存&lt;/strong&gt;&lt;/h4&gt;
+&lt;pre&gt;&lt;code&gt;float a[1024] __attribute__((aligned(64)));
+
+&lt;/code&gt;&lt;/pre&gt;&lt;h4 id=&#34;多维数据对齐&#34;&gt;&lt;strong&gt;多维数据对齐&lt;/strong&gt;&lt;/h4&gt;
+&lt;p&gt;使用_mm_malloc分配多维数组的话，可能出现问题：&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;
+float* a = _mm_malloc(16*15*sizeof(float), 64);
+
+for(i=0;i&amp;lt;16;i++){
+    #pragma vector aligned
+        for(j=0;j&amp;lt;15;j++){
+            a[i*15+j]++;
+        }
+}
+
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;比如这里实际上intel这个函数做了一些其他操作，尤其是在对齐和向量化的前提下，内层循环是15层，编译器知道内层要vectorize，对齐是64字节也就是8个float，内层的15次循环要做512bit向量化的话就会出问题的，因为512bit对应64字节，内层16次循环的话这个就比较完美。抛开这种当作二维用的情况，一维情况下从内存分配器那里就特殊处理了末尾，比如这个16*15的刚好是8的倍数不存在末尾，但是你这样用循环就存在了末尾：7个作为一个末尾，可是编译器又不知道你这样搞，他还是当你单层循环，向量化的程序就会出现问题，可能产生错误的结果&lt;/p&gt;
+&lt;h3 id=&#34;通知编译器&#34;&gt;&lt;strong&gt;通知编译器&lt;/strong&gt;&lt;/h3&gt;
+&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;#pragma vector aligned 放在loop前，告诉编译器里面data是对齐的&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;__assume_aligned(a, 64); 放在循环内都可以，告诉编译器a这个array是对齐的&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;__assume(n1%16==0); 可能还需要告诉编译器这个loop scalars的属性，来个例子就知道了：&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-c&#34; data-lang=&#34;c&#34;&gt;
+&lt;span class=&#34;kr&#34;&gt;__declspec&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;align&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;64&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;))&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;float&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;X&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;[&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;1000&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;],&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;X2&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;[&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;1000&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;];&lt;/span&gt;
+
+&lt;span class=&#34;kt&#34;&gt;void&lt;/span&gt; &lt;span class=&#34;nf&#34;&gt;foo&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;kt&#34;&gt;float&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;*&lt;/span&gt; &lt;span class=&#34;kr&#34;&gt;restrict&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;a&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;int&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;n&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;int&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;n1&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;int&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;n2&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;{&lt;/span&gt;
+  &lt;span class=&#34;n&#34;&gt;__assume_aligned&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;a&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;64&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
+  &lt;span class=&#34;kr&#34;&gt;__assume&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;n1&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;%&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;16&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;==&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;0&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
+  &lt;span class=&#34;kr&#34;&gt;__assume&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;n2&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;%&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;16&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;==&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;0&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
+
+  &lt;span class=&#34;k&#34;&gt;for&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;kt&#34;&gt;int&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;i&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;0&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;i&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;n&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;i&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;++&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;{&lt;/span&gt; &lt;span class=&#34;c1&#34;&gt;// Compiler vectorizes loop with all aligned accesses
+&lt;/span&gt;&lt;span class=&#34;c1&#34;&gt;&lt;/span&gt;    &lt;span class=&#34;n&#34;&gt;X&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;[&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;i&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;]&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;+=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;a&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;[&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;i&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;]&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;+&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;a&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;[&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;i&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;+&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;n1&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;]&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;+&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;a&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;[&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;i&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;-&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;n1&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;]&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;+&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;a&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;[&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;i&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;+&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;n2&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;]&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;+&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;a&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;[&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;i&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;-&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;n2&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;];&lt;/span&gt;
+  &lt;span class=&#34;p&#34;&gt;}&lt;/span&gt;
+  
+  &lt;span class=&#34;k&#34;&gt;for&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;kt&#34;&gt;int&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;i&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;0&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;i&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;n&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;i&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;++&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;{&lt;/span&gt; &lt;span class=&#34;c1&#34;&gt;// Compiler vectorizes loop with all aligned accesses
+&lt;/span&gt;&lt;span class=&#34;c1&#34;&gt;&lt;/span&gt;    &lt;span class=&#34;n&#34;&gt;X2&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;[&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;i&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;]&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;+=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;X&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;[&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;i&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;]&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;*&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;a&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;[&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;i&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;];&lt;/span&gt;
+  &lt;span class=&#34;p&#34;&gt;}&lt;/span&gt;
+&lt;span class=&#34;p&#34;&gt;}&lt;/span&gt;
+
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;ol start=&#34;4&#34;&gt;
+&lt;li&gt;openmp的指令： #pragma omp simd aligned(a:64)&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;这样每个线程就可以去均分并操作整齐的数据&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-c&#34; data-lang=&#34;c&#34;&gt;
+&lt;span class=&#34;kr&#34;&gt;__declspec&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;align&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;64&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;))&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;float&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;X&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;[&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;1000&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;],&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;X2&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;[&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;1000&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;];&lt;/span&gt;
+
+&lt;span class=&#34;kt&#34;&gt;void&lt;/span&gt; &lt;span class=&#34;nf&#34;&gt;foo&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;kt&#34;&gt;float&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;*&lt;/span&gt; &lt;span class=&#34;kr&#34;&gt;restrict&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;a&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;int&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;n&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;int&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;n1&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;int&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;n2&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;{&lt;/span&gt;
+  &lt;span class=&#34;kt&#34;&gt;int&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;i&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
+
+  &lt;span class=&#34;kr&#34;&gt;__assume&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;n1&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;%&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;16&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;==&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;0&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
+  &lt;span class=&#34;kr&#34;&gt;__assume&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;n2&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;%&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;16&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;==&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;0&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
+
+&lt;span class=&#34;cp&#34;&gt;#pragma omp simd aligned(X:64,a:64)
+&lt;/span&gt;&lt;span class=&#34;cp&#34;&gt;&lt;/span&gt;  &lt;span class=&#34;k&#34;&gt;for&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;i&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;0&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;i&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;n&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;i&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;++&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;{&lt;/span&gt;
+    &lt;span class=&#34;n&#34;&gt;X&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;[&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;i&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;]&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;+=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;a&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;[&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;i&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;]&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;+&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;a&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;[&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;i&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;+&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;n1&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;]&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;+&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;a&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;[&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;i&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;-&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;n1&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;]&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;+&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;a&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;[&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;i&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;+&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;n2&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;]&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;+&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;a&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;[&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;i&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;-&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;n2&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;];&lt;/span&gt;
+  &lt;span class=&#34;p&#34;&gt;}&lt;/span&gt;
+
+&lt;span class=&#34;cp&#34;&gt;#pragma omp simd aligned(a:64)
+&lt;/span&gt;&lt;span class=&#34;cp&#34;&gt;&lt;/span&gt;  &lt;span class=&#34;k&#34;&gt;for&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;i&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;=&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;0&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;i&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;n&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;i&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;++&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;{&lt;/span&gt;
+    &lt;span class=&#34;n&#34;&gt;X2&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;[&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;i&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;]&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;+=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;X&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;[&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;i&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;]&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;*&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;a&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;[&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;i&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;];&lt;/span&gt;
+  &lt;span class=&#34;p&#34;&gt;}&lt;/span&gt;
+
+&lt;span class=&#34;p&#34;&gt;}&lt;/span&gt;
+
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id=&#34;检查编译器是否向量化程序&#34;&gt;检查编译器是否向量化程序&lt;/h2&gt;
+&lt;p&gt;CCE: -hlist=a&lt;/p&gt;
+&lt;p&gt;GNU: -fdump-tree-vect-all=&lt;!-- raw HTML omitted --&gt;&lt;/p&gt;
+&lt;p&gt;Intel: -opt-report3&lt;/p&gt;
+&lt;p&gt;AMD/Clang:-Rpass-analysis=.*&lt;/p&gt;
+&lt;p&gt;使用perf来找线索&lt;/p&gt;
+&lt;h2 id=&#34;充分配合编译器向量化&#34;&gt;充分配合编译器向量化&lt;/h2&gt;
+&lt;ol&gt;
+&lt;li&gt;
+&lt;p&gt;尽量消除迭代之间的依赖性（尽量多的使用循环的index而非一个外部变量来在loop中运算）：&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;将分支移出循环，if&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;#pragma ivdep 告诉编译器循环是独立的无依赖的&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;restrict 告诉编译器这个变量或者数组是唯一的&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;注意对齐&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;确保循环足够大，并确定循环大小&lt;/p&gt;
+&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h2 id=&#34;gathers-and-scatters&#34;&gt;Gathers and Scatters&lt;/h2&gt;
+&lt;p&gt;数据的访问模式不是均步的，他也有可能可以向量化。&lt;/p&gt;
+&lt;p&gt;首先说明，这功能是基于处理器指令的，处理器没实现的话，就没法用。KNL有专门的Gathers and Scatters指令，但是还是比对齐的数据损耗更大。&lt;/p&gt;
+&lt;p&gt;以网上找的一个人写的SIMD的库的教程来说明，我觉得有实际例子会比较好：&lt;/p&gt;
+&lt;p&gt;UME::SIMD&lt;/p&gt;
+&lt;p&gt;三种情况；&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;跨步访问，一次跨3个元素访问下一个&lt;/li&gt;
+&lt;li&gt;索引访问，以新计算的偏移量访问数组元素&lt;/li&gt;
+&lt;li&gt;改组访问，以不同的顺序访问元素&lt;/li&gt;
+&lt;/ol&gt;
+&lt;h3 id=&#34;跨步访问&#34;&gt;&lt;strong&gt;跨步访问&lt;/strong&gt;&lt;/h3&gt;
+&lt;p&gt;首先明确一点，gather是load的超集。&lt;/p&gt;
+&lt;p&gt;但是load效率高，速度快，所以还是多使用load来将连续内存搞到寄存器里。如果可以通过修改数据结构和代码的方式做到那就尽量去做，少使用gather。&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-c&#34; data-lang=&#34;c&#34;&gt;
+&lt;span class=&#34;kt&#34;&gt;float&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;a&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;[&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;LARGE_DATA_SIZE&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;];&lt;/span&gt;
+&lt;span class=&#34;kt&#34;&gt;uint32_t&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;STRIDE&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;8&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
+&lt;span class=&#34;p&#34;&gt;...&lt;/span&gt;
+&lt;span class=&#34;k&#34;&gt;for&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;kt&#34;&gt;int&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;i&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;0&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;i&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;&amp;lt;&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;PROBLEM_SIZE&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;i&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;+=&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;8&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;{&lt;/span&gt;
+  &lt;span class=&#34;n&#34;&gt;SIMDVec&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&#34;kt&#34;&gt;float&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;8&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;vec&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
+ 
+  &lt;span class=&#34;c1&#34;&gt;// Note that we have to scale the loop index.
+&lt;/span&gt;&lt;span class=&#34;c1&#34;&gt;&lt;/span&gt;  &lt;span class=&#34;kt&#34;&gt;int&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;offset&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;i&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;*&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;STRIDE&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
+ 
+  &lt;span class=&#34;c1&#34;&gt;// &amp;#39;load&amp;#39; the data to vec.
+&lt;/span&gt;&lt;span class=&#34;c1&#34;&gt;&lt;/span&gt;  &lt;span class=&#34;n&#34;&gt;vec&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;gather&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;&amp;amp;&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;a&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;[&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;offset&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;],&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;STRIDE&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
+  &lt;span class=&#34;c1&#34;&gt;// do something useful
+&lt;/span&gt;&lt;span class=&#34;c1&#34;&gt;&lt;/span&gt;  &lt;span class=&#34;n&#34;&gt;vec&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;+=&lt;/span&gt; &lt;span class=&#34;mf&#34;&gt;3.14&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
+  &lt;span class=&#34;c1&#34;&gt;// store the result at original locations
+&lt;/span&gt;&lt;span class=&#34;c1&#34;&gt;&lt;/span&gt;  &lt;span class=&#34;n&#34;&gt;vec&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;scatter&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;&amp;amp;&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;a&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;[&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;offset&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;],&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;STRIDE&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
+&lt;span class=&#34;p&#34;&gt;}&lt;/span&gt;
+
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id=&#34;索引访问&#34;&gt;&lt;strong&gt;索引访问&lt;/strong&gt;&lt;/h3&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-c&#34; data-lang=&#34;c&#34;&gt;&lt;span class=&#34;kt&#34;&gt;float&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;a&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;[&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;LARGE_DATA_SIZE&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;];&lt;/span&gt;
+&lt;span class=&#34;kt&#34;&gt;int&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;indices&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;[&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;PROBLEM_SIZE&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;];&lt;/span&gt;
+&lt;span class=&#34;kt&#34;&gt;uint32_t&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;STRIDE&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;4&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
+&lt;span class=&#34;p&#34;&gt;...&lt;/span&gt;
+&lt;span class=&#34;k&#34;&gt;for&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;kt&#34;&gt;int&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;i&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;0&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;i&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;&amp;lt;&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;PROBLEM_SIZE&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;i&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;+=&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;8&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt; &lt;span class=&#34;p&#34;&gt;{&lt;/span&gt;
+  &lt;span class=&#34;n&#34;&gt;SIMDVec&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&#34;kt&#34;&gt;float&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;8&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;vec&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
+ 
+  &lt;span class=&#34;c1&#34;&gt;// Here we are using precomputed indices,
+&lt;/span&gt;&lt;span class=&#34;c1&#34;&gt;&lt;/span&gt;  &lt;span class=&#34;c1&#34;&gt;// but they can be computed on-the-fly if necessary.
+&lt;/span&gt;&lt;span class=&#34;c1&#34;&gt;&lt;/span&gt;  &lt;span class=&#34;n&#34;&gt;SIMDVec&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&#34;kt&#34;&gt;uint32_t&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;mi&#34;&gt;8&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;indices_vec&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;&amp;amp;&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;indices&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;[&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;i&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;];&lt;/span&gt;
+ 
+  &lt;span class=&#34;c1&#34;&gt;// &amp;#39;load&amp;#39; the data to vec.
+&lt;/span&gt;&lt;span class=&#34;c1&#34;&gt;&lt;/span&gt;  &lt;span class=&#34;n&#34;&gt;vec&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;gather&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;&amp;amp;&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;a&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;[&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;0&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;],&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;indices_vec&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
+  &lt;span class=&#34;c1&#34;&gt;// do something useful
+&lt;/span&gt;&lt;span class=&#34;c1&#34;&gt;&lt;/span&gt;  &lt;span class=&#34;n&#34;&gt;vec&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;+=&lt;/span&gt; &lt;span class=&#34;mf&#34;&gt;3.14&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
+  &lt;span class=&#34;c1&#34;&gt;// store the result at original locations
+&lt;/span&gt;&lt;span class=&#34;c1&#34;&gt;&lt;/span&gt;  &lt;span class=&#34;n&#34;&gt;vec&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;scatter&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;&amp;amp;&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;a&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;[&lt;/span&gt;&lt;span class=&#34;mi&#34;&gt;0&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;],&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;indices_vec&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;);&lt;/span&gt;
+&lt;span class=&#34;p&#34;&gt;}&lt;/span&gt;
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h2 id=&#34;masking-and-blending&#34;&gt;Masking and Blending&lt;/h2&gt;
+&lt;p&gt;Mask 可以被认为是是一个描述分支的掩码数组，通过它和特殊的指令：blend， 可以将内含分支的loop向量化掉：&lt;/p&gt;
+&lt;p&gt;before:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;for (i = 0; i &amp;lt; N; i++) {
+    if (Trigger[i] &amp;lt; Val) {
+        A[i] = B[i] + 0.5;
+    }else{
+        A[i] = B[i] - 0.5;
+    }
+}
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;after:&lt;/p&gt;
+&lt;pre&gt;&lt;code&gt;for (i = 0; i &amp;lt; N; i+=16) {
+    TmpB= B[i:i+15];
+    Mask = Trigger[i:i+15] &amp;lt; Val
+    TmpA1 = TmpB + 0.5;
+    TmpA2 = TmpB - 0.5;
+    TmpA = BLEND Mask, TmpA1, TmpA2
+    A[i:i+15] = TmpA;
+} 
+&lt;/code&gt;&lt;/pre&gt;&lt;p&gt;看代码就知道啥意思了&lt;/p&gt;
+&lt;h2 id=&#34;再记一下arm的一些支持&#34;&gt;再记一下arm的一些支持&lt;/h2&gt;
+&lt;p&gt;ARM的向量化指令功能叫做SVE:&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;
+&lt;p&gt;SVE is vector length independent&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Allows hardware to be created and used between 128-bits and 2048-bits&lt;/li&gt;
+&lt;li&gt;Current processors using it have 512-bit vectors&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Programming approach allows executable to scale dynamically to available vector length&lt;/p&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Designed to help improve auto-vectorization&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Instructions to support speculative vectorization to allow uncounted loops to be vectorized.&lt;/li&gt;
+&lt;li&gt;Instructions to make it easier to vectorise outer loops, working with dependencies&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Gather-load and scatter-store&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Loads a single vector register from non-contiguous memory locations.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Per-lane predication&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Operate on individual lanes of vector controlled by of a governing predicate register.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Predicate-driven loop control and management&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;Eliminate loop heads and tails and other overhead by processing partial vectors.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Vector partitioning for software-managed speculation&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;First-fault vector load instructions allow vector accesses to cross into invalid pages.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;li&gt;
+&lt;p&gt;Extended floating-point and bitwise horizontal reductions&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;In-order or tree-based floating-point sum, trade-off repeatability vs performance.&lt;/li&gt;
+&lt;/ul&gt;
+&lt;/li&gt;
+&lt;/ul&gt;
 </description>
         </item>
         <item>
@@ -1620,7 +1875,7 @@ mpirun -np &lt;span class=&#34;m&#34;&gt;4&lt;/span&gt; hello_c
 &lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-c++&#34; data-lang=&#34;c++&#34;&gt;&lt;span class=&#34;n&#34;&gt;_Rb_tree&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&#34;kt&#34;&gt;int&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;kt&#34;&gt;int&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;_Identity&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&#34;kt&#34;&gt;int&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;&amp;gt;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;less&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&#34;kt&#34;&gt;int&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;&amp;gt;&amp;gt;&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;itree&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;其中前两个是K和V，&lt;/p&gt;
 &lt;p&gt;_Identity&lt;!-- raw HTML omitted --&gt;是一个从V中得到K的函数，为什么需要这个呢，举例：&lt;/p&gt;
-&lt;p&gt;key: int   Value:pair&amp;lt;int, vector&lt;!-- raw HTML omitted --&gt;&amp;gt;, 看出来了吧，这个Value其实是data和key的结合体，所以需要告诉怎么从结合体中取出这个data，逻辑意义上的key和value就对应这里的key和data了。&lt;/p&gt;
+&lt;p&gt;key: int    Value:pair&amp;lt;int, vector&amp;lt;int&amp;raquo;, 看出来了吧，这个Value其实是data和key的结合体，所以需要告诉怎么从结合体中取出这个data，逻辑意义上的key和value就对应这里的key和data了。&lt;/p&gt;
 &lt;p&gt;less&lt;!-- raw HTML omitted --&gt;是一个重载了operator()的比较函数。&lt;/p&gt;
 &lt;p&gt;有两种插入：
 insert_equal和insert_unique，看字面意思就知道是啥&lt;/p&gt;
@@ -1696,7 +1951,7 @@ insert_equal和insert_unique，看字面意思就知道是啥&lt;/p&gt;
 &lt;li&gt;继承串联下存在虚继承&lt;/li&gt;
 &lt;/ol&gt;
 &lt;p&gt;&lt;strong&gt;情况三的类存在一个或多个virtual function&lt;/strong&gt;&lt;/p&gt;
-&lt;p&gt;很容易想到的多态情况，以一个derive class A作为值赋给一个base class B，发生切割操作，并且需要使用Base class的vptr而非A的vptr，这都需要编译器在生成的拷贝构造函数中纠正&lt;/p&gt;
+&lt;p&gt;很容易想到的多态情况，以一个derive class A作为值赋给一个base class B指针或引用，发生修改扩张操作（多态），并且需要使用Base class的vptr而非A的vptr，这都需要编译器在生成的拷贝构造函数中纠正，使base class的vptr指向对应A的虚函数。&lt;/p&gt;
 &lt;p&gt;&lt;strong&gt;情况四的继承串联下存在虚继承&lt;/strong&gt;&lt;/p&gt;
 &lt;p&gt;同样将derive class A作为值赋给一个base class B，同时这个base class B虚继承自一个virtual base class C。那么A的拷贝构造函数需要被编译器扩张或生成来完成bptr的指定。&lt;/p&gt;
 &lt;h3 id=&#34;传值三种情况构造&#34;&gt;&lt;strong&gt;传值三种情况构造&lt;/strong&gt;&lt;/h3&gt;
@@ -1789,7 +2044,7 @@ insert_equal和insert_unique，看字面意思就知道是啥&lt;/p&gt;
 &lt;p&gt;对于函数的成员方法，其可以直接操作类内成员，编译器在参数列表添加一个this指针，方法是通过this指针来操作的&lt;/p&gt;
 &lt;p&gt;&lt;strong&gt;存取操作&lt;/strong&gt;&lt;/p&gt;
 &lt;p&gt;通过计算成员变量的offset来存取，但是一旦存在virtual base class object，就多了一层间接性，因为虚基类的对象可能需要通过一个bptr来访问到。&lt;/p&gt;
-&lt;p&gt;显然，以下两种情况当时用指针存取，成员存在于虚基类中，其效率会低:&lt;/p&gt;
+&lt;p&gt;显然，以下两种情况当使用指针存取，成员存在于虚基类中，其效率会低，这是因为编译器实际上并不能确定aptr指向什么type，也就对于x的offset无从得知，一切判断都需要延迟到执行期。但是a.x的方式对于编译器来说是明显的，编译器可以确定的在生成的汇编代码里加上offset寻址到那个x。&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-c++&#34; data-lang=&#34;c++&#34;&gt;&lt;span class=&#34;n&#34;&gt;A&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;a&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
 &lt;span class=&#34;n&#34;&gt;A&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;*&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;aptr&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;=&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;&amp;amp;&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;a&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
 &lt;span class=&#34;n&#34;&gt;a&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;.&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;x&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
@@ -1966,8 +2221,8 @@ insert_equal和insert_unique，看字面意思就知道是啥&lt;/p&gt;
 &lt;h3 id=&#34;析构过程&#34;&gt;&lt;strong&gt;析构过程&lt;/strong&gt;&lt;/h3&gt;
 &lt;p&gt;&lt;figure 
 	&gt;
-	&lt;a href=&#34;https://gao377020481.github.io/post/c&amp;#43;&amp;#43;/object.jpg&#34; &gt;
-		&lt;img src=&#34;https://gao377020481.github.io/post/c&amp;#43;&amp;#43;/object.jpg&#34;
+	&lt;a href=&#34;https://gao377020481.github.io/post/c&amp;#43;&amp;#43;/object9.jpg&#34; &gt;
+		&lt;img src=&#34;https://gao377020481.github.io/post/c&amp;#43;&amp;#43;/object9.jpg&#34;
 			
 			
 			
@@ -3066,6 +3321,11 @@ SAVE的时候AOF一样会写入，因为AOF写入又后台线程完成&lt;/p&gt;
         <description>&lt;img src="https://gao377020481.github.io/p/%E5%BC%82%E5%B8%B8%E5%A4%84%E7%90%86/529.jpg" alt="Featured image of post 异常处理" /&gt;&lt;h1 id=&#34;try-catch组件实现&#34;&gt;&lt;strong&gt;Try Catch组件实现&lt;/strong&gt;&lt;/h1&gt;
 &lt;p&gt;&lt;strong&gt;先说明try catch组件使用setjump和longjump实现&lt;/strong&gt;&lt;/p&gt;
 &lt;h2 id=&#34;setjump-longjump语法&#34;&gt;&lt;strong&gt;setjump longjump语法&lt;/strong&gt;&lt;/h2&gt;
+&lt;p&gt;Int setjmp(jmp_buf  env);&lt;/p&gt;
+&lt;p&gt;返回值：若直接调用则返回0，若从longjmp调用返回则返回非0值的longjmp中的val值&lt;/p&gt;
+&lt;p&gt;Void longjmp(jmp_buf env,int val);&lt;/p&gt;
+&lt;p&gt;调用此函数则返回到语句setjmp所在的地方，其中env 就是setjmp中的 env，而val 则是使setjmp的返回值变为val。&lt;/p&gt;
+&lt;p&gt;当检查到一个错误时,则以两个参数调用longjmp函数，第一个就是在调用setjmp时所用的env，第二个参数是具有非0值val，它将成为从setjmp处返回的值。使用第二个参数的原因是对于一个setjmp可以有多个longjmp。&lt;/p&gt;
 &lt;p&gt;jmp_buf env;环境&lt;/p&gt;
 &lt;p&gt;setjump(env)设置回跳点，返回longjump(env,out)传的参数out，配套使用，longjump可穿越函数跳转&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-c&#34; data-lang=&#34;c&#34;&gt;&lt;span class=&#34;n&#34;&gt;jmp_buf&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;env&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;;&lt;/span&gt;
@@ -11275,6 +11535,63 @@ deb http://mirrors.aliyun.com/ubuntu/ xenial-security multiverse
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;安装gcc：&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-shell&#34; data-lang=&#34;shell&#34;&gt;sudo apt-get install build-essential
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;</description>
+        </item>
+        <item>
+        <title>对象优化</title>
+        <link>https://gao377020481.github.io/p/%E5%AF%B9%E8%B1%A1%E4%BC%98%E5%8C%96/</link>
+        <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+        
+        <guid>https://gao377020481.github.io/p/%E5%AF%B9%E8%B1%A1%E4%BC%98%E5%8C%96/</guid>
+        <description>&lt;img src="https://gao377020481.github.io/p/%E5%AF%B9%E8%B1%A1%E4%BC%98%E5%8C%96/283.jpg" alt="Featured image of post 对象优化" /&gt;&lt;h2 id=&#34;面向对象带来的性能损耗&#34;&gt;面向对象带来的性能损耗&lt;/h2&gt;
+&lt;p&gt;关于对象的构成可以参考之前的一篇博客，&lt;a class=&#34;link&#34; href=&#34;https://gao377020481.github.io/p/c-%e5%af%b9%e8%b1%a1/&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
+    &gt;C++对象&lt;/a&gt;&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;缓存开销&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;数据被组织在对象内，然后对象又有一些额外的内存开销，比如虚表等。&lt;/p&gt;
+&lt;ol start=&#34;2&#34;&gt;
+&lt;li&gt;方法开销&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;面向对象有很多的小函数，函数调用耗时，小的区块也限制了编译器优化的空间，虚函数机制多次跳转也有损耗。&lt;/p&gt;
+&lt;ol start=&#34;3&#34;&gt;
+&lt;li&gt;构造开销&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;构造函数开销大，有可能要处理虚继承虚函数的情况。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;JAVA&lt;/strong&gt;中：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;在堆上分配空间，调用类的构造函数，初始化类的字段&lt;/li&gt;
+&lt;li&gt;对象状态被垃圾收集器跟踪，可能发生垃圾回收&lt;/li&gt;
+&lt;li&gt;在使用调试器创建对象时，你可以在一定程度上看到这一点。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;**C++**中：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;拷贝构造经常发生（传参赋值返回），JAVA中都是引用就不会潜在发生。&lt;/li&gt;
+&lt;li&gt;构造与解构在继承体系中都是链状的，call的开销也很大&lt;/li&gt;
+&lt;/ul&gt;
+&lt;ol start=&#34;4&#34;&gt;
+&lt;li&gt;异常&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;这个可以参考之前写的&lt;a class=&#34;link&#34; href=&#34;https://gao377020481.github.io/p/%e5%bc%82%e5%b8%b8%e5%a4%84%e7%90%86/&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
+    &gt;异常处理&lt;/a&gt;，讲到try catch的实现，里面其实就是很多的跳转，还是非局部的，也就是很像function call。消耗当然大了。&lt;/p&gt;
+&lt;h2 id=&#34;优化&#34;&gt;优化&lt;/h2&gt;
+&lt;h3 id=&#34;method-in-lining&#34;&gt;Method In-lining&lt;/h3&gt;
+&lt;p&gt;编译器很难自己去in-lining，c++的in-line关键字也只是鼓励编译器尝试in-line函数。但还是多用inline关键字。&lt;/p&gt;
+&lt;p&gt;一般对于带循环的小函数编译器不会inline它，所以建议用重复的几行来替代小循环。&lt;/p&gt;
+&lt;p&gt;私有，final的方法很可能被inline但是虚函数从不会被inline因为需要在运行时间接调用&lt;/p&gt;
+&lt;p&gt;nested template：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-c++&#34; data-lang=&#34;c++&#34;&gt;
+&lt;span class=&#34;k&#34;&gt;template&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&#34;k&#34;&gt;template&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&#34;k&#34;&gt;typename&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;k&#34;&gt;typename&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;...&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&#34;k&#34;&gt;class&lt;/span&gt; &lt;span class=&#34;nc&#34;&gt;V&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;k&#34;&gt;typename&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;...&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;Args&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;&amp;gt;&lt;/span&gt;
+&lt;span class=&#34;kt&#34;&gt;void&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;print_container&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;V&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;Args&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;...&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;&amp;amp;&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;con&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;这需要C++11支持，template &amp;lt;typename, typename&amp;hellip;&amp;gt; class V是第一个模板参数，他是一个有typename, typename&amp;hellip;为模板参数的类，它的名字叫V，typename&amp;hellip; Args指后续的模板参数，数量任意多，Args就是V里的模板参数，需要在这里指示出来。这是C++11的写法，可以让编译器自动推导传入类型模板参数的数量和类型。&lt;/p&gt;
+&lt;p&gt;举个例子，&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-c++&#34; data-lang=&#34;c++&#34;&gt;&lt;span class=&#34;n&#34;&gt;vector&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;vector&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;vector&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&#34;kt&#34;&gt;int&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;&amp;gt;&amp;gt;&amp;gt;&lt;/span&gt;&lt;span class=&#34;err&#34;&gt;的参数传进去，推导出来就是这个：&lt;/span&gt;
+
+&lt;span class=&#34;kt&#34;&gt;void&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;print_container&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;std&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;::&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;vector&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;std&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;::&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;vector&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;std&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;::&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;vector&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&#34;kt&#34;&gt;int&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;&amp;gt;&amp;gt;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;std&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;::&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;allocator&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;std&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;::&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;vector&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;std&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;::&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;vector&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&#34;kt&#34;&gt;int&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;&amp;gt;&amp;gt;&amp;gt;&amp;gt;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;std&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;::&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;vector&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;std&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;::&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;vector&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;std&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;::&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;vector&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&#34;kt&#34;&gt;int&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;&amp;gt;&amp;gt;&amp;gt;&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;&amp;amp;&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;con&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id=&#34;encapsulation&#34;&gt;Encapsulation&lt;/h3&gt;
+&lt;p&gt;意思就是把性能差的部分拿出来单独放到一个区域中或类中，在辅助上硬件比如FPGA,GPGPU，可以达到不错的加速效果。&lt;/p&gt;
+</description>
         </item>
         
     </channel>

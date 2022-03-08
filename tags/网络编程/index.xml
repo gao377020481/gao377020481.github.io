@@ -14,13 +14,15 @@
       
       <guid>https://gao377020481.github.io/p/%E5%BC%82%E5%B8%B8%E5%A4%84%E7%90%86/</guid>
       <description>Try Catch组件实现 先说明try catch组件使用setjump和longjump实现
-setjump longjump语法 jmp_buf env;环境
+setjump longjump语法 Int setjmp(jmp_buf env);
+返回值：若直接调用则返回0，若从longjmp调用返回则返回非0值的longjmp中的val值
+Void longjmp(jmp_buf env,int val);
+调用此函数则返回到语句setjmp所在的地方，其中env 就是setjmp中的 env，而val 则是使setjmp的返回值变为val。
+当检查到一个错误时,则以两个参数调用longjmp函数，第一个就是在调用setjmp时所用的env，第二个参数是具有非0值val，它将成为从setjmp处返回的值。使用第二个参数的原因是对于一个setjmp可以有多个longjmp。
+jmp_buf env;环境
 setjump(env)设置回跳点，返回longjump(env,out)传的参数out，配套使用，longjump可穿越函数跳转
 jmp_buf env; int c = setjump(env); longjump(env,3); 这里longjump后就会跳回setjump这一行，并且setjump会返回3，也就是c = 3。
-int count = 0; jmp_buf env; void a(int indx) { longjump(env,indx); } int main() { int idx = 0; count = setjump(env); if(count == 0) { a(env,idx++); } else if (count == 1) { a(env,idx++); } else { printf(&amp;#34;ok&amp;#34;); } return 0; } 如上，函数a会调回开头setjump处，如果是这样a调用多次，a又没有返回（a运行到longjump处进入了，没返回），a的栈会不会还存在，存在的话如果有无数个a，会不会发生栈溢出。
-答案是不会，因为a在进入longjump后，其栈指针直接失效，a的栈直接失效，在setjump函数所在函数block中被覆盖，所以a的多次调用不会发生栈溢出。
-setjump 与 longjump本身是线程安全的
-setjump longjump与try catch的关系 先来个 代码：</description>
+int count = 0; jmp_buf env; void a(int indx) { longjump(env,indx); } int main() { int idx = 0; count = setjump(env); if(count == 0) { a(env,idx++); } else if (count == 1) { a(env,idx++); } else { printf(&amp;#34;ok&amp;#34;); } return 0; } 如上，函数a会调回开头setjump处，如果是这样a调用多次，a又没有返回（a运行到longjump处进入了，没返回），a的栈会不会还存在，存在的话如果有无数个a，会不会发生栈溢出。</description>
     </item>
     
   </channel>

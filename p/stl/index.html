@@ -301,7 +301,7 @@
 <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-c++" data-lang="c++"><span class="n">_Rb_tree</span><span class="o">&lt;</span><span class="kt">int</span><span class="p">,</span> <span class="kt">int</span><span class="p">,</span> <span class="n">_Identity</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;</span><span class="p">,</span> <span class="n">less</span><span class="o">&lt;</span><span class="kt">int</span><span class="o">&gt;&gt;</span> <span class="n">itree</span><span class="p">;</span>
 </code></pre></div><p>其中前两个是K和V，</p>
 <p>_Identity<!-- raw HTML omitted -->是一个从V中得到K的函数，为什么需要这个呢，举例：</p>
-<p>key: int   Value:pair&lt;int, vector<!-- raw HTML omitted -->&gt;, 看出来了吧，这个Value其实是data和key的结合体，所以需要告诉怎么从结合体中取出这个data，逻辑意义上的key和value就对应这里的key和data了。</p>
+<p>key: int    Value:pair&lt;int, vector&lt;int&raquo;, 看出来了吧，这个Value其实是data和key的结合体，所以需要告诉怎么从结合体中取出这个data，逻辑意义上的key和value就对应这里的key和data了。</p>
 <p>less<!-- raw HTML omitted -->是一个重载了operator()的比较函数。</p>
 <p>有两种插入：
 insert_equal和insert_unique，看字面意思就知道是啥</p>

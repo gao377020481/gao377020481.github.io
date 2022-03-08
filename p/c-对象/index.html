@@ -186,7 +186,7 @@
 <li>继承串联下存在虚继承</li>
 </ol>
 <p><strong>情况三的类存在一个或多个virtual function</strong></p>
-<p>很容易想到的多态情况，以一个derive class A作为值赋给一个base class B，发生切割操作，并且需要使用Base class的vptr而非A的vptr，这都需要编译器在生成的拷贝构造函数中纠正</p>
+<p>很容易想到的多态情况，以一个derive class A作为值赋给一个base class B指针或引用，发生修改扩张操作（多态），并且需要使用Base class的vptr而非A的vptr，这都需要编译器在生成的拷贝构造函数中纠正，使base class的vptr指向对应A的虚函数。</p>
 <p><strong>情况四的继承串联下存在虚继承</strong></p>
 <p>同样将derive class A作为值赋给一个base class B，同时这个base class B虚继承自一个virtual base class C。那么A的拷贝构造函数需要被编译器扩张或生成来完成bptr的指定。</p>
 <h3 id="传值三种情况构造"><strong>传值三种情况构造</strong></h3>
@@ -279,7 +279,7 @@
 <p>对于函数的成员方法，其可以直接操作类内成员，编译器在参数列表添加一个this指针，方法是通过this指针来操作的</p>
 <p><strong>存取操作</strong></p>
 <p>通过计算成员变量的offset来存取，但是一旦存在virtual base class object，就多了一层间接性，因为虚基类的对象可能需要通过一个bptr来访问到。</p>
-<p>显然，以下两种情况当时用指针存取，成员存在于虚基类中，其效率会低:</p>
+<p>显然，以下两种情况当使用指针存取，成员存在于虚基类中，其效率会低，这是因为编译器实际上并不能确定aptr指向什么type，也就对于x的offset无从得知，一切判断都需要延迟到执行期。但是a.x的方式对于编译器来说是明显的，编译器可以确定的在生成的汇编代码里加上offset寻址到那个x。</p>
 <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-c++" data-lang="c++"><span class="n">A</span> <span class="n">a</span><span class="p">;</span>
 <span class="n">A</span> <span class="o">*</span><span class="n">aptr</span> <span class="o">=</span> <span class="o">&amp;</span><span class="n">a</span><span class="p">;</span>
 <span class="n">a</span><span class="p">.</span><span class="n">x</span><span class="p">;</span>
@@ -456,8 +456,8 @@
 <h3 id="析构过程"><strong>析构过程</strong></h3>
 <p><figure 
 	>
-	<a href="/post/c&#43;&#43;/object.jpg" >
-		<img src="/post/c&#43;&#43;/object.jpg"
+	<a href="/post/c&#43;&#43;/object9.jpg" >
+		<img src="/post/c&#43;&#43;/object9.jpg"
 			
 			
 			

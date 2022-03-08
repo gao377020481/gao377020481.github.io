@@ -136,6 +136,11 @@
     <h1 id="try-catch组件实现"><strong>Try Catch组件实现</strong></h1>
 <p><strong>先说明try catch组件使用setjump和longjump实现</strong></p>
 <h2 id="setjump-longjump语法"><strong>setjump longjump语法</strong></h2>
+<p>Int setjmp(jmp_buf  env);</p>
+<p>返回值：若直接调用则返回0，若从longjmp调用返回则返回非0值的longjmp中的val值</p>
+<p>Void longjmp(jmp_buf env,int val);</p>
+<p>调用此函数则返回到语句setjmp所在的地方，其中env 就是setjmp中的 env，而val 则是使setjmp的返回值变为val。</p>
+<p>当检查到一个错误时,则以两个参数调用longjmp函数，第一个就是在调用setjmp时所用的env，第二个参数是具有非0值val，它将成为从setjmp处返回的值。使用第二个参数的原因是对于一个setjmp可以有多个longjmp。</p>
 <p>jmp_buf env;环境</p>
 <p>setjump(env)设置回跳点，返回longjump(env,out)传的参数out，配套使用，longjump可穿越函数跳转</p>
 <div class="highlight"><pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="n">jmp_buf</span> <span class="n">env</span><span class="p">;</span>

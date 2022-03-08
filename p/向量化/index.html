@@ -123,7 +123,7 @@
 
 
                 <time class="article-time--reading">
-                    1 minute read
+                    3 minute read
                 </time>
             </div>
         
@@ -142,6 +142,261 @@
 <li>迭代之间最好也没有依赖性</li>
 <li>理论上就算有依赖性也可以向量化但是不实用</li>
 </ol>
+<h2 id="现代向量处理器">现代向量处理器</h2>
+<ol>
+<li>依赖于大量的硬件单元而非流水线</li>
+<li>有SIMD指令</li>
+<li>大量依赖缓存，所以对齐很重要</li>
+</ol>
+<h3 id="几个x86-vec指令"><strong>几个x86 vec指令</strong></h3>
+<ol>
+<li>MMX instructions</li>
+</ol>
+<p>适用于 32,16 or 8-bit 整数类型的计算指令，有8 x 64-bit 的寄存器： MM0 … MM7</p>
+<ol start="2">
+<li>SSE instructions</li>
+</ol>
+<p>支持：64 &amp; 32-bit floating point，64, 32,16 or 8-bit integer types， 有8 x 128-bit 寄存器： xmm0 … xmm7 (xmm8 .. xmm16 in 64-bit mode)</p>
+<ol start="3">
+<li>AVX instructions</li>
+</ol>
+<p>ymm0 … ymm15 寄存器相比于SSE拓展到256bits</p>
+<ol start="4">
+<li>AVX2   AVX-512</li>
+</ol>
+<p>AVX-512只在 Intel KNL and Skylake上有，更强力512-bits寄存器，zmm0 … zmm15，他分四部分：Foundation（扩展32，64指令），Conflict Detection Instructions（检测要vec的loop的冲突，尽可能让更多的loop能vec），Exponential and Reciprocal Instructions（KNL里的，能支持超越运算，咱也不懂。。）， Prefetch Instructions （KNL里的预取指支持）</p>
+<h3 id="amd和arm的"><strong>AMD和ARM的</strong></h3>
+<p>AMD：</p>
+<p>256bits的AVX2已经支持，但是512的在下一代</p>
+<p>ARM：</p>
+<p>大多数没有vec支持，通过 NEON instruction set有一些现代HPC处理器支持128bits，但是有SVE: Scalable Vector Extensions这个东西能给芯片制造商提供支持不同长度vec的指令（A64FX 512-bit SVE ）</p>
+<h2 id="对齐">对齐</h2>
+<p>AVX在32字节对齐的地址上工作的最好</p>
+<p>所以一般需要告诉编译器对齐，并且连续的去访问内存</p>
+<p>这里说的都是intel上的，两步走：</p>
+<h3 id="分配"><strong>分配</strong></h3>
+<h4 id="动态内存"><strong>动态内存</strong></h4>
+<pre><code>_mm_malloc, _mm_free
+float *a = _mm_malloc(1024*sizeof(float),64);
+</code></pre><h4 id="静态内存"><strong>静态内存</strong></h4>
+<pre><code>float a[1024] __attribute__((aligned(64)));
+
+</code></pre><h4 id="多维数据对齐"><strong>多维数据对齐</strong></h4>
+<p>使用_mm_malloc分配多维数组的话，可能出现问题：</p>
+<pre><code>
+float* a = _mm_malloc(16*15*sizeof(float), 64);
+
+for(i=0;i&lt;16;i++){
+    #pragma vector aligned
+        for(j=0;j&lt;15;j++){
+            a[i*15+j]++;
+        }
+}
+
+</code></pre><p>比如这里实际上intel这个函数做了一些其他操作，尤其是在对齐和向量化的前提下，内层循环是15层，编译器知道内层要vectorize，对齐是64字节也就是8个float，内层的15次循环要做512bit向量化的话就会出问题的，因为512bit对应64字节，内层16次循环的话这个就比较完美。抛开这种当作二维用的情况，一维情况下从内存分配器那里就特殊处理了末尾，比如这个16*15的刚好是8的倍数不存在末尾，但是你这样用循环就存在了末尾：7个作为一个末尾，可是编译器又不知道你这样搞，他还是当你单层循环，向量化的程序就会出现问题，可能产生错误的结果</p>
+<h3 id="通知编译器"><strong>通知编译器</strong></h3>
+<ol>
+<li>
+<p>#pragma vector aligned 放在loop前，告诉编译器里面data是对齐的</p>
+</li>
+<li>
+<p>__assume_aligned(a, 64); 放在循环内都可以，告诉编译器a这个array是对齐的</p>
+</li>
+<li>
+<p>__assume(n1%16==0); 可能还需要告诉编译器这个loop scalars的属性，来个例子就知道了：</p>
+</li>
+</ol>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-c" data-lang="c">
+<span class="kr">__declspec</span><span class="p">(</span><span class="n">align</span><span class="p">(</span><span class="mi">64</span><span class="p">))</span> <span class="kt">float</span> <span class="n">X</span><span class="p">[</span><span class="mi">1000</span><span class="p">],</span> <span class="n">X2</span><span class="p">[</span><span class="mi">1000</span><span class="p">];</span>
+
+<span class="kt">void</span> <span class="nf">foo</span><span class="p">(</span><span class="kt">float</span> <span class="o">*</span> <span class="kr">restrict</span> <span class="n">a</span><span class="p">,</span> <span class="kt">int</span> <span class="n">n</span><span class="p">,</span> <span class="kt">int</span> <span class="n">n1</span><span class="p">,</span> <span class="kt">int</span> <span class="n">n2</span><span class="p">)</span> <span class="p">{</span>
+  <span class="n">__assume_aligned</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="mi">64</span><span class="p">);</span>
+  <span class="kr">__assume</span><span class="p">(</span><span class="n">n1</span><span class="o">%</span><span class="mi">16</span><span class="o">==</span><span class="mi">0</span><span class="p">);</span>
+  <span class="kr">__assume</span><span class="p">(</span><span class="n">n2</span><span class="o">%</span><span class="mi">16</span><span class="o">==</span><span class="mi">0</span><span class="p">);</span>
+
+  <span class="k">for</span><span class="p">(</span><span class="kt">int</span> <span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span><span class="n">i</span><span class="o">&lt;</span><span class="n">n</span><span class="p">;</span><span class="n">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span> <span class="c1">// Compiler vectorizes loop with all aligned accesses
+</span><span class="c1"></span>    <span class="n">X</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+=</span> <span class="n">a</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+</span> <span class="n">a</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="n">n1</span><span class="p">]</span> <span class="o">+</span> <span class="n">a</span><span class="p">[</span><span class="n">i</span><span class="o">-</span><span class="n">n1</span><span class="p">]</span><span class="o">+</span> <span class="n">a</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="n">n2</span><span class="p">]</span> <span class="o">+</span> <span class="n">a</span><span class="p">[</span><span class="n">i</span><span class="o">-</span><span class="n">n2</span><span class="p">];</span>
+  <span class="p">}</span>
+  
+  <span class="k">for</span><span class="p">(</span><span class="kt">int</span> <span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span><span class="n">i</span><span class="o">&lt;</span><span class="n">n</span><span class="p">;</span><span class="n">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span> <span class="c1">// Compiler vectorizes loop with all aligned accesses
+</span><span class="c1"></span>    <span class="n">X2</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+=</span> <span class="n">X</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">*</span><span class="n">a</span><span class="p">[</span><span class="n">i</span><span class="p">];</span>
+  <span class="p">}</span>
+<span class="p">}</span>
+
+</code></pre></div><ol start="4">
+<li>openmp的指令： #pragma omp simd aligned(a:64)</li>
+</ol>
+<p>这样每个线程就可以去均分并操作整齐的数据</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-c" data-lang="c">
+<span class="kr">__declspec</span><span class="p">(</span><span class="n">align</span><span class="p">(</span><span class="mi">64</span><span class="p">))</span> <span class="kt">float</span> <span class="n">X</span><span class="p">[</span><span class="mi">1000</span><span class="p">],</span> <span class="n">X2</span><span class="p">[</span><span class="mi">1000</span><span class="p">];</span>
+
+<span class="kt">void</span> <span class="nf">foo</span><span class="p">(</span><span class="kt">float</span> <span class="o">*</span> <span class="kr">restrict</span> <span class="n">a</span><span class="p">,</span> <span class="kt">int</span> <span class="n">n</span><span class="p">,</span> <span class="kt">int</span> <span class="n">n1</span><span class="p">,</span> <span class="kt">int</span> <span class="n">n2</span><span class="p">)</span> <span class="p">{</span>
+  <span class="kt">int</span> <span class="n">i</span><span class="p">;</span>
+
+  <span class="kr">__assume</span><span class="p">(</span><span class="n">n1</span><span class="o">%</span><span class="mi">16</span><span class="o">==</span><span class="mi">0</span><span class="p">);</span>
+  <span class="kr">__assume</span><span class="p">(</span><span class="n">n2</span><span class="o">%</span><span class="mi">16</span><span class="o">==</span><span class="mi">0</span><span class="p">);</span>
+
+<span class="cp">#pragma omp simd aligned(X:64,a:64)
+</span><span class="cp"></span>  <span class="k">for</span><span class="p">(</span><span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span><span class="n">i</span><span class="o">&lt;</span><span class="n">n</span><span class="p">;</span><span class="n">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+    <span class="n">X</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+=</span> <span class="n">a</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+</span> <span class="n">a</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="n">n1</span><span class="p">]</span> <span class="o">+</span> <span class="n">a</span><span class="p">[</span><span class="n">i</span><span class="o">-</span><span class="n">n1</span><span class="p">]</span><span class="o">+</span> <span class="n">a</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="n">n2</span><span class="p">]</span> <span class="o">+</span> <span class="n">a</span><span class="p">[</span><span class="n">i</span><span class="o">-</span><span class="n">n2</span><span class="p">];</span>
+  <span class="p">}</span>
+
+<span class="cp">#pragma omp simd aligned(a:64)
+</span><span class="cp"></span>  <span class="k">for</span><span class="p">(</span><span class="n">i</span><span class="o">=</span><span class="mi">0</span><span class="p">;</span><span class="n">i</span><span class="o">&lt;</span><span class="n">n</span><span class="p">;</span><span class="n">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+    <span class="n">X2</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+=</span> <span class="n">X</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">*</span><span class="n">a</span><span class="p">[</span><span class="n">i</span><span class="p">];</span>
+  <span class="p">}</span>
+
+<span class="p">}</span>
+
+</code></pre></div><h2 id="检查编译器是否向量化程序">检查编译器是否向量化程序</h2>
+<p>CCE: -hlist=a</p>
+<p>GNU: -fdump-tree-vect-all=<!-- raw HTML omitted --></p>
+<p>Intel: -opt-report3</p>
+<p>AMD/Clang:-Rpass-analysis=.*</p>
+<p>使用perf来找线索</p>
+<h2 id="充分配合编译器向量化">充分配合编译器向量化</h2>
+<ol>
+<li>
+<p>尽量消除迭代之间的依赖性（尽量多的使用循环的index而非一个外部变量来在loop中运算）：</p>
+</li>
+<li>
+<p>将分支移出循环，if</p>
+</li>
+<li>
+<p>#pragma ivdep 告诉编译器循环是独立的无依赖的</p>
+</li>
+<li>
+<p>restrict 告诉编译器这个变量或者数组是唯一的</p>
+</li>
+<li>
+<p>注意对齐</p>
+</li>
+<li>
+<p>确保循环足够大，并确定循环大小</p>
+</li>
+</ol>
+<h2 id="gathers-and-scatters">Gathers and Scatters</h2>
+<p>数据的访问模式不是均步的，他也有可能可以向量化。</p>
+<p>首先说明，这功能是基于处理器指令的，处理器没实现的话，就没法用。KNL有专门的Gathers and Scatters指令，但是还是比对齐的数据损耗更大。</p>
+<p>以网上找的一个人写的SIMD的库的教程来说明，我觉得有实际例子会比较好：</p>
+<p>UME::SIMD</p>
+<p>三种情况；</p>
+<ol>
+<li>跨步访问，一次跨3个元素访问下一个</li>
+<li>索引访问，以新计算的偏移量访问数组元素</li>
+<li>改组访问，以不同的顺序访问元素</li>
+</ol>
+<h3 id="跨步访问"><strong>跨步访问</strong></h3>
+<p>首先明确一点，gather是load的超集。</p>
+<p>但是load效率高，速度快，所以还是多使用load来将连续内存搞到寄存器里。如果可以通过修改数据结构和代码的方式做到那就尽量去做，少使用gather。</p>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-c" data-lang="c">
+<span class="kt">float</span> <span class="n">a</span><span class="p">[</span><span class="n">LARGE_DATA_SIZE</span><span class="p">];</span>
+<span class="kt">uint32_t</span> <span class="n">STRIDE</span> <span class="o">=</span> <span class="mi">8</span><span class="p">;</span>
+<span class="p">...</span>
+<span class="k">for</span><span class="p">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">PROBLEM_SIZE</span><span class="p">;</span> <span class="n">i</span><span class="o">+=</span><span class="mi">8</span><span class="p">)</span> <span class="p">{</span>
+  <span class="n">SIMDVec</span><span class="o">&lt;</span><span class="kt">float</span><span class="p">,</span> <span class="mi">8</span><span class="o">&gt;</span> <span class="n">vec</span><span class="p">;</span>
+ 
+  <span class="c1">// Note that we have to scale the loop index.
+</span><span class="c1"></span>  <span class="kt">int</span> <span class="n">offset</span> <span class="o">=</span> <span class="n">i</span><span class="o">*</span><span class="n">STRIDE</span><span class="p">;</span>
+ 
+  <span class="c1">// &#39;load&#39; the data to vec.
+</span><span class="c1"></span>  <span class="n">vec</span><span class="p">.</span><span class="n">gather</span><span class="p">(</span><span class="o">&amp;</span><span class="n">a</span><span class="p">[</span><span class="n">offset</span><span class="p">],</span> <span class="n">STRIDE</span><span class="p">);</span>
+  <span class="c1">// do something useful
+</span><span class="c1"></span>  <span class="n">vec</span> <span class="o">+=</span> <span class="mf">3.14</span><span class="p">;</span>
+  <span class="c1">// store the result at original locations
+</span><span class="c1"></span>  <span class="n">vec</span><span class="p">.</span><span class="n">scatter</span><span class="p">(</span><span class="o">&amp;</span><span class="n">a</span><span class="p">[</span><span class="n">offset</span><span class="p">],</span> <span class="n">STRIDE</span><span class="p">);</span>
+<span class="p">}</span>
+
+</code></pre></div><h3 id="索引访问"><strong>索引访问</strong></h3>
+<div class="highlight"><pre tabindex="0" class="chroma"><code class="language-c" data-lang="c"><span class="kt">float</span> <span class="n">a</span><span class="p">[</span><span class="n">LARGE_DATA_SIZE</span><span class="p">];</span>
+<span class="kt">int</span> <span class="n">indices</span><span class="p">[</span><span class="n">PROBLEM_SIZE</span><span class="p">];</span>
+<span class="kt">uint32_t</span> <span class="n">STRIDE</span> <span class="o">=</span> <span class="mi">4</span><span class="p">;</span>
+<span class="p">...</span>
+<span class="k">for</span><span class="p">(</span><span class="kt">int</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span> <span class="n">i</span> <span class="o">&lt;</span> <span class="n">PROBLEM_SIZE</span><span class="p">;</span> <span class="n">i</span><span class="o">+=</span><span class="mi">8</span><span class="p">)</span> <span class="p">{</span>
+  <span class="n">SIMDVec</span><span class="o">&lt;</span><span class="kt">float</span><span class="p">,</span> <span class="mi">8</span><span class="o">&gt;</span> <span class="n">vec</span><span class="p">;</span>
+ 
+  <span class="c1">// Here we are using precomputed indices,
+</span><span class="c1"></span>  <span class="c1">// but they can be computed on-the-fly if necessary.
+</span><span class="c1"></span>  <span class="n">SIMDVec</span><span class="o">&lt;</span><span class="kt">uint32_t</span><span class="p">,</span> <span class="mi">8</span><span class="o">&gt;</span> <span class="n">indices_vec</span><span class="p">(</span><span class="o">&amp;</span><span class="n">indices</span><span class="p">[</span><span class="n">i</span><span class="p">];</span>
+ 
+  <span class="c1">// &#39;load&#39; the data to vec.
+</span><span class="c1"></span>  <span class="n">vec</span><span class="p">.</span><span class="n">gather</span><span class="p">(</span><span class="o">&amp;</span><span class="n">a</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">indices_vec</span><span class="p">);</span>
+  <span class="c1">// do something useful
+</span><span class="c1"></span>  <span class="n">vec</span> <span class="o">+=</span> <span class="mf">3.14</span><span class="p">;</span>
+  <span class="c1">// store the result at original locations
+</span><span class="c1"></span>  <span class="n">vec</span><span class="p">.</span><span class="n">scatter</span><span class="p">(</span><span class="o">&amp;</span><span class="n">a</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">indices_vec</span><span class="p">);</span>
+<span class="p">}</span>
+</code></pre></div><h2 id="masking-and-blending">Masking and Blending</h2>
+<p>Mask 可以被认为是是一个描述分支的掩码数组，通过它和特殊的指令：blend， 可以将内含分支的loop向量化掉：</p>
+<p>before:</p>
+<pre><code>for (i = 0; i &lt; N; i++) {
+    if (Trigger[i] &lt; Val) {
+        A[i] = B[i] + 0.5;
+    }else{
+        A[i] = B[i] - 0.5;
+    }
+}
+</code></pre><p>after:</p>
+<pre><code>for (i = 0; i &lt; N; i+=16) {
+    TmpB= B[i:i+15];
+    Mask = Trigger[i:i+15] &lt; Val
+    TmpA1 = TmpB + 0.5;
+    TmpA2 = TmpB - 0.5;
+    TmpA = BLEND Mask, TmpA1, TmpA2
+    A[i:i+15] = TmpA;
+} 
+</code></pre><p>看代码就知道啥意思了</p>
+<h2 id="再记一下arm的一些支持">再记一下arm的一些支持</h2>
+<p>ARM的向量化指令功能叫做SVE:</p>
+<ul>
+<li>
+<p>SVE is vector length independent</p>
+<ul>
+<li>Allows hardware to be created and used between 128-bits and 2048-bits</li>
+<li>Current processors using it have 512-bit vectors</li>
+</ul>
+</li>
+<li>
+<p>Programming approach allows executable to scale dynamically to available vector length</p>
+</li>
+<li>
+<p>Designed to help improve auto-vectorization</p>
+<ul>
+<li>Instructions to support speculative vectorization to allow uncounted loops to be vectorized.</li>
+<li>Instructions to make it easier to vectorise outer loops, working with dependencies</li>
+</ul>
+</li>
+<li>
+<p>Gather-load and scatter-store</p>
+<ul>
+<li>Loads a single vector register from non-contiguous memory locations.</li>
+</ul>
+</li>
+<li>
+<p>Per-lane predication</p>
+<ul>
+<li>Operate on individual lanes of vector controlled by of a governing predicate register.</li>
+</ul>
+</li>
+<li>
+<p>Predicate-driven loop control and management</p>
+<ul>
+<li>Eliminate loop heads and tails and other overhead by processing partial vectors.</li>
+</ul>
+</li>
+<li>
+<p>Vector partitioning for software-managed speculation</p>
+<ul>
+<li>First-fault vector load instructions allow vector accesses to cross into invalid pages.</li>
+</ul>
+</li>
+<li>
+<p>Extended floating-point and bitwise horizontal reductions</p>
+<ul>
+<li>In-order or tree-based floating-point sum, trade-off repeatability vs performance.</li>
+</ul>
+</li>
+</ul>
 
 </section>
 
@@ -226,6 +481,28 @@
                 
                     
 <article class="has-image">
+    <a href="/p/%E5%AF%B9%E8%B1%A1%E4%BC%98%E5%8C%96/">
+        
+        
+            <div class="article-image">
+                <img src="/p/%E5%AF%B9%E8%B1%A1%E4%BC%98%E5%8C%96/283.bfcbd186852300ceccc4253bc2aa082e_hu5ca3888a09b3a06cbac826e342e11bf1_4506406_250x150_fill_q75_box_smart1.jpg" 
+                        width="250" 
+                        height="150" 
+                        loading="lazy" 
+                        data-key="对象优化" 
+                        data-hash="md5-v8vRhoUjAM7MxCU7wqoILg==">
+                
+            </div>
+        
+
+        <div class="article-details">
+            <h2 class="article-title">对象优化</h2>
+        </div>
+    </a>
+</article>
+                
+                    
+<article class="has-image">
     <a href="/p/mercury-rpc-framework-for-hpc/">
         
         
@@ -264,28 +541,6 @@
 
         <div class="article-details">
             <h2 class="article-title">Gekkofs</h2>
-        </div>
-    </a>
-</article>
-                
-                    
-<article class="has-image">
-    <a href="/p/spectremeltdown/">
-        
-        
-            <div class="article-image">
-                <img src="/p/spectremeltdown/325.b955d1b6de1f9b7e753b021def3a7f2d_hube714498331873c40184a998a513a196_5002269_250x150_fill_q75_box_smart1.jpg" 
-                        width="250" 
-                        height="150" 
-                        loading="lazy" 
-                        data-key="Spectre&amp;Meltdown" 
-                        data-hash="md5-uVXRtt4fm351OwId7zp/LQ==">
-                
-            </div>
-        
-
-        <div class="article-details">
-            <h2 class="article-title">Spectre&amp;Meltdown</h2>
         </div>
     </a>
 </article>
@@ -458,6 +713,34 @@
                     <nav id="TableOfContents">
   <ol>
     <li><a href="#requirements">Requirements</a></li>
+    <li><a href="#现代向量处理器">现代向量处理器</a>
+      <ol>
+        <li><a href="#几个x86-vec指令"><strong>几个x86 vec指令</strong></a></li>
+        <li><a href="#amd和arm的"><strong>AMD和ARM的</strong></a></li>
+      </ol>
+    </li>
+    <li><a href="#对齐">对齐</a>
+      <ol>
+        <li><a href="#分配"><strong>分配</strong></a>
+          <ol>
+            <li><a href="#动态内存"><strong>动态内存</strong></a></li>
+            <li><a href="#静态内存"><strong>静态内存</strong></a></li>
+            <li><a href="#多维数据对齐"><strong>多维数据对齐</strong></a></li>
+          </ol>
+        </li>
+        <li><a href="#通知编译器"><strong>通知编译器</strong></a></li>
+      </ol>
+    </li>
+    <li><a href="#检查编译器是否向量化程序">检查编译器是否向量化程序</a></li>
+    <li><a href="#充分配合编译器向量化">充分配合编译器向量化</a></li>
+    <li><a href="#gathers-and-scatters">Gathers and Scatters</a>
+      <ol>
+        <li><a href="#跨步访问"><strong>跨步访问</strong></a></li>
+        <li><a href="#索引访问"><strong>索引访问</strong></a></li>
+      </ol>
+    </li>
+    <li><a href="#masking-and-blending">Masking and Blending</a></li>
+    <li><a href="#再记一下arm的一些支持">再记一下arm的一些支持</a></li>
   </ol>
 </nav>
                 </div>

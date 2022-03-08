@@ -44,7 +44,10 @@ Server端：GekkoFS daemon  Sever端通过本地的rocksdb来保存文件系统�
       <pubDate>Thu, 10 Feb 2022 00:00:00 +0000</pubDate>
       
       <guid>https://gao377020481.github.io/p/%E5%90%91%E9%87%8F%E5%8C%96/</guid>
-      <description>Requirements  loop得有可以（ determinable (at run time)）确定的循环次数 loop里不能包含（inline不算）过程调用 loop里不能包含分支 迭代次数也得多 迭代之间最好也没有依赖性 理论上就算有依赖性也可以向量化但是不实用  </description>
+      <description>Requirements  loop得有可以（ determinable (at run time)）确定的循环次数 loop里不能包含（inline不算）过程调用 loop里不能包含分支 迭代次数也得多 迭代之间最好也没有依赖性 理论上就算有依赖性也可以向量化但是不实用  现代向量处理器  依赖于大量的硬件单元而非流水线 有SIMD指令 大量依赖缓存，所以对齐很重要  几个x86 vec指令  MMX instructions  适用于 32,16 or 8-bit 整数类型的计算指令，有8 x 64-bit 的寄存器： MM0 … MM7
+SSE instructions  支持：64 &amp;amp; 32-bit floating point，64, 32,16 or 8-bit integer types， 有8 x 128-bit 寄存器： xmm0 … xmm7 (xmm8 .. xmm16 in 64-bit mode)
+AVX instructions  ymm0 … ymm15 寄存器相比于SSE拓展到256bits
+AVX2 AVX-512  AVX-512只在 Intel KNL and Skylake上有，更强力512-bits寄存器，zmm0 … zmm15，他分四部分：Foundation（扩展32，64指令），Conflict Detection Instructions（检测要vec的loop的冲突，尽可能让更多的loop能vec），Exponential and Reciprocal Instructions（KNL里的，能支持超越运算，咱也不懂。。）， Prefetch Instructions （KNL里的预取指支持）</description>
     </item>
     
     <item>
@@ -129,6 +132,28 @@ export PATH=/usr/local/openmpi/bin:$PATH export LD_LIBRARY_PATH=/usr/local/openm
 source /etc/profile 测试
 mpicc --version 写代码测试：hello.c
 #include &amp;lt;stdio.h&amp;gt;#include &amp;#34;mpi.h&amp;#34; int main(int argc, char* argv[]) { int rank, size, len; char version[MPI_MAX_LIBRARY_VERSION_STRING]; MPI_Init(&amp;amp;argc, &amp;amp;argv); MPI_Comm_rank(MPI_COMM_WORLD, &amp;amp;rank); MPI_Comm_size(MPI_COMM_WORLD, &amp;amp;size); MPI_Get_library_version(version, &amp;amp;len); printf(&amp;#34;Hello, world, I am %d of %d, (%s, %d)\n&amp;#34;, rank, size, version, len); MPI_Finalize(); return 0; } 编译并运行,我这里是四核虚拟机</description>
+    </item>
+    
+    <item>
+      <title>对象优化</title>
+      <link>https://gao377020481.github.io/p/%E5%AF%B9%E8%B1%A1%E4%BC%98%E5%8C%96/</link>
+      <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
+      
+      <guid>https://gao377020481.github.io/p/%E5%AF%B9%E8%B1%A1%E4%BC%98%E5%8C%96/</guid>
+      <description>面向对象带来的性能损耗 关于对象的构成可以参考之前的一篇博客，C++对象
+ 缓存开销  数据被组织在对象内，然后对象又有一些额外的内存开销，比如虚表等。
+方法开销  面向对象有很多的小函数，函数调用耗时，小的区块也限制了编译器优化的空间，虚函数机制多次跳转也有损耗。
+构造开销  构造函数开销大，有可能要处理虚继承虚函数的情况。
+JAVA中：
+ 在堆上分配空间，调用类的构造函数，初始化类的字段 对象状态被垃圾收集器跟踪，可能发生垃圾回收 在使用调试器创建对象时，你可以在一定程度上看到这一点。  **C++**中：
+ 拷贝构造经常发生（传参赋值返回），JAVA中都是引用就不会潜在发生。 构造与解构在继承体系中都是链状的，call的开销也很大  异常  这个可以参考之前写的异常处理，讲到try catch的实现，里面其实就是很多的跳转，还是非局部的，也就是很像function call。消耗当然大了。
+优化 Method In-lining 编译器很难自己去in-lining，c++的in-line关键字也只是鼓励编译器尝试in-line函数。但还是多用inline关键字。
+一般对于带循环的小函数编译器不会inline它，所以建议用重复的几行来替代小循环。
+私有，final的方法很可能被inline但是虚函数从不会被inline因为需要在运行时间接调用
+nested template：
+template &amp;lt;template &amp;lt;typename, typename...&amp;gt; class V, typename... Args&amp;gt; void print_container(V&amp;lt;Args...&amp;gt; &amp;amp;con) 这需要C++11支持，template &amp;lt;typename, typename&amp;hellip;&amp;gt; class V是第一个模板参数，他是一个有typename, typename&amp;hellip;为模板参数的类，它的名字叫V，typename&amp;hellip; Args指后续的模板参数，数量任意多，Args就是V里的模板参数，需要在这里指示出来。这是C++11的写法，可以让编译器自动推导传入类型模板参数的数量和类型。
+举个例子，
+vector&amp;lt;vector&amp;lt;vector&amp;lt;int&amp;gt;&amp;gt;&amp;gt;的参数传进去，推导出来就是这个： void print_container&amp;lt;std::vector, std::vector&amp;lt;std::vector&amp;lt;int&amp;gt;&amp;gt;, std::allocator&amp;lt;std::vector&amp;lt;std::vector&amp;lt;int&amp;gt;&amp;gt;&amp;gt;&amp;gt;(std::vector&amp;lt;std::vector&amp;lt;std::vector&amp;lt;int&amp;gt;&amp;gt;&amp;gt; &amp;amp;con) Encapsulation 意思就是把性能差的部分拿出来单独放到一个区域中或类中，在辅助上硬件比如FPGA,GPGPU，可以达到不错的加速效果。</description>
     </item>
     
   </channel>
