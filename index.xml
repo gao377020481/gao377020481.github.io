@@ -6,7 +6,64 @@
         <description>Recent content on Gao&#39;s Happy Day</description>
         <generator>Hugo -- gohugo.io</generator>
         <language>en-us</language>
-        <lastBuildDate>Sat, 12 Feb 2022 00:00:00 +0000</lastBuildDate><atom:link href="https://gao377020481.github.io/index.xml" rel="self" type="application/rss+xml" /><item>
+        <lastBuildDate>Tue, 08 Mar 2022 00:00:00 +0000</lastBuildDate><atom:link href="https://gao377020481.github.io/index.xml" rel="self" type="application/rss+xml" /><item>
+        <title>对象优化</title>
+        <link>https://gao377020481.github.io/p/%E5%AF%B9%E8%B1%A1%E4%BC%98%E5%8C%96/</link>
+        <pubDate>Tue, 08 Mar 2022 00:00:00 +0000</pubDate>
+        
+        <guid>https://gao377020481.github.io/p/%E5%AF%B9%E8%B1%A1%E4%BC%98%E5%8C%96/</guid>
+        <description>&lt;img src="https://gao377020481.github.io/p/%E5%AF%B9%E8%B1%A1%E4%BC%98%E5%8C%96/283.jpg" alt="Featured image of post 对象优化" /&gt;&lt;h2 id=&#34;面向对象带来的性能损耗&#34;&gt;面向对象带来的性能损耗&lt;/h2&gt;
+&lt;p&gt;关于对象的构成可以参考之前的一篇博客，&lt;a class=&#34;link&#34; href=&#34;https://gao377020481.github.io/p/c-%e5%af%b9%e8%b1%a1/&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
+    &gt;C++对象&lt;/a&gt;&lt;/p&gt;
+&lt;ol&gt;
+&lt;li&gt;缓存开销&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;数据被组织在对象内，然后对象又有一些额外的内存开销，比如虚表等。&lt;/p&gt;
+&lt;ol start=&#34;2&#34;&gt;
+&lt;li&gt;方法开销&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;面向对象有很多的小函数，函数调用耗时，小的区块也限制了编译器优化的空间，虚函数机制多次跳转也有损耗。&lt;/p&gt;
+&lt;ol start=&#34;3&#34;&gt;
+&lt;li&gt;构造开销&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;构造函数开销大，有可能要处理虚继承虚函数的情况。&lt;/p&gt;
+&lt;p&gt;&lt;strong&gt;JAVA&lt;/strong&gt;中：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;在堆上分配空间，调用类的构造函数，初始化类的字段&lt;/li&gt;
+&lt;li&gt;对象状态被垃圾收集器跟踪，可能发生垃圾回收&lt;/li&gt;
+&lt;li&gt;在使用调试器创建对象时，你可以在一定程度上看到这一点。&lt;/li&gt;
+&lt;/ul&gt;
+&lt;p&gt;**C++**中：&lt;/p&gt;
+&lt;ul&gt;
+&lt;li&gt;拷贝构造经常发生（传参赋值返回），JAVA中都是引用就不会潜在发生。&lt;/li&gt;
+&lt;li&gt;构造与解构在继承体系中都是链状的，call的开销也很大&lt;/li&gt;
+&lt;/ul&gt;
+&lt;ol start=&#34;4&#34;&gt;
+&lt;li&gt;异常&lt;/li&gt;
+&lt;/ol&gt;
+&lt;p&gt;这个可以参考之前写的&lt;a class=&#34;link&#34; href=&#34;https://gao377020481.github.io/p/%e5%bc%82%e5%b8%b8%e5%a4%84%e7%90%86/&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
+    &gt;异常处理&lt;/a&gt;，讲到try catch的实现，里面其实就是很多的跳转，还是非局部的，也就是很像function call。消耗当然大了。&lt;/p&gt;
+&lt;h2 id=&#34;优化&#34;&gt;优化&lt;/h2&gt;
+&lt;h3 id=&#34;method-in-lining&#34;&gt;Method In-lining&lt;/h3&gt;
+&lt;p&gt;编译器很难自己去in-lining，c++的in-line关键字也只是鼓励编译器尝试in-line函数。但还是多用inline关键字。&lt;/p&gt;
+&lt;p&gt;一般对于带循环的小函数编译器不会inline它，所以建议用重复的几行来替代小循环。&lt;/p&gt;
+&lt;p&gt;私有，final的方法很可能被inline但是虚函数从不会被inline因为需要在运行时间接调用&lt;/p&gt;
+&lt;p&gt;nested template：&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-c++&#34; data-lang=&#34;c++&#34;&gt;
+&lt;span class=&#34;k&#34;&gt;template&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&#34;k&#34;&gt;template&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&#34;k&#34;&gt;typename&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;k&#34;&gt;typename&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;...&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&#34;k&#34;&gt;class&lt;/span&gt; &lt;span class=&#34;nc&#34;&gt;V&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;k&#34;&gt;typename&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;...&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;Args&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;&amp;gt;&lt;/span&gt;
+&lt;span class=&#34;kt&#34;&gt;void&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;print_container&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;V&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;Args&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;...&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;&amp;amp;&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;con&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;这需要C++11支持，template &amp;lt;typename, typename&amp;hellip;&amp;gt; class V是第一个模板参数，他是一个有typename, typename&amp;hellip;为模板参数的类，它的名字叫V，typename&amp;hellip; Args指后续的模板参数，数量任意多，Args就是V里的模板参数，需要在这里指示出来。这是C++11的写法，可以让编译器自动推导传入类型模板参数的数量和类型。&lt;/p&gt;
+&lt;p&gt;举个例子，&lt;/p&gt;
+&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-c++&#34; data-lang=&#34;c++&#34;&gt;&lt;span class=&#34;n&#34;&gt;vector&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;vector&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;vector&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&#34;kt&#34;&gt;int&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;&amp;gt;&amp;gt;&amp;gt;&lt;/span&gt;&lt;span class=&#34;err&#34;&gt;的参数传进去，推导出来就是这个：&lt;/span&gt;
+
+&lt;span class=&#34;kt&#34;&gt;void&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;print_container&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;std&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;::&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;vector&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;std&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;::&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;vector&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;std&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;::&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;vector&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&#34;kt&#34;&gt;int&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;&amp;gt;&amp;gt;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;std&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;::&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;allocator&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;std&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;::&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;vector&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;std&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;::&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;vector&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&#34;kt&#34;&gt;int&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;&amp;gt;&amp;gt;&amp;gt;&amp;gt;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;std&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;::&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;vector&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;std&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;::&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;vector&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;std&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;::&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;vector&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&#34;kt&#34;&gt;int&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;&amp;gt;&amp;gt;&amp;gt;&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;&amp;amp;&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;con&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
+
+&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id=&#34;encapsulation&#34;&gt;Encapsulation&lt;/h3&gt;
+&lt;p&gt;意思就是把性能差的部分拿出来单独放到一个区域中或类中，在辅助上硬件比如FPGA,GPGPU，可以达到不错的加速效果。&lt;/p&gt;
+</description>
+        </item>
+        <item>
         <title>Mercury初探</title>
         <link>https://gao377020481.github.io/p/mercury-rpc-framework-for-hpc/</link>
         <pubDate>Sat, 12 Feb 2022 00:00:00 +0000</pubDate>
@@ -11535,63 +11592,6 @@ deb http://mirrors.aliyun.com/ubuntu/ xenial-security multiverse
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;安装gcc：&lt;/p&gt;
 &lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-shell&#34; data-lang=&#34;shell&#34;&gt;sudo apt-get install build-essential
 &lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;</description>
-        </item>
-        <item>
-        <title>对象优化</title>
-        <link>https://gao377020481.github.io/p/%E5%AF%B9%E8%B1%A1%E4%BC%98%E5%8C%96/</link>
-        <pubDate>Mon, 01 Jan 0001 00:00:00 +0000</pubDate>
-        
-        <guid>https://gao377020481.github.io/p/%E5%AF%B9%E8%B1%A1%E4%BC%98%E5%8C%96/</guid>
-        <description>&lt;img src="https://gao377020481.github.io/p/%E5%AF%B9%E8%B1%A1%E4%BC%98%E5%8C%96/283.jpg" alt="Featured image of post 对象优化" /&gt;&lt;h2 id=&#34;面向对象带来的性能损耗&#34;&gt;面向对象带来的性能损耗&lt;/h2&gt;
-&lt;p&gt;关于对象的构成可以参考之前的一篇博客，&lt;a class=&#34;link&#34; href=&#34;https://gao377020481.github.io/p/c-%e5%af%b9%e8%b1%a1/&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
-    &gt;C++对象&lt;/a&gt;&lt;/p&gt;
-&lt;ol&gt;
-&lt;li&gt;缓存开销&lt;/li&gt;
-&lt;/ol&gt;
-&lt;p&gt;数据被组织在对象内，然后对象又有一些额外的内存开销，比如虚表等。&lt;/p&gt;
-&lt;ol start=&#34;2&#34;&gt;
-&lt;li&gt;方法开销&lt;/li&gt;
-&lt;/ol&gt;
-&lt;p&gt;面向对象有很多的小函数，函数调用耗时，小的区块也限制了编译器优化的空间，虚函数机制多次跳转也有损耗。&lt;/p&gt;
-&lt;ol start=&#34;3&#34;&gt;
-&lt;li&gt;构造开销&lt;/li&gt;
-&lt;/ol&gt;
-&lt;p&gt;构造函数开销大，有可能要处理虚继承虚函数的情况。&lt;/p&gt;
-&lt;p&gt;&lt;strong&gt;JAVA&lt;/strong&gt;中：&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;在堆上分配空间，调用类的构造函数，初始化类的字段&lt;/li&gt;
-&lt;li&gt;对象状态被垃圾收集器跟踪，可能发生垃圾回收&lt;/li&gt;
-&lt;li&gt;在使用调试器创建对象时，你可以在一定程度上看到这一点。&lt;/li&gt;
-&lt;/ul&gt;
-&lt;p&gt;**C++**中：&lt;/p&gt;
-&lt;ul&gt;
-&lt;li&gt;拷贝构造经常发生（传参赋值返回），JAVA中都是引用就不会潜在发生。&lt;/li&gt;
-&lt;li&gt;构造与解构在继承体系中都是链状的，call的开销也很大&lt;/li&gt;
-&lt;/ul&gt;
-&lt;ol start=&#34;4&#34;&gt;
-&lt;li&gt;异常&lt;/li&gt;
-&lt;/ol&gt;
-&lt;p&gt;这个可以参考之前写的&lt;a class=&#34;link&#34; href=&#34;https://gao377020481.github.io/p/%e5%bc%82%e5%b8%b8%e5%a4%84%e7%90%86/&#34;  target=&#34;_blank&#34; rel=&#34;noopener&#34;
-    &gt;异常处理&lt;/a&gt;，讲到try catch的实现，里面其实就是很多的跳转，还是非局部的，也就是很像function call。消耗当然大了。&lt;/p&gt;
-&lt;h2 id=&#34;优化&#34;&gt;优化&lt;/h2&gt;
-&lt;h3 id=&#34;method-in-lining&#34;&gt;Method In-lining&lt;/h3&gt;
-&lt;p&gt;编译器很难自己去in-lining，c++的in-line关键字也只是鼓励编译器尝试in-line函数。但还是多用inline关键字。&lt;/p&gt;
-&lt;p&gt;一般对于带循环的小函数编译器不会inline它，所以建议用重复的几行来替代小循环。&lt;/p&gt;
-&lt;p&gt;私有，final的方法很可能被inline但是虚函数从不会被inline因为需要在运行时间接调用&lt;/p&gt;
-&lt;p&gt;nested template：&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-c++&#34; data-lang=&#34;c++&#34;&gt;
-&lt;span class=&#34;k&#34;&gt;template&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&#34;k&#34;&gt;template&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&#34;k&#34;&gt;typename&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;k&#34;&gt;typename&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;...&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&#34;k&#34;&gt;class&lt;/span&gt; &lt;span class=&#34;nc&#34;&gt;V&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;k&#34;&gt;typename&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;...&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;Args&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;&amp;gt;&lt;/span&gt;
-&lt;span class=&#34;kt&#34;&gt;void&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;print_container&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;V&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;Args&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;...&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;&amp;gt;&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;&amp;amp;&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;con&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
-
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;p&gt;这需要C++11支持，template &amp;lt;typename, typename&amp;hellip;&amp;gt; class V是第一个模板参数，他是一个有typename, typename&amp;hellip;为模板参数的类，它的名字叫V，typename&amp;hellip; Args指后续的模板参数，数量任意多，Args就是V里的模板参数，需要在这里指示出来。这是C++11的写法，可以让编译器自动推导传入类型模板参数的数量和类型。&lt;/p&gt;
-&lt;p&gt;举个例子，&lt;/p&gt;
-&lt;div class=&#34;highlight&#34;&gt;&lt;pre tabindex=&#34;0&#34; class=&#34;chroma&#34;&gt;&lt;code class=&#34;language-c++&#34; data-lang=&#34;c++&#34;&gt;&lt;span class=&#34;n&#34;&gt;vector&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;vector&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;vector&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&#34;kt&#34;&gt;int&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;&amp;gt;&amp;gt;&amp;gt;&lt;/span&gt;&lt;span class=&#34;err&#34;&gt;的参数传进去，推导出来就是这个：&lt;/span&gt;
-
-&lt;span class=&#34;kt&#34;&gt;void&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;print_container&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;std&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;::&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;vector&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;std&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;::&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;vector&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;std&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;::&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;vector&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&#34;kt&#34;&gt;int&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;&amp;gt;&amp;gt;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;,&lt;/span&gt; &lt;span class=&#34;n&#34;&gt;std&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;::&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;allocator&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;std&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;::&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;vector&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;std&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;::&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;vector&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&#34;kt&#34;&gt;int&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;&amp;gt;&amp;gt;&amp;gt;&amp;gt;&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;(&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;std&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;::&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;vector&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;std&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;::&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;vector&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;std&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;::&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;vector&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;&amp;lt;&lt;/span&gt;&lt;span class=&#34;kt&#34;&gt;int&lt;/span&gt;&lt;span class=&#34;o&#34;&gt;&amp;gt;&amp;gt;&amp;gt;&lt;/span&gt; &lt;span class=&#34;o&#34;&gt;&amp;amp;&lt;/span&gt;&lt;span class=&#34;n&#34;&gt;con&lt;/span&gt;&lt;span class=&#34;p&#34;&gt;)&lt;/span&gt;
-
-&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;&lt;h3 id=&#34;encapsulation&#34;&gt;Encapsulation&lt;/h3&gt;
-&lt;p&gt;意思就是把性能差的部分拿出来单独放到一个区域中或类中，在辅助上硬件比如FPGA,GPGPU，可以达到不错的加速效果。&lt;/p&gt;
-</description>
         </item>
         
     </channel>
